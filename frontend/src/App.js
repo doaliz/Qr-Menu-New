@@ -39,6 +39,11 @@ function App() {
                 <QRCodePage />
               </ProtectedRoute>
             } />
+            <Route path="/settings" element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            } />
             <Route path="/menu/:restaurantId" element={<PublicMenu />} />
             <Route path="/" element={<Navigate to="/login" />} />
           </Routes>
