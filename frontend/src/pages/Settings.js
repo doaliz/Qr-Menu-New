@@ -63,6 +63,42 @@ export default function Settings() {
     }
   };
 
+  const handleHeroImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Sadece JPG, JPEG ve PNG dosyaları yüklenebilir');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Dosya boyutu 5MB\'dan küçük olmalıdır');
+      return;
+    }
+
+    setUploadingHero(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await axios.post(`${API}/upload-image`, formData, {
+        headers: {
+          ...headers,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      setHeroImageUrl(response.data.image_url);
+      toast.success('Kapak görseli yüklendi');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Görsel yüklenirken hata oluştu');
+    } finally {
+      setUploadingHero(false);
+    }
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
