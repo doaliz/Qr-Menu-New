@@ -189,6 +189,60 @@ export default function Settings() {
               </div>
             </div>
 
+            <div className="space-y-2">
+              <Label>Menü Kapak Görseli (Opsiyonel)</Label>
+              <div className="space-y-3">
+                <Input
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png"
+                  onChange={handleHeroImageUpload}
+                  disabled={uploadingHero}
+                  data-testid="hero-image-upload-input"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Menünüzün üst kısmında görünecek kapak görseli. Desteklenen formatlar: JPG, JPEG, PNG (Max 5MB)
+                </p>
+                {uploadingHero && (
+                  <div className="flex items-center gap-2 text-sm text-primary">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Yükleniyor...
+                  </div>
+                )}
+                {heroImageUrl && (
+                  <div className="relative w-full h-32 border rounded-lg overflow-hidden bg-muted">
+                    <img
+                      src={heroImageUrl}
+                      alt="Kapak Görseli Önizleme"
+                      className="w-full h-full object-cover"
+                    />
+                    <Button
+                      size="icon"
+                      variant="destructive"
+                      className="absolute top-1 right-1 h-6 w-6"
+                      onClick={() => setHeroImageUrl('')}
+                      data-testid="remove-hero-button"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="instagram-url">Instagram Profil Linki (Opsiyonel)</Label>
+              <Input
+                id="instagram-url"
+                value={instagramUrl}
+                onChange={(e) => setInstagramUrl(e.target.value)}
+                placeholder="https://instagram.com/isletmeniz"
+                data-testid="instagram-url-input"
+              />
+              <p className="text-xs text-muted-foreground">
+                Instagram profil linkinizi ekleyin, menünüzde görünecektir
+              </p>
+            </div>
+
             <div className="border-t pt-6">
               <Button 
                 onClick={handleSave} 
