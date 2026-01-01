@@ -362,20 +362,20 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {items.map((item) => (
-                    <div key={item.id} className="flex items-start justify-between p-3 border rounded-lg" data-testid={`menu-item-${item.id}`}>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-medium">{item.name}</h4>
+                    <div key={item.id} className="flex items-start justify-between p-3 border rounded-lg gap-2" data-testid={`menu-item-${item.id}`}>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h4 className="font-medium text-sm md:text-base">{item.name}</h4>
                           {!item.is_available && (
-                            <span className="text-xs bg-destructive/10 text-destructive px-2 py-0.5 rounded" data-testid={`unavailable-badge-${item.id}`}>
+                            <span className="text-xs bg-destructive/10 text-destructive px-2 py-0.5 rounded whitespace-nowrap" data-testid={`unavailable-badge-${item.id}`}>
                               Satışta Değil
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-muted-foreground line-clamp-1">{item.description}</p>
+                        <p className="text-xs md:text-sm text-muted-foreground line-clamp-1">{item.description}</p>
                         <p className="text-sm font-semibold text-primary mt-1">{item.price} ₺</p>
                       </div>
-                      <div className="flex gap-1 ml-2">
+                      <div className="flex gap-1 flex-shrink-0">
                         <Button
                           variant="ghost"
                           size="icon"
