@@ -288,7 +288,11 @@ async def get_public_menu(restaurant_id: str):
         raise HTTPException(status_code=404, detail="Restaurant not found")
     
     categories = await db.categories.find({'restaurant_id': restaurant_id}, {'_id': 0}).sort('order', 1).to_list(1000)
-    menu_items = await db.menu_items.find({'restaurant_id': restaurant_id}, {'_id': 0}).to_list(1000)
+    # Only fetch available menu items for public menu
+    menu_items = await db.menu_items.find({
+        'restaurant_id': restaurant_id, 
+        'is_available': {'$ne': False}
+    }, {'_id': 0}).to_list(1000)
     
     categories_with_items = []
     for category in categories:
