@@ -433,6 +433,8 @@ async def create_category(input: CategoryCreate, restaurant_id: str = Depends(ge
         'restaurant_id': restaurant_id,
         'name': input.name,
         'order': input.order,
+        'name_color': input.name_color or '#000000',
+        'bg_color': input.bg_color or '#FFFFFF',
         'created_at': datetime.now(timezone.utc).isoformat()
     }
     
