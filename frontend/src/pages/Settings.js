@@ -102,19 +102,17 @@ export default function Settings() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await axios.put(`${API}/auth/profile`, {
+      const response = await axios.put(`${API}/auth/profile`, {
         name,
-        logo_url: logoUrl || null
+        logo_url: logoUrl || null,
+        hero_image_url: heroImageUrl || null,
+        instagram_url: instagramUrl || null
       }, { headers });
       
       toast.success('Profil güncellendi');
       
-      // Force re-login to update user context
-      setTimeout(() => {
-        logout();
-        navigate('/login');
-        toast.info('Değişikliklerin geçerli olması için tekrar giriş yapın');
-      }, 1000);
+      // Update local storage and reload user
+      window.location.reload();
     } catch (error) {
       toast.error('Profil güncellenirken hata oluştu');
     } finally {
