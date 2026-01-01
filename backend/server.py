@@ -155,10 +155,22 @@ async def get_current_restaurant(credentials: HTTPAuthorizationCredentials = Dep
         if not restaurant_id:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
         
-        # Check subscription status
+        # Get restaurant
         restaurant = await db.restaurants.find_one({'id': restaurant_id}, {'_id': 0})
         if not restaurant:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Restaurant not found")
+        
+        # Migrate old data: Add trial if missing
+        if not restaurant.get('trial_end_date'):
+            trial_end = datetime.now(timezone.utc) + timedelta(days=TRIAL_DAYS)
+            await db.restaurants.update_one(
+                {'id': restaurant_id},
+                {'$set': {
+                    'trial_end_date': trial_end.isoformat(),
+                    'subscription_status': 'trial'
+                }}
+            )
+            return restaurant_id  # Allow access after migration
         
         now = datetime.now(timezone.utc)
         trial_end = datetime.fromisoformat(restaurant['trial_end_date']) if restaurant.get('trial_end_date') else None
