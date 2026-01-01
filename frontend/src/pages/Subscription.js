@@ -83,7 +83,7 @@ export default function Subscription() {
       const response = await axios.post(
         `${API}/payments/checkout`,
         {
-          package_id: 'monthly',
+          package_id: 'yearly',
           origin_url: originUrl
         },
         { headers }
