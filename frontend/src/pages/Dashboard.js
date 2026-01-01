@@ -425,10 +425,10 @@ export default function Dashboard() {
           setItemDialogOpen(open);
           if (!open) {
             setEditingItem(null);
-            setItemForm({ name: '', description: '', price: '', category_id: '', image_url: '' });
+            setItemForm({ name: '', description: '', price: '', category_id: '', image_url: '', is_available: true });
           }
         }}>
-          <DialogContent data-testid="item-dialog">
+          <DialogContent data-testid="item-dialog" className="max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingItem ? 'Ürün Düzenle' : 'Yeni Ürün'}</DialogTitle>
               <DialogDescription>Menünüze yeni bir ürün ekleyin</DialogDescription>
@@ -467,14 +467,50 @@ export default function Dashboard() {
                 />
               </div>
               <div>
-                <Label htmlFor="item-image">Fotoğraf URL (Opsiyonel)</Label>
-                <Input
-                  id="item-image"
-                  value={itemForm.image_url}
-                  onChange={(e) => setItemForm({ ...itemForm, image_url: e.target.value })}
-                  placeholder="https://..."
-                  data-testid="item-image-input"
+                <Label htmlFor="item-image">Fotoğraf (Opsiyonel)</Label>
+                <div className="space-y-2">
+                  <Input
+                    id="item-image"
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/png"
+                    onChange={handleImageUpload}
+                    disabled={uploadingImage}
+                    data-testid="item-image-input"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Desteklenen formatlar: JPG, JPEG, PNG (Max 5MB)
+                  </p>
+                  {uploadingImage && (
+                    <p className="text-xs text-primary">Yükleniyor...</p>
+                  )}
+                  {itemForm.image_url && (
+                    <div className="relative w-32 h-32 border rounded-lg overflow-hidden">
+                      <img
+                        src={itemForm.image_url}
+                        alt="Önizleme"
+                        className="w-full h-full object-cover"
+                      />
+                      <Button
+                        size="icon"
+                        variant="destructive"
+                        className="absolute top-1 right-1 h-6 w-6"
+                        onClick={() => setItemForm({ ...itemForm, image_url: '' })}
+                        data-testid="remove-image-button"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="item-available"
+                  checked={itemForm.is_available}
+                  onCheckedChange={(checked) => setItemForm({ ...itemForm, is_available: checked })}
+                  data-testid="item-available-switch"
                 />
+                <Label htmlFor="item-available">Satışta</Label>
               </div>
             </div>
             <DialogFooter>
