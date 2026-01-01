@@ -45,6 +45,21 @@ function App() {
                 <Settings />
               </ProtectedRoute>
             } />
+            <Route path="/subscription" element={
+              <ProtectedRoute>
+                <Subscription />
+              </ProtectedRoute>
+            } />
+            <Route path="/subscription/success" element={
+              <ProtectedRoute>
+                <Subscription />
+              </ProtectedRoute>
+            } />
+            <Route path="/subscription/cancel" element={
+              <ProtectedRoute>
+                <Subscription />
+              </ProtectedRoute>
+            } />
             <Route path="/menu/:restaurantId" element={<PublicMenu />} />
             <Route path="/" element={<Navigate to="/login" />} />
           </Routes>
