@@ -275,6 +275,32 @@ async def update_profile(input: RestaurantUpdate, restaurant_id: str = Depends(g
     updated_restaurant = await db.restaurants.find_one({'id': restaurant_id}, {'_id': 0, 'password': 0})
     return Restaurant(**updated_restaurant)
 
+@api_router.post("/colors/bulk-update")
+async def bulk_update_colors(input: BulkColorUpdate, restaurant_id: str = Depends(get_current_restaurant)):
+    update_data = {}
+    if input.name_color:
+        update_data['name_color'] = input.name_color
+    if input.bg_color:
+        update_data['bg_color'] = input.bg_color
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No colors provided")
+    
+    if input.target == 'categories':
+        result = await db.categories.update_many(
+            {'restaurant_id': restaurant_id},
+            {'$set': update_data}
+        )
+        return {"message": f"{result.modified_count} kategori güncellendi", "updated_count": result.modified_count}
+    elif input.target == 'items':
+        result = await db.menu_items.update_many(
+            {'restaurant_id': restaurant_id},
+            {'$set': update_data}
+        )
+        return {"message": f"{result.modified_count} ürün güncellendi", "updated_count": result.modified_count}
+    else:
+        raise HTTPException(status_code=400, detail="Invalid target")
+
 @api_router.get("/subscription/info", response_model=SubscriptionInfo)
 async def get_subscription_info(restaurant_id: str = Depends(get_current_restaurant)):
     restaurant = await db.restaurants.find_one({'id': restaurant_id}, {'_id': 0})
