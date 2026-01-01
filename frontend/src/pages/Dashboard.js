@@ -47,12 +47,16 @@ export default function Dashboard() {
 
   const fetchData = async () => {
     try {
-      const [categoriesRes, itemsRes] = await Promise.all([
+      const [categoriesRes, itemsRes, subscriptionRes] = await Promise.all([
         axios.get(`${API}/categories`, { headers }),
-        axios.get(`${API}/menu-items`, { headers })
+        axios.get(`${API}/menu-items`, { headers }),
+        axios.get(`${API}/subscription/info`, { headers }).catch(() => null)
       ]);
       setCategories(categoriesRes.data);
       setMenuItems(itemsRes.data);
+      if (subscriptionRes) {
+        setSubscriptionInfo(subscriptionRes.data);
+      }
     } catch (error) {
       toast.error('Veriler yüklenirken hata oluştu');
     } finally {
