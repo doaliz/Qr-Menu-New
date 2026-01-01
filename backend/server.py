@@ -402,9 +402,9 @@ async def get_payment_status(session_id: str, restaurant_id: str = Depends(get_c
     
     # If payment succeeded and not yet processed
     if status_response.payment_status == 'paid' and transaction.get('payment_status') != 'paid':
-        # Extend subscription by 30 days
+        # Extend subscription by 365 days (yearly)
         now = datetime.now(timezone.utc)
-        new_subscription_end = now + timedelta(days=30)
+        new_subscription_end = now + timedelta(days=365)
         
         await db.restaurants.update_one(
             {'id': restaurant_id},
