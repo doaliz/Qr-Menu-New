@@ -158,13 +158,15 @@ export default function Dashboard() {
       price: item.price.toString(),
       category_id: item.category_id,
       image_url: item.image_url || '',
-      is_available: item.is_available !== undefined ? item.is_available : true
+      is_available: item.is_available !== undefined ? item.is_available : true,
+      name_color: item.name_color || '#000000',
+      bg_color: item.bg_color || '#FFFFFF'
     });
     setItemDialogOpen(true);
   };
 
   const openCreateItem = (categoryId) => {
-    setItemForm({ name: '', description: '', price: '', category_id: categoryId, image_url: '', is_available: true });
+    setItemForm({ name: '', description: '', price: '', category_id: categoryId, image_url: '', is_available: true, name_color: '#000000', bg_color: '#FFFFFF' });
     setItemDialogOpen(true);
   };
 
