@@ -109,7 +109,7 @@ export default function Settings() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const response = await axios.put(`${API}/auth/profile`, {
+      await axios.put(`${API}/auth/profile`, {
         name,
         logo_url: logoUrl || null,
         hero_image_url: heroImageUrl || null,
@@ -119,7 +119,9 @@ export default function Settings() {
       toast.success('Profil güncellendi');
       
       // Update local storage and reload user
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     } catch (error) {
       toast.error('Profil güncellenirken hata oluştu');
     } finally {
