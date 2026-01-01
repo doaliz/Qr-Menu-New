@@ -55,11 +55,21 @@ export default function PublicMenu() {
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-3xl md:text-4xl font-bold playfair" data-testid="restaurant-title">
-              {menuData.restaurant.name}
-            </h1>
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              {menuData.restaurant.logo_url && (
+                <img 
+                  src={menuData.restaurant.logo_url} 
+                  alt={menuData.restaurant.name}
+                  className="h-10 w-10 md:h-12 md:w-12 object-contain rounded-lg bg-white p-1"
+                  data-testid="restaurant-logo"
+                />
+              )}
+              <h1 className="text-2xl md:text-4xl font-bold playfair truncate" data-testid="restaurant-title">
+                {menuData.restaurant.name}
+              </h1>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
               <Sun className="h-4 w-4" />
               <Switch checked={theme === 'dark'} onCheckedChange={toggleTheme} data-testid="theme-toggle" />
               <Moon className="h-4 w-4" />
