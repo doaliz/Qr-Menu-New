@@ -323,6 +323,46 @@ export default function Dashboard() {
                     data-testid="category-order-input"
                   />
                 </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="category-name-color">İsim Rengi</Label>
+                    <div className="flex gap-2 items-center">
+                      <Input
+                        id="category-name-color"
+                        type="color"
+                        value={categoryForm.name_color}
+                        onChange={(e) => setCategoryForm({ ...categoryForm, name_color: e.target.value })}
+                        className="w-12 h-10 p-1 cursor-pointer"
+                        data-testid="category-name-color-input"
+                      />
+                      <Input
+                        value={categoryForm.name_color}
+                        onChange={(e) => setCategoryForm({ ...categoryForm, name_color: e.target.value })}
+                        placeholder="#000000"
+                        className="flex-1"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="category-bg-color">Arka Plan Rengi</Label>
+                    <div className="flex gap-2 items-center">
+                      <Input
+                        id="category-bg-color"
+                        type="color"
+                        value={categoryForm.bg_color}
+                        onChange={(e) => setCategoryForm({ ...categoryForm, bg_color: e.target.value })}
+                        className="w-12 h-10 p-1 cursor-pointer"
+                        data-testid="category-bg-color-input"
+                      />
+                      <Input
+                        value={categoryForm.bg_color}
+                        onChange={(e) => setCategoryForm({ ...categoryForm, bg_color: e.target.value })}
+                        placeholder="#FFFFFF"
+                        className="flex-1"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
               <DialogFooter>
                 <Button 
