@@ -138,7 +138,7 @@ export default function PublicMenu() {
               {activeCategoryData.name}
             </h2>
             {activeCategoryData.items.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {activeCategoryData.items
                   .filter(item => item.is_available !== false)
                   .map((item) => (
@@ -151,36 +151,38 @@ export default function PublicMenu() {
                     }}
                     data-testid={`menu-item-${item.id}`}
                   >
-                    {item.image_url && (
-                      <div className="aspect-video w-full overflow-hidden bg-muted">
-                        <img
-                          src={item.image_url}
-                          alt={item.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                          }}
-                        />
-                      </div>
-                    )}
-                    <div className="p-4">
-                      <div className="flex items-start justify-between mb-2">
-                        <h3 
-                          className="text-lg font-semibold" 
-                          style={{ color: item.name_color || '#000000' }}
-                          data-testid={`item-name-${item.id}`}
-                        >
-                          {item.name}
-                        </h3>
-                        <span className="text-lg font-bold text-primary ml-2" data-testid={`item-price-${item.id}`}>
-                          {item.price} ₺
-                        </span>
-                      </div>
-                      {item.description && (
-                        <p className="text-sm text-muted-foreground" data-testid={`item-description-${item.id}`}>
-                          {item.description}
-                        </p>
+                    <div className="flex items-start gap-4 p-4">
+                      {item.image_url && (
+                        <div className="w-24 h-24 md:w-28 md:h-28 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
+                          <img
+                            src={item.image_url}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.parentElement.style.display = 'none';
+                            }}
+                          />
+                        </div>
                       )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 
+                            className="text-lg md:text-xl font-semibold" 
+                            style={{ color: item.name_color || '#000000' }}
+                            data-testid={`item-name-${item.id}`}
+                          >
+                            {item.name}
+                          </h3>
+                          <span className="text-lg md:text-xl font-bold text-primary whitespace-nowrap" data-testid={`item-price-${item.id}`}>
+                            {item.price} ₺
+                          </span>
+                        </div>
+                        {item.description && (
+                          <p className="text-sm md:text-base text-muted-foreground mt-2" data-testid={`item-description-${item.id}`}>
+                            {item.description}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
