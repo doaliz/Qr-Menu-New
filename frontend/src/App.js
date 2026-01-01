@@ -10,6 +10,7 @@ import Dashboard from '@/pages/Dashboard';
 import PublicMenu from '@/pages/PublicMenu';
 import QRCodePage from '@/pages/QRCodePage';
 import Settings from '@/pages/Settings';
+import Subscription from '@/pages/Subscription';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
