@@ -59,6 +59,11 @@ class RestaurantUpdate(BaseModel):
     hero_image_url: Optional[str] = None
     instagram_url: Optional[str] = None
 
+class BulkColorUpdate(BaseModel):
+    target: str  # 'categories' or 'items'
+    name_color: Optional[str] = None
+    bg_color: Optional[str] = None
+
 class Category(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
