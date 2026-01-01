@@ -172,6 +172,25 @@ async def get_me(restaurant_id: str = Depends(get_current_restaurant)):
     
     return Restaurant(**restaurant_dict)
 
+@api_router.post("/upload-image")
+async def upload_image(file: UploadFile = File(...), restaurant_id: str = Depends(get_current_restaurant)):
+    allowed_extensions = ['jpg', 'jpeg', 'png']
+    file_extension = file.filename.split('.')[-1].lower()
+    
+    if file_extension not in allowed_extensions:
+        raise HTTPException(status_code=400, detail="Sadece JPG, JPEG ve PNG dosyaları desteklenmektedir")
+    
+    max_size = 5 * 1024 * 1024
+    contents = await file.read()
+    
+    if len(contents) > max_size:
+        raise HTTPException(status_code=400, detail="Dosya boyutu 5MB'dan küçük olmalıdır")
+    
+    image_base64 = base64.b64encode(contents).decode('utf-8')
+    image_data_url = f"data:image/{file_extension};base64,{image_base64}"
+    
+    return {"image_url": image_data_url, "filename": file.filename}
+
 @api_router.get("/categories", response_model=List[Category])
 async def get_categories(restaurant_id: str = Depends(get_current_restaurant)):
     categories = await db.categories.find({'restaurant_id': restaurant_id}, {'_id': 0}).sort('order', 1).to_list(1000)
