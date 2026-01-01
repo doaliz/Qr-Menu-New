@@ -258,6 +258,150 @@ async def update_profile(input: RestaurantUpdate, restaurant_id: str = Depends(g
     updated_restaurant = await db.restaurants.find_one({'id': restaurant_id}, {'_id': 0, 'password': 0})
     return Restaurant(**updated_restaurant)
 
+@api_router.get("/subscription/info", response_model=SubscriptionInfo)
+async def get_subscription_info(restaurant_id: str = Depends(get_current_restaurant)):
+    restaurant = await db.restaurants.find_one({'id': restaurant_id}, {'_id': 0})
+    if not restaurant:
+        raise HTTPException(status_code=404, detail="Restaurant not found")
+    
+    now = datetime.now(timezone.utc)
+    trial_end = datetime.fromisoformat(restaurant['trial_end_date']) if restaurant.get('trial_end_date') else None
+    subscription_end = datetime.fromisoformat(restaurant['subscription_end_date']) if restaurant.get('subscription_end_date') else None
+    
+    is_active = False
+    days_remaining = None
+    
+    if trial_end and now < trial_end:
+        is_active = True
+        days_remaining = (trial_end - now).days
+    elif subscription_end and now < subscription_end:
+        is_active = True
+        days_remaining = (subscription_end - now).days
+    
+    return SubscriptionInfo(
+        subscription_status=restaurant.get('subscription_status', 'trial'),
+        trial_end_date=trial_end,
+        subscription_end_date=subscription_end,
+        days_remaining=days_remaining,
+        is_active=is_active
+    )
+
+@api_router.post("/payments/checkout")
+async def create_checkout(request: CheckoutRequest, restaurant_id: str = Depends(get_current_restaurant)):
+    # Fixed package: monthly subscription
+    PACKAGES = {"monthly": MONTHLY_PRICE}
+    
+    if request.package_id not in PACKAGES:
+        raise HTTPException(status_code=400, detail="Invalid package")
+    
+    amount = PACKAGES[request.package_id]
+    
+    # Create success and cancel URLs
+    success_url = f"{request.origin_url}/subscription/success?session_id={{CHECKOUT_SESSION_ID}}"
+    cancel_url = f"{request.origin_url}/subscription/cancel"
+    
+    # Initialize Stripe
+    webhook_url = f"{request.origin_url}/api/webhook/stripe"
+    stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
+    
+    # Create checkout session
+    checkout_request = CheckoutSessionRequest(
+        amount=amount,
+        currency="try",
+        success_url=success_url,
+        cancel_url=cancel_url,
+        metadata={
+            "restaurant_id": restaurant_id,
+            "package_id": request.package_id
+        }
+    )
+    
+    session = await stripe_checkout.create_checkout_session(checkout_request)
+    
+    # Save transaction
+    await db.payment_transactions.insert_one({
+        'session_id': session.session_id,
+        'restaurant_id': restaurant_id,
+        'amount': amount,
+        'currency': 'try',
+        'status': 'pending',
+        'payment_status': 'initiated',
+        'metadata': checkout_request.metadata,
+        'created_at': datetime.now(timezone.utc).isoformat()
+    })
+    
+    return {"url": session.url, "session_id": session.session_id}
+
+@api_router.get("/payments/status/{session_id}")
+async def get_payment_status(session_id: str, restaurant_id: str = Depends(get_current_restaurant)):
+    # Get transaction from DB
+    transaction = await db.payment_transactions.find_one({'session_id': session_id, 'restaurant_id': restaurant_id}, {'_id': 0})
+    if not transaction:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    
+    # If already processed, return cached status
+    if transaction.get('payment_status') == 'paid':
+        return {"status": "complete", "payment_status": "paid", "processed": True}
+    
+    # Check with Stripe
+    stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url="")
+    status_response = await stripe_checkout.get_checkout_status(session_id)
+    
+    # Update transaction
+    await db.payment_transactions.update_one(
+        {'session_id': session_id},
+        {'$set': {
+            'status': status_response.status,
+            'payment_status': status_response.payment_status,
+            'updated_at': datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    # If payment succeeded and not yet processed
+    if status_response.payment_status == 'paid' and transaction.get('payment_status') != 'paid':
+        # Extend subscription by 30 days
+        now = datetime.now(timezone.utc)
+        new_subscription_end = now + timedelta(days=30)
+        
+        await db.restaurants.update_one(
+            {'id': restaurant_id},
+            {'$set': {
+                'subscription_status': 'active',
+                'subscription_end_date': new_subscription_end.isoformat()
+            }}
+        )
+    
+    return {
+        "status": status_response.status,
+        "payment_status": status_response.payment_status,
+        "amount": status_response.amount_total,
+        "currency": status_response.currency
+    }
+
+@api_router.post("/webhook/stripe")
+async def stripe_webhook(request: Request):
+    body = await request.body()
+    signature = request.headers.get("Stripe-Signature")
+    
+    try:
+        stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url="")
+        webhook_response = await stripe_checkout.handle_webhook(body, signature)
+        
+        # Update transaction
+        await db.payment_transactions.update_one(
+            {'session_id': webhook_response.session_id},
+            {'$set': {
+                'payment_status': webhook_response.payment_status,
+                'event_type': webhook_response.event_type,
+                'webhook_received_at': datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        return {"status": "success"}
+    except Exception as e:
+        logger.error(f"Webhook error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+
 @api_router.post("/upload-image")
 async def upload_image(file: UploadFile = File(...), restaurant_id: str = Depends(get_current_restaurant)):
     allowed_extensions = ['jpg', 'jpeg', 'png']
