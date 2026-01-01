@@ -91,6 +91,8 @@ class MenuItem(BaseModel):
     price: float
     image_url: Optional[str] = None
     is_available: bool = True
+    name_color: Optional[str] = '#000000'
+    bg_color: Optional[str] = '#FFFFFF'
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class MenuItemCreate(BaseModel):
@@ -100,6 +102,8 @@ class MenuItemCreate(BaseModel):
     price: float
     image_url: Optional[str] = None
     is_available: Optional[bool] = True
+    name_color: Optional[str] = '#000000'
+    bg_color: Optional[str] = '#FFFFFF'
 
 class MenuItemUpdate(BaseModel):
     name: Optional[str] = None
@@ -108,6 +112,8 @@ class MenuItemUpdate(BaseModel):
     category_id: Optional[str] = None
     image_url: Optional[str] = None
     is_available: Optional[bool] = None
+    name_color: Optional[str] = None
+    bg_color: Optional[str] = None
 
 class ImageUpload(BaseModel):
     image_data: str
