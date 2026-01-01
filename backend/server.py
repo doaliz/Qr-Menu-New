@@ -436,6 +436,20 @@ async def upload_image(file: UploadFile = File(...), restaurant_id: str = Depend
 @api_router.get("/categories", response_model=List[Category])
 async def get_categories(restaurant_id: str = Depends(get_current_restaurant)):
     categories = await db.categories.find({'restaurant_id': restaurant_id}, {'_id': 0}).sort('order', 1).to_list(1000)
+    
+    # Migrate old data: Add default colors if missing
+    for cat in categories:
+        if 'name_color' not in cat or 'bg_color' not in cat:
+            await db.categories.update_one(
+                {'id': cat['id']},
+                {'$set': {
+                    'name_color': cat.get('name_color', '#000000'),
+                    'bg_color': cat.get('bg_color', '#FFFFFF')
+                }}
+            )
+            cat['name_color'] = cat.get('name_color', '#000000')
+            cat['bg_color'] = cat.get('bg_color', '#FFFFFF')
+    
     return [Category(**cat) for cat in categories]
 
 @api_router.post("/categories", response_model=Category)
