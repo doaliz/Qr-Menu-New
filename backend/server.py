@@ -268,7 +268,17 @@ async def update_profile(input: RestaurantUpdate, restaurant_id: str = Depends(g
     if not restaurant:
         raise HTTPException(status_code=404, detail="Restaurant not found")
     
-    update_data = {k: v for k, v in input.model_dump().items() if v is not None}
+    update_data = {}
+    # Handle all fields including None values (to allow deletion)
+    if input.name is not None:
+        update_data['name'] = input.name
+    if 'logo_url' in input.model_dump(exclude_unset=True):
+        update_data['logo_url'] = input.logo_url
+    if 'hero_image_url' in input.model_dump(exclude_unset=True):
+        update_data['hero_image_url'] = input.hero_image_url
+    if 'instagram_url' in input.model_dump(exclude_unset=True):
+        update_data['instagram_url'] = input.instagram_url
+    
     if update_data:
         await db.restaurants.update_one({'id': restaurant_id}, {'$set': update_data})
     
