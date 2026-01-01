@@ -151,14 +151,63 @@ export default function Dashboard() {
       description: item.description || '',
       price: item.price.toString(),
       category_id: item.category_id,
-      image_url: item.image_url || ''
+      image_url: item.image_url || '',
+      is_available: item.is_available !== undefined ? item.is_available : true
     });
     setItemDialogOpen(true);
   };
 
   const openCreateItem = (categoryId) => {
-    setItemForm({ name: '', description: '', price: '', category_id: categoryId, image_url: '' });
+    setItemForm({ name: '', description: '', price: '', category_id: categoryId, image_url: '', is_available: true });
     setItemDialogOpen(true);
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Sadece JPG, JPEG ve PNG dosyaları yüklenebilir');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Dosya boyutu 5MB\'dan küçük olmalıdır');
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await axios.post(`${API}/upload-image`, formData, {
+        headers: {
+          ...headers,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      setItemForm({ ...itemForm, image_url: response.data.image_url });
+      toast.success('Fotoğraf yüklendi');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Fotoğraf yüklenirken hata oluştu');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const toggleItemAvailability = async (item) => {
+    try {
+      await axios.put(`${API}/menu-items/${item.id}`, {
+        is_available: !item.is_available
+      }, { headers });
+      toast.success(item.is_available ? 'Ürün satışa kapatıldı' : 'Ürün satışa açıldı');
+      fetchData();
+    } catch (error) {
+      toast.error('İşlem başarısız');
+    }
   };
 
   const handleLogout = () => {
