@@ -29,8 +29,9 @@ export default function Dashboard() {
   const [editingCategory, setEditingCategory] = useState(null);
   
   const [itemDialogOpen, setItemDialogOpen] = useState(false);
-  const [itemForm, setItemForm] = useState({ name: '', description: '', price: '', category_id: '', image_url: '' });
+  const [itemForm, setItemForm] = useState({ name: '', description: '', price: '', category_id: '', image_url: '', is_available: true });
   const [editingItem, setEditingItem] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const headers = { Authorization: `Bearer ${token}` };
 
