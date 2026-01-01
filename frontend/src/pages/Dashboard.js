@@ -222,39 +222,52 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b sticky top-0 bg-background z-10">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold playfair" data-testid="restaurant-name">{user?.name}</h1>
-            <p className="text-sm text-muted-foreground">Admin Paneli</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate('/qr-code')}
-              data-testid="qr-code-button"
-            >
-              <QrCode className="h-4 w-4 mr-2" />
-              QR Kod
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate(`/menu/${user?.id}`)}
-              data-testid="view-menu-button"
-            >
-              <MenuIcon className="h-4 w-4 mr-2" />
-              Menüyü Görüntüle
-            </Button>
-            <div className="flex items-center gap-2">
-              <Sun className="h-4 w-4" />
-              <Switch checked={theme === 'dark'} onCheckedChange={toggleTheme} data-testid="theme-toggle" />
-              <Moon className="h-4 w-4" />
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <h1 className="text-xl md:text-2xl font-semibold playfair truncate" data-testid="restaurant-name">{user?.name}</h1>
+              <p className="text-xs md:text-sm text-muted-foreground">Admin Paneli</p>
             </div>
-            <Button variant="outline" size="sm" onClick={handleLogout} data-testid="logout-button">
-              <LogOut className="h-4 w-4 mr-2" />
-              Çıkış
-            </Button>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/settings')}
+                className="hidden sm:flex"
+                data-testid="settings-button"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                Ayarlar
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/qr-code')}
+                data-testid="qr-code-button"
+              >
+                <QrCode className="h-4 w-4 md:mr-2" />
+                <span className="hidden md:inline">QR Kod</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(`/menu/${user?.id}`)}
+                className="hidden md:flex"
+                data-testid="view-menu-button"
+              >
+                <MenuIcon className="h-4 w-4 mr-2" />
+                Menüyü Görüntüle
+              </Button>
+              <div className="hidden md:flex items-center gap-2">
+                <Sun className="h-4 w-4" />
+                <Switch checked={theme === 'dark'} onCheckedChange={toggleTheme} data-testid="theme-toggle" />
+                <Moon className="h-4 w-4" />
+              </div>
+              <Button variant="outline" size="sm" onClick={handleLogout} data-testid="logout-button">
+                <LogOut className="h-4 w-4 md:mr-2" />
+                <span className="hidden md:inline">Çıkış</span>
+              </Button>
+            </div>
           </div>
         </div>
       </header>
