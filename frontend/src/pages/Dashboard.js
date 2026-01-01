@@ -442,7 +442,19 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {items.map((item) => (
-                    <div key={item.id} className="flex items-start justify-between p-3 border rounded-lg gap-2" data-testid={`menu-item-${item.id}`}>
+                    <div key={item.id} className="flex items-start gap-3 p-3 border rounded-lg" data-testid={`menu-item-${item.id}`}>
+                      {item.image_url && (
+                        <div className="w-20 h-20 flex-shrink-0 rounded-md overflow-hidden bg-muted">
+                          <img
+                            src={item.image_url}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.parentElement.style.display = 'none';
+                            }}
+                          />
+                        </div>
+                      )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <h4 className="font-medium text-sm md:text-base">{item.name}</h4>
@@ -452,12 +464,14 @@ export default function Dashboard() {
                             </span>
                           )}
                         </div>
-                        <p className="text-xs md:text-sm text-muted-foreground line-clamp-1">{item.description}</p>
+                        {item.description && (
+                          <p className="text-xs md:text-sm text-muted-foreground line-clamp-2 mt-1">{item.description}</p>
+                        )}
                         <p className="text-sm font-semibold text-primary mt-1">{item.price} ₺</p>
                       </div>
                       <div className="flex flex-col gap-2 items-end flex-shrink-0">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-muted-foreground">Satışta</span>
+                          <span className="text-xs text-muted-foreground hidden sm:inline">Satışta</span>
                           <Switch
                             checked={item.is_available}
                             onCheckedChange={() => toggleItemAvailability(item)}
