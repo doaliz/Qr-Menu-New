@@ -127,6 +127,26 @@ export default function Settings() {
     }
   };
 
+  const handleBulkColorUpdate = async (target) => {
+    setUpdatingColors(true);
+    try {
+      const colors = target === 'categories' 
+        ? { name_color: categoryNameColor, bg_color: categoryBgColor }
+        : { name_color: itemNameColor, bg_color: itemBgColor };
+      
+      const response = await axios.post(`${API}/colors/bulk-update`, {
+        target,
+        ...colors
+      }, { headers });
+      
+      toast.success(response.data.message);
+    } catch (error) {
+      toast.error('Renkler güncellenirken hata oluştu');
+    } finally {
+      setUpdatingColors(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b sticky top-0 bg-background z-10">
