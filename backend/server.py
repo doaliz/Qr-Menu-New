@@ -77,6 +77,7 @@ class MenuItemCreate(BaseModel):
     description: Optional[str] = None
     price: float
     image_url: Optional[str] = None
+    is_available: Optional[bool] = True
 
 class MenuItemUpdate(BaseModel):
     name: Optional[str] = None
@@ -84,6 +85,11 @@ class MenuItemUpdate(BaseModel):
     price: Optional[float] = None
     category_id: Optional[str] = None
     image_url: Optional[str] = None
+    is_available: Optional[bool] = None
+
+class ImageUpload(BaseModel):
+    image_data: str
+    filename: str
 
 class TokenResponse(BaseModel):
     token: str
