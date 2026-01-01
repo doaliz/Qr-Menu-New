@@ -576,6 +576,46 @@ export default function Dashboard() {
                 />
                 <Label htmlFor="item-available">Satışta</Label>
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="item-name-color">İsim Rengi</Label>
+                  <div className="flex gap-2 items-center">
+                    <Input
+                      id="item-name-color"
+                      type="color"
+                      value={itemForm.name_color}
+                      onChange={(e) => setItemForm({ ...itemForm, name_color: e.target.value })}
+                      className="w-12 h-10 p-1 cursor-pointer"
+                      data-testid="item-name-color-input"
+                    />
+                    <Input
+                      value={itemForm.name_color}
+                      onChange={(e) => setItemForm({ ...itemForm, name_color: e.target.value })}
+                      placeholder="#000000"
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="item-bg-color">Arka Plan Rengi</Label>
+                  <div className="flex gap-2 items-center">
+                    <Input
+                      id="item-bg-color"
+                      type="color"
+                      value={itemForm.bg_color}
+                      onChange={(e) => setItemForm({ ...itemForm, bg_color: e.target.value })}
+                      className="w-12 h-10 p-1 cursor-pointer"
+                      data-testid="item-bg-color-input"
+                    />
+                    <Input
+                      value={itemForm.bg_color}
+                      onChange={(e) => setItemForm({ ...itemForm, bg_color: e.target.value })}
+                      placeholder="#FFFFFF"
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
             <DialogFooter>
               <Button 
