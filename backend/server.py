@@ -39,6 +39,9 @@ class Restaurant(BaseModel):
     logo_url: Optional[str] = None
     hero_image_url: Optional[str] = None
     instagram_url: Optional[str] = None
+    trial_end_date: Optional[datetime] = None
+    subscription_status: str = 'trial'
+    subscription_end_date: Optional[datetime] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class RestaurantCreate(BaseModel):
