@@ -26,11 +26,11 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
-  const [categoryForm, setCategoryForm] = useState({ name: '', order: 0 });
+  const [categoryForm, setCategoryForm] = useState({ name: '', order: 0, name_color: '#000000', bg_color: '#FFFFFF' });
   const [editingCategory, setEditingCategory] = useState(null);
   
   const [itemDialogOpen, setItemDialogOpen] = useState(false);
-  const [itemForm, setItemForm] = useState({ name: '', description: '', price: '', category_id: '', image_url: '', is_available: true });
+  const [itemForm, setItemForm] = useState({ name: '', description: '', price: '', category_id: '', image_url: '', is_available: true, name_color: '#000000', bg_color: '#FFFFFF' });
   const [editingItem, setEditingItem] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
 
