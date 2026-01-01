@@ -169,15 +169,16 @@ export default function Subscription() {
 
           <Card data-testid="pricing-card" className="border-2 border-primary">
             <CardHeader>
-              <CardTitle className="text-2xl">Aylık Abonelik</CardTitle>
+              <CardTitle className="text-2xl">Yıllık Abonelik</CardTitle>
               <CardDescription>Sınırsız erişim</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-bold">99₺</span>
-                  <span className="text-muted-foreground">/ay</span>
+                  <span className="text-4xl font-bold">999₺</span>
+                  <span className="text-muted-foreground">/yıl</span>
                 </div>
+                <p className="text-sm text-muted-foreground mt-1">Aylık sadece 83₺</p>
               </div>
 
               <ul className="space-y-3">
