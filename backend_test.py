@@ -317,6 +317,261 @@ class RestaurantMenuAPITester:
         
         return success
 
+    def test_file_upload_validation(self):
+        """Test file upload with format and size validation"""
+        import base64
+        import io
+        
+        # Test 1: Valid PNG file (small)
+        small_png_data = base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==')
+        
+        # Create a small test file
+        files = {'file': ('test.png', io.BytesIO(small_png_data), 'image/png')}
+        
+        try:
+            response = requests.post(
+                f"{self.api_url}/upload-image",
+                files=files,
+                headers={'Authorization': f'Bearer {self.token}'},
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            if success:
+                response_data = response.json()
+                if 'image_url' in response_data and response_data['image_url'].startswith('data:image/'):
+                    self.log_test("File Upload - Valid PNG", True)
+                else:
+                    self.log_test("File Upload - Valid PNG", False, "Invalid response format")
+                    success = False
+            else:
+                self.log_test("File Upload - Valid PNG", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("File Upload - Valid PNG", False, f"Error: {str(e)}")
+            success = False
+        
+        # Test 2: Invalid file format
+        files = {'file': ('test.txt', io.BytesIO(b'test content'), 'text/plain')}
+        
+        try:
+            response = requests.post(
+                f"{self.api_url}/upload-image",
+                files=files,
+                headers={'Authorization': f'Bearer {self.token}'},
+                timeout=10
+            )
+            
+            # Should return 400 for invalid format
+            if response.status_code == 400:
+                self.log_test("File Upload - Invalid Format Rejection", True)
+            else:
+                self.log_test("File Upload - Invalid Format Rejection", False, f"Expected 400, got {response.status_code}")
+        except Exception as e:
+            self.log_test("File Upload - Invalid Format Rejection", False, f"Error: {str(e)}")
+        
+        # Test 3: File too large (simulate 6MB file)
+        large_data = b'x' * (6 * 1024 * 1024)  # 6MB
+        files = {'file': ('large.jpg', io.BytesIO(large_data), 'image/jpeg')}
+        
+        try:
+            response = requests.post(
+                f"{self.api_url}/upload-image",
+                files=files,
+                headers={'Authorization': f'Bearer {self.token}'},
+                timeout=15
+            )
+            
+            # Should return 400 for file too large
+            if response.status_code == 400:
+                self.log_test("File Upload - Size Limit Rejection", True)
+            else:
+                self.log_test("File Upload - Size Limit Rejection", False, f"Expected 400, got {response.status_code}")
+        except Exception as e:
+            self.log_test("File Upload - Size Limit Rejection", False, f"Error: {str(e)}")
+        
+        return success
+
+    def test_product_availability_toggle(self, category_id):
+        """Test product availability toggle functionality"""
+        # Create a product with is_available = True
+        item_data = {
+            "category_id": category_id,
+            "name": "Test Availability Product",
+            "description": "Test product for availability toggle",
+            "price": 15.00,
+            "is_available": True
+        }
+        
+        success, response = self.run_test(
+            "Create Product - Available",
+            "POST",
+            "menu-items",
+            200,
+            data=item_data
+        )
+        
+        if not success:
+            return False
+        
+        item_id = response.get('id')
+        if not item_id:
+            self.log_test("Product Availability - ID Check", False, "No item ID returned")
+            return False
+        
+        # Verify product is available
+        if response.get('is_available') != True:
+            self.log_test("Product Availability - Initial State", False, "Product not created as available")
+            return False
+        else:
+            self.log_test("Product Availability - Initial State", True)
+        
+        # Toggle to unavailable
+        update_data = {"is_available": False}
+        success, response = self.run_test(
+            "Toggle Product - Set Unavailable",
+            "PUT",
+            f"menu-items/{item_id}",
+            200,
+            data=update_data
+        )
+        
+        if success and response.get('is_available') == False:
+            self.log_test("Product Availability - Toggle to Unavailable", True)
+        else:
+            self.log_test("Product Availability - Toggle to Unavailable", False, "Failed to set unavailable")
+            return False
+        
+        # Toggle back to available
+        update_data = {"is_available": True}
+        success, response = self.run_test(
+            "Toggle Product - Set Available",
+            "PUT",
+            f"menu-items/{item_id}",
+            200,
+            data=update_data
+        )
+        
+        if success and response.get('is_available') == True:
+            self.log_test("Product Availability - Toggle to Available", True)
+        else:
+            self.log_test("Product Availability - Toggle to Available", False, "Failed to set available")
+            return False
+        
+        # Clean up
+        self.run_test(
+            "Delete Availability Test Product",
+            "DELETE",
+            f"menu-items/{item_id}",
+            200
+        )
+        
+        return True
+
+    def test_public_menu_filtering(self):
+        """Test that public menu filters out unavailable products"""
+        if not self.restaurant_id:
+            self.log_test("Public Menu Filtering", False, "No restaurant ID available")
+            return False
+        
+        # Create a category for testing
+        category_data = {"name": "Filter Test Category", "order": 99}
+        success, cat_response = self.run_test(
+            "Create Filter Test Category",
+            "POST",
+            "categories",
+            200,
+            data=category_data
+        )
+        
+        if not success:
+            return False
+        
+        category_id = cat_response.get('id')
+        
+        # Create available product
+        available_item = {
+            "category_id": category_id,
+            "name": "Available Product",
+            "price": 10.00,
+            "is_available": True
+        }
+        
+        success, available_response = self.run_test(
+            "Create Available Product for Filtering",
+            "POST",
+            "menu-items",
+            200,
+            data=available_item
+        )
+        
+        if not success:
+            return False
+        
+        available_item_id = available_response.get('id')
+        
+        # Create unavailable product
+        unavailable_item = {
+            "category_id": category_id,
+            "name": "Unavailable Product",
+            "price": 20.00,
+            "is_available": False
+        }
+        
+        success, unavailable_response = self.run_test(
+            "Create Unavailable Product for Filtering",
+            "POST",
+            "menu-items",
+            200,
+            data=unavailable_item
+        )
+        
+        if not success:
+            return False
+        
+        unavailable_item_id = unavailable_response.get('id')
+        
+        # Get public menu and check filtering
+        success, menu_response = self.run_test(
+            "Get Public Menu for Filtering Test",
+            "GET",
+            f"menu/public/{self.restaurant_id}",
+            200
+        )
+        
+        if not success:
+            return False
+        
+        # Find our test category in the response
+        test_category = None
+        for category in menu_response.get('categories', []):
+            if category.get('id') == category_id:
+                test_category = category
+                break
+        
+        if not test_category:
+            self.log_test("Public Menu Filtering - Category Found", False, "Test category not found in public menu")
+            return False
+        
+        # Check that only available items are included
+        items = test_category.get('items', [])
+        available_items = [item for item in items if item.get('id') == available_item_id]
+        unavailable_items = [item for item in items if item.get('id') == unavailable_item_id]
+        
+        if len(available_items) == 1 and len(unavailable_items) == 0:
+            self.log_test("Public Menu Filtering - Correct Filtering", True)
+            filtering_success = True
+        else:
+            self.log_test("Public Menu Filtering - Correct Filtering", False, 
+                         f"Available items: {len(available_items)}, Unavailable items: {len(unavailable_items)}")
+            filtering_success = False
+        
+        # Clean up
+        self.run_test("Delete Available Test Product", "DELETE", f"menu-items/{available_item_id}", 200)
+        self.run_test("Delete Unavailable Test Product", "DELETE", f"menu-items/{unavailable_item_id}", 200)
+        self.run_test("Delete Filter Test Category", "DELETE", f"categories/{category_id}", 200)
+        
+        return filtering_success
+
     def test_multi_tenant_isolation(self):
         """Test that restaurants can only access their own data"""
         # Create another restaurant
