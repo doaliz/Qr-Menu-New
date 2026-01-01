@@ -194,6 +194,7 @@ async def register(input: RestaurantCreate):
         raise HTTPException(status_code=400, detail="Email already registered")
     
     hashed_password = hash_password(input.password)
+    trial_end = datetime.now(timezone.utc) + timedelta(days=TRIAL_DAYS)
     restaurant_dict = {
         'id': str(uuid.uuid4()),
         'name': input.name,
@@ -202,6 +203,9 @@ async def register(input: RestaurantCreate):
         'logo_url': None,
         'hero_image_url': None,
         'instagram_url': None,
+        'trial_end_date': trial_end.isoformat(),
+        'subscription_status': 'trial',
+        'subscription_end_date': None,
         'created_at': datetime.now(timezone.utc).isoformat()
     }
     
