@@ -447,39 +447,35 @@ export default function Dashboard() {
                         <p className="text-xs md:text-sm text-muted-foreground line-clamp-1">{item.description}</p>
                         <p className="text-sm font-semibold text-primary mt-1">{item.price} ₺</p>
                       </div>
-                      <div className="flex gap-1 flex-shrink-0">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => toggleItemAvailability(item)}
-                          title={item.is_available ? 'Satışa Kapat' : 'Satışa Aç'}
-                          data-testid={`toggle-availability-${item.id}`}
-                        >
-                          {item.is_available ? (
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                          ) : (
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                          )}
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => openEditItem(item)}
-                          data-testid={`edit-item-${item.id}`}
-                        >
-                          <Edit className="h-3 w-3" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => handleDeleteItem(item.id)}
-                          data-testid={`delete-item-${item.id}`}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
+                      <div className="flex flex-col gap-2 items-end flex-shrink-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-muted-foreground">Satışta</span>
+                          <Switch
+                            checked={item.is_available}
+                            onCheckedChange={() => toggleItemAvailability(item)}
+                            data-testid={`item-availability-switch-${item.id}`}
+                          />
+                        </div>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => openEditItem(item)}
+                            data-testid={`edit-item-${item.id}`}
+                          >
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => handleDeleteItem(item.id)}
+                            data-testid={`delete-item-${item.id}`}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   ))}
