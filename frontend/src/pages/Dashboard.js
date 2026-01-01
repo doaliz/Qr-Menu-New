@@ -349,11 +349,32 @@ export default function Dashboard() {
                   {items.map((item) => (
                     <div key={item.id} className="flex items-start justify-between p-3 border rounded-lg" data-testid={`menu-item-${item.id}`}>
                       <div className="flex-1">
-                        <h4 className="font-medium">{item.name}</h4>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-medium">{item.name}</h4>
+                          {!item.is_available && (
+                            <span className="text-xs bg-destructive/10 text-destructive px-2 py-0.5 rounded" data-testid={`unavailable-badge-${item.id}`}>
+                              Satışta Değil
+                            </span>
+                          )}
+                        </div>
                         <p className="text-sm text-muted-foreground line-clamp-1">{item.description}</p>
                         <p className="text-sm font-semibold text-primary mt-1">{item.price} ₺</p>
                       </div>
                       <div className="flex gap-1 ml-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => toggleItemAvailability(item)}
+                          title={item.is_available ? 'Satışa Kapat' : 'Satışa Aç'}
+                          data-testid={`toggle-availability-${item.id}`}
+                        >
+                          {item.is_available ? (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                          ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                          )}
+                        </Button>
                         <Button
                           variant="ghost"
                           size="icon"
