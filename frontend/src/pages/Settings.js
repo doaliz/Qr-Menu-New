@@ -299,6 +299,119 @@ export default function Settings() {
                 </p>
               </div>
             </div>
+
+            <div className="border-t pt-6">
+              <h3 className="text-xl font-semibold mb-4">Toplu Renk Ayarları</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Tüm kategoriler veya ürünler için renkleri tek seferde güncelleyin
+              </p>
+              
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Tüm Kategoriler</CardTitle>
+                    <CardDescription>Tüm kategorilerin renklerini güncelle</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>İsim Rengi</Label>
+                        <div className="flex gap-2 items-center mt-1">
+                          <Input
+                            type="color"
+                            value={categoryNameColor}
+                            onChange={(e) => setCategoryNameColor(e.target.value)}
+                            className="w-12 h-10 p-1 cursor-pointer"
+                          />
+                          <Input
+                            value={categoryNameColor}
+                            onChange={(e) => setCategoryNameColor(e.target.value)}
+                            placeholder="#000000"
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label>Arka Plan Rengi</Label>
+                        <div className="flex gap-2 items-center mt-1">
+                          <Input
+                            type="color"
+                            value={categoryBgColor}
+                            onChange={(e) => setCategoryBgColor(e.target.value)}
+                            className="w-12 h-10 p-1 cursor-pointer"
+                          />
+                          <Input
+                            value={categoryBgColor}
+                            onChange={(e) => setCategoryBgColor(e.target.value)}
+                            placeholder="#FFFFFF"
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <Button 
+                      onClick={() => handleBulkColorUpdate('categories')}
+                      disabled={updatingColors}
+                      className="w-full"
+                    >
+                      {updatingColors ? 'Güncelleniyor...' : 'Tüm Kategorileri Güncelle'}
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Tüm Ürünler</CardTitle>
+                    <CardDescription>Tüm ürünlerin renklerini güncelle</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>İsim Rengi</Label>
+                        <div className="flex gap-2 items-center mt-1">
+                          <Input
+                            type="color"
+                            value={itemNameColor}
+                            onChange={(e) => setItemNameColor(e.target.value)}
+                            className="w-12 h-10 p-1 cursor-pointer"
+                          />
+                          <Input
+                            value={itemNameColor}
+                            onChange={(e) => setItemNameColor(e.target.value)}
+                            placeholder="#000000"
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label>Arka Plan Rengi</Label>
+                        <div className="flex gap-2 items-center mt-1">
+                          <Input
+                            type="color"
+                            value={itemBgColor}
+                            onChange={(e) => setItemBgColor(e.target.value)}
+                            className="w-12 h-10 p-1 cursor-pointer"
+                          />
+                          <Input
+                            value={itemBgColor}
+                            onChange={(e) => setItemBgColor(e.target.value)}
+                            placeholder="#FFFFFF"
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <Button 
+                      onClick={() => handleBulkColorUpdate('items')}
+                      disabled={updatingColors}
+                      className="w-full"
+                    >
+                      {updatingColors ? 'Güncelleniyor...' : 'Tüm Ürünleri Güncelle'}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </main>
