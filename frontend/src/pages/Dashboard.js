@@ -241,6 +241,24 @@ export default function Dashboard() {
             <div className="min-w-0">
               <h1 className="text-xl md:text-2xl font-semibold playfair truncate" data-testid="restaurant-name">{user?.name}</h1>
               <p className="text-xs md:text-sm text-muted-foreground">Admin Paneli</p>
+              {subscriptionInfo && (
+                <div className="flex items-center gap-2 mt-1">
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${
+                    subscriptionInfo.subscription_status === 'trial' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
+                    subscriptionInfo.subscription_status === 'active' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                    'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                  }`}>
+                    {subscriptionInfo.subscription_status === 'trial' && 'Deneme'}
+                    {subscriptionInfo.subscription_status === 'active' && 'Aktif'}
+                    {subscriptionInfo.subscription_status === 'expired' && 'Süresi Dolmuş'}
+                  </span>
+                  {subscriptionInfo.days_remaining !== null && (
+                    <span className="text-xs text-muted-foreground">
+                      {subscriptionInfo.days_remaining} gün kaldı
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
               <Button
