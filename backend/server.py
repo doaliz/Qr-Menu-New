@@ -154,7 +154,34 @@ async def get_current_restaurant(credentials: HTTPAuthorizationCredentials = Dep
         restaurant_id = payload.get('restaurant_id')
         if not restaurant_id:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
-        return restaurant_id
+        
+        # Check subscription status
+        restaurant = await db.restaurants.find_one({'id': restaurant_id}, {'_id': 0})
+        if not restaurant:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Restaurant not found")
+        
+        now = datetime.now(timezone.utc)
+        trial_end = datetime.fromisoformat(restaurant['trial_end_date']) if restaurant.get('trial_end_date') else None
+        subscription_end = datetime.fromisoformat(restaurant['subscription_end_date']) if restaurant.get('subscription_end_date') else None
+        
+        # Check if trial or subscription is active
+        if trial_end and now < trial_end:
+            return restaurant_id  # Trial active
+        
+        if subscription_end and now < subscription_end and restaurant.get('subscription_status') == 'active':
+            return restaurant_id  # Subscription active
+        
+        # Update status to expired if needed
+        if restaurant.get('subscription_status') != 'expired':
+            await db.restaurants.update_one(
+                {'id': restaurant_id},
+                {'$set': {'subscription_status': 'expired'}}
+            )
+        
+        raise HTTPException(
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail="Deneme süreniz doldu. Lütfen abonelik satın alın."
+        )
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired")
     except jwt.InvalidTokenError:
