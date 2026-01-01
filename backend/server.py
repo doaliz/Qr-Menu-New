@@ -177,6 +177,19 @@ async def get_me(restaurant_id: str = Depends(get_current_restaurant)):
     
     return Restaurant(**restaurant_dict)
 
+@api_router.put("/auth/profile", response_model=Restaurant)
+async def update_profile(input: RestaurantUpdate, restaurant_id: str = Depends(get_current_restaurant)):
+    restaurant = await db.restaurants.find_one({'id': restaurant_id}, {'_id': 0, 'password': 0})
+    if not restaurant:
+        raise HTTPException(status_code=404, detail="Restaurant not found")
+    
+    update_data = {k: v for k, v in input.model_dump().items() if v is not None}
+    if update_data:
+        await db.restaurants.update_one({'id': restaurant_id}, {'$set': update_data})
+    
+    updated_restaurant = await db.restaurants.find_one({'id': restaurant_id}, {'_id': 0, 'password': 0})
+    return Restaurant(**updated_restaurant)
+
 @api_router.post("/upload-image")
 async def upload_image(file: UploadFile = File(...), restaurant_id: str = Depends(get_current_restaurant)):
     allowed_extensions = ['jpg', 'jpeg', 'png']
