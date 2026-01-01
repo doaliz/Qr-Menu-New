@@ -119,6 +119,17 @@ class ImageUpload(BaseModel):
     image_data: str
     filename: str
 
+class CheckoutRequest(BaseModel):
+    package_id: str
+    origin_url: str
+
+class SubscriptionInfo(BaseModel):
+    subscription_status: str
+    trial_end_date: Optional[datetime]
+    subscription_end_date: Optional[datetime]
+    days_remaining: Optional[int]
+    is_active: bool
+
 class TokenResponse(BaseModel):
     token: str
     restaurant: Restaurant
