@@ -114,9 +114,14 @@ export default function PublicMenu() {
                 onClick={() => setActiveCategory(category.id)}
                 className={`px-4 py-2 rounded-full whitespace-nowrap font-medium transition-colors ${
                   activeCategory === category.id
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                    ? 'shadow-md'
+                    : 'hover:opacity-80'
                 }`}
+                style={{
+                  backgroundColor: activeCategory === category.id ? (category.bg_color || '#FFFFFF') : 'transparent',
+                  color: activeCategory === category.id ? (category.name_color || '#000000') : 'inherit',
+                  border: activeCategory === category.id ? 'none' : '1px solid currentColor'
+                }}
                 data-testid={`category-tab-${category.id}`}
               >
                 {category.name}
