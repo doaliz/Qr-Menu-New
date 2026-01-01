@@ -97,7 +97,9 @@ export default function PublicMenu() {
             </h2>
             {activeCategoryData.items.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {activeCategoryData.items.map((item) => (
+                {activeCategoryData.items
+                  .filter(item => item.is_available !== false)
+                  .map((item) => (
                   <div
                     key={item.id}
                     className="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
