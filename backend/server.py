@@ -252,6 +252,7 @@ async def create_menu_item(input: MenuItemCreate, restaurant_id: str = Depends(g
         'description': input.description,
         'price': input.price,
         'image_url': input.image_url,
+        'is_available': input.is_available if input.is_available is not None else True,
         'created_at': datetime.now(timezone.utc).isoformat()
     }
     
