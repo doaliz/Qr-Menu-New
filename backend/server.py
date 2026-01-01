@@ -44,6 +44,10 @@ class RestaurantLogin(BaseModel):
     email: EmailStr
     password: str
 
+class RestaurantUpdate(BaseModel):
+    name: Optional[str] = None
+    logo_url: Optional[str] = None
+
 class Category(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
