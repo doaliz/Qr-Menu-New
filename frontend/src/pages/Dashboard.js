@@ -327,21 +327,22 @@ export default function Dashboard() {
           </Dialog>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
           {categories.map((category) => {
             const items = menuItems.filter(item => item.category_id === category.id);
             return (
               <Card key={category.id} className="shadow-sm" data-testid={`category-${category.id}`}>
                 <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-xl">{category.name}</CardTitle>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <CardTitle className="text-lg md:text-xl truncate">{category.name}</CardTitle>
                       <CardDescription>{items.length} ürün</CardDescription>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1 flex-shrink-0">
                       <Button
                         variant="ghost"
                         size="icon"
+                        className="h-8 w-8"
                         onClick={() => openEditCategory(category)}
                         data-testid={`edit-category-${category.id}`}
                       >
@@ -350,6 +351,7 @@ export default function Dashboard() {
                       <Button
                         variant="ghost"
                         size="icon"
+                        className="h-8 w-8"
                         onClick={() => handleDeleteCategory(category.id)}
                         data-testid={`delete-category-${category.id}`}
                       >
