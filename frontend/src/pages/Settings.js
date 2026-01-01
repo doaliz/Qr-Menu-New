@@ -19,7 +19,10 @@ export default function Settings() {
   const navigate = useNavigate();
   const [name, setName] = useState(user?.name || '');
   const [logoUrl, setLogoUrl] = useState(user?.logo_url || '');
+  const [heroImageUrl, setHeroImageUrl] = useState(user?.hero_image_url || '');
+  const [instagramUrl, setInstagramUrl] = useState(user?.instagram_url || '');
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingHero, setUploadingHero] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const headers = { Authorization: `Bearer ${token}` };
