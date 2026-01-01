@@ -10,8 +10,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { Plus, Edit, Trash2, LogOut, Moon, Sun, QrCode, Menu as MenuIcon } from 'lucide-react';
+import { Plus, Edit, Trash2, LogOut, Moon, Sun, QrCode, Menu as MenuIcon, Palette } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
+import SubscriptionBanner from '@/components/SubscriptionBanner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
