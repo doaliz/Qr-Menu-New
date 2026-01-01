@@ -103,7 +103,7 @@ export default function Dashboard() {
       }, { headers });
       toast.success('Ürün eklendi');
       setItemDialogOpen(false);
-      setItemForm({ name: '', description: '', price: '', category_id: '', image_url: '' });
+      setItemForm({ name: '', description: '', price: '', category_id: '', image_url: '', is_available: true });
       fetchData();
     } catch (error) {
       toast.error('Ürün eklenirken hata oluştu');
@@ -119,7 +119,7 @@ export default function Dashboard() {
       toast.success('Ürün güncellendi');
       setItemDialogOpen(false);
       setEditingItem(null);
-      setItemForm({ name: '', description: '', price: '', category_id: '', image_url: '' });
+      setItemForm({ name: '', description: '', price: '', category_id: '', image_url: '', is_available: true });
       fetchData();
     } catch (error) {
       toast.error('Ürün güncellenirken hata oluştu');
