@@ -636,7 +636,7 @@ class RestaurantMenuAPITester:
 
     def run_all_tests(self):
         """Run all tests"""
-        print("🚀 Starting Restaurant Menu API Tests")
+        print("🚀 Starting Restaurant Menu API Tests - New Features Focus")
         print(f"Testing against: {self.base_url}")
         print("=" * 50)
         
@@ -654,11 +654,24 @@ class RestaurantMenuAPITester:
         # Test invalid auth
         self.test_invalid_auth()
         
-        # Test CRUD operations
+        # Test NEW FEATURES - File Upload
+        print("\n🔍 Testing NEW FEATURE: File Upload Validation")
+        self.test_file_upload_validation()
+        
+        # Test CRUD operations with availability features
         category_id = self.test_categories_crud()
         if category_id:
+            # Test NEW FEATURES - Product Availability Toggle
+            print("\n🔍 Testing NEW FEATURE: Product Availability Toggle")
+            self.test_product_availability_toggle(category_id)
+            
+            # Test regular menu items
             self.test_menu_items_crud(category_id)
             self.cleanup_test_data(category_id)
+        
+        # Test NEW FEATURES - Public Menu Filtering
+        print("\n🔍 Testing NEW FEATURE: Public Menu Filtering")
+        self.test_public_menu_filtering()
         
         # Test public endpoints
         self.test_public_menu()
