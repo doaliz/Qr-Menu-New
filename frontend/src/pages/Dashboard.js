@@ -273,8 +273,8 @@ export default function Dashboard() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-semibold playfair">Menü Yönetimi</h2>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <h2 className="text-2xl md:text-3xl font-semibold playfair">Menü Yönetimi</h2>
           <Dialog open={categoryDialogOpen} onOpenChange={(open) => {
             setCategoryDialogOpen(open);
             if (!open) {
@@ -283,7 +283,7 @@ export default function Dashboard() {
             }
           }}>
             <DialogTrigger asChild>
-              <Button data-testid="add-category-button">
+              <Button data-testid="add-category-button" className="w-full sm:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
                 Kategori Ekle
               </Button>
