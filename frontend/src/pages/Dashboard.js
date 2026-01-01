@@ -489,7 +489,7 @@ export default function Dashboard() {
           setItemDialogOpen(open);
           if (!open) {
             setEditingItem(null);
-            setItemForm({ name: '', description: '', price: '', category_id: '', image_url: '', is_available: true });
+            setItemForm({ name: '', description: '', price: '', category_id: '', image_url: '', is_available: true, name_color: '#000000', bg_color: '#FFFFFF' });
           }
         }}>
           <DialogContent data-testid="item-dialog" className="max-h-[90vh] overflow-y-auto">
