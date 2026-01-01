@@ -64,7 +64,7 @@ export default function Dashboard() {
       await axios.post(`${API}/categories`, categoryForm, { headers });
       toast.success('Kategori eklendi');
       setCategoryDialogOpen(false);
-      setCategoryForm({ name: '', order: 0 });
+      setCategoryForm({ name: '', order: 0, name_color: '#000000', bg_color: '#FFFFFF' });
       fetchData();
     } catch (error) {
       toast.error('Kategori eklenirken hata oluştu');
@@ -77,7 +77,7 @@ export default function Dashboard() {
       toast.success('Kategori güncellendi');
       setCategoryDialogOpen(false);
       setEditingCategory(null);
-      setCategoryForm({ name: '', order: 0 });
+      setCategoryForm({ name: '', order: 0, name_color: '#000000', bg_color: '#FFFFFF' });
       fetchData();
     } catch (error) {
       toast.error('Kategori güncellenirken hata oluştu');
@@ -288,7 +288,7 @@ export default function Dashboard() {
             setCategoryDialogOpen(open);
             if (!open) {
               setEditingCategory(null);
-              setCategoryForm({ name: '', order: 0 });
+              setCategoryForm({ name: '', order: 0, name_color: '#000000', bg_color: '#FFFFFF' });
             }
           }}>
             <DialogTrigger asChild>
