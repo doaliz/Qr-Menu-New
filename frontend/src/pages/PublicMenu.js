@@ -145,6 +145,10 @@ export default function PublicMenu() {
                   <div
                     key={item.id}
                     className="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                    style={{
+                      backgroundColor: item.bg_color || '#FFFFFF',
+                      borderColor: item.bg_color || 'inherit'
+                    }}
                     data-testid={`menu-item-${item.id}`}
                   >
                     {item.image_url && (
@@ -161,7 +165,11 @@ export default function PublicMenu() {
                     )}
                     <div className="p-4">
                       <div className="flex items-start justify-between mb-2">
-                        <h3 className="text-lg font-semibold" data-testid={`item-name-${item.id}`}>
+                        <h3 
+                          className="text-lg font-semibold" 
+                          style={{ color: item.name_color || '#000000' }}
+                          data-testid={`item-name-${item.id}`}
+                        >
                           {item.name}
                         </h3>
                         <span className="text-lg font-bold text-primary ml-2" data-testid={`item-price-${item.id}`}>
