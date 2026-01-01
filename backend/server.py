@@ -65,15 +65,21 @@ class Category(BaseModel):
     restaurant_id: str
     name: str
     order: int = 0
+    name_color: Optional[str] = '#000000'
+    bg_color: Optional[str] = '#FFFFFF'
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class CategoryCreate(BaseModel):
     name: str
     order: Optional[int] = 0
+    name_color: Optional[str] = '#000000'
+    bg_color: Optional[str] = '#FFFFFF'
 
 class CategoryUpdate(BaseModel):
     name: Optional[str] = None
     order: Optional[int] = None
+    name_color: Optional[str] = None
+    bg_color: Optional[str] = None
 
 class MenuItem(BaseModel):
     model_config = ConfigDict(extra="ignore")
