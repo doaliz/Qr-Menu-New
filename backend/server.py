@@ -494,6 +494,23 @@ async def delete_category(category_id: str, restaurant_id: str = Depends(get_cur
 @api_router.get("/menu-items", response_model=List[MenuItem])
 async def get_menu_items(restaurant_id: str = Depends(get_current_restaurant)):
     items = await db.menu_items.find({'restaurant_id': restaurant_id}, {'_id': 0}).to_list(1000)
+    
+    # Migrate old data: Add default colors and availability if missing
+    for item in items:
+        update_fields = {}
+        if 'name_color' not in item:
+            update_fields['name_color'] = '#000000'
+            item['name_color'] = '#000000'
+        if 'bg_color' not in item:
+            update_fields['bg_color'] = '#FFFFFF'
+            item['bg_color'] = '#FFFFFF'
+        if 'is_available' not in item:
+            update_fields['is_available'] = True
+            item['is_available'] = True
+        
+        if update_fields:
+            await db.menu_items.update_one({'id': item['id']}, {'$set': update_fields})
+    
     return [MenuItem(**item) for item in items]
 
 @api_router.post("/menu-items", response_model=MenuItem)
