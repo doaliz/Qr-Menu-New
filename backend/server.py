@@ -331,8 +331,8 @@ async def get_subscription_info(restaurant_id: str = Depends(get_current_restaur
 
 @api_router.post("/payments/checkout")
 async def create_checkout(request: CheckoutRequest, restaurant_id: str = Depends(get_current_restaurant)):
-    # Fixed package: monthly subscription
-    PACKAGES = {"monthly": MONTHLY_PRICE}
+    # Fixed package: yearly subscription
+    PACKAGES = {"yearly": YEARLY_PRICE}
     
     if request.package_id not in PACKAGES:
         raise HTTPException(status_code=400, detail="Invalid package")
