@@ -24,6 +24,13 @@ export default function Settings() {
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingHero, setUploadingHero] = useState(false);
   const [saving, setSaving] = useState(false);
+  
+  // Bulk color update
+  const [categoryNameColor, setCategoryNameColor] = useState('#000000');
+  const [categoryBgColor, setCategoryBgColor] = useState('#FFFFFF');
+  const [itemNameColor, setItemNameColor] = useState('#000000');
+  const [itemBgColor, setItemBgColor] = useState('#FFFFFF');
+  const [updatingColors, setUpdatingColors] = useState(false);
 
   const headers = { Authorization: `Bearer ${token}` };
 
