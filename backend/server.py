@@ -49,6 +49,8 @@ class RestaurantLogin(BaseModel):
 class RestaurantUpdate(BaseModel):
     name: Optional[str] = None
     logo_url: Optional[str] = None
+    hero_image_url: Optional[str] = None
+    instagram_url: Optional[str] = None
 
 class Category(BaseModel):
     model_config = ConfigDict(extra="ignore")
