@@ -138,6 +138,7 @@ async def register(input: RestaurantCreate):
         'name': input.name,
         'email': input.email,
         'password': hashed_password,
+        'logo_url': None,
         'created_at': datetime.now(timezone.utc).isoformat()
     }
     
