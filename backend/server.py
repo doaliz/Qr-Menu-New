@@ -26,6 +26,9 @@ app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
 SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'your-secret-key-change-in-production')
+STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY', 'sk_test_emergent')
+TRIAL_DAYS = 7
+MONTHLY_PRICE = 99.00
 security = HTTPBearer()
 
 class Restaurant(BaseModel):
