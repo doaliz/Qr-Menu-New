@@ -141,7 +141,12 @@ export default function Dashboard() {
 
   const openEditCategory = (category) => {
     setEditingCategory(category);
-    setCategoryForm({ name: category.name, order: category.order });
+    setCategoryForm({ 
+      name: category.name, 
+      order: category.order,
+      name_color: category.name_color || '#000000',
+      bg_color: category.bg_color || '#FFFFFF'
+    });
     setCategoryDialogOpen(true);
   };
 
