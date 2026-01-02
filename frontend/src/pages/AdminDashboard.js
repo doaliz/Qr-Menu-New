@@ -48,20 +48,21 @@ export default function AdminDashboard() {
   const [deletionRequests, setDeletionRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'active', 'trial', 'expired'
   const [showAddModal, setShowAddModal] = useState(false);
   const [addingRestaurant, setAddingRestaurant] = useState(false);
   const [newRestaurant, setNewRestaurant] = useState({
     name: '',
     email: '',
     phone: '',
-    password: ''
+    password: '',
+    licenseType: 'trial' // 'trial' or 'yearly'
   });
   
   // License modal state
   const [showLicenseModal, setShowLicenseModal] = useState(false);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [licenseLoading, setLicenseLoading] = useState(false);
-  const [licenseDuration, setLicenseDuration] = useState('365');
 
   // Delete confirmation
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
