@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { Plus, Edit, Trash2, LogOut, Moon, Sun, QrCode, Menu as MenuIcon, Palette } from 'lucide-react';
+import { Plus, Edit, Trash2, LogOut, Moon, Sun, QrCode, Menu as MenuIcon, Palette, Download, Smartphone } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import SubscriptionBanner from '@/components/SubscriptionBanner';
 
@@ -26,6 +26,12 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
   
+  // PWA Install state
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstallButton, setShowInstallButton] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const [showIOSInstall, setShowIOSInstall] = useState(false);
+  
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
   const [categoryForm, setCategoryForm] = useState({ name: '', order: 0, name_color: '#000000', bg_color: '#FFFFFF' });
   const [editingCategory, setEditingCategory] = useState(null);
@@ -36,6 +42,61 @@ export default function Dashboard() {
   const [uploadingImage, setUploadingImage] = useState(false);
 
   const headers = { Authorization: `Bearer ${token}` };
+
+  // PWA Install prompt handler
+  useEffect(() => {
+    // Check if iOS
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    setIsIOS(isIOSDevice);
+    
+    // Check if already installed
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    
+    if (isIOSDevice && !isStandalone) {
+      // Show iOS install instructions
+      const hasSeenIOSPrompt = localStorage.getItem('ios-install-prompt-seen');
+      if (!hasSeenIOSPrompt) {
+        setShowIOSInstall(true);
+      }
+    }
+
+    // Listen for beforeinstallprompt (Android/Chrome)
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallButton(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    // Hide button if app is installed
+    window.addEventListener('appinstalled', () => {
+      setShowInstallButton(false);
+      setDeferredPrompt(null);
+      toast.success('Uygulama masaüstüne eklendi!');
+    });
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        toast.success('Uygulama masaüstüne ekleniyor...');
+      }
+      setDeferredPrompt(null);
+      setShowInstallButton(false);
+    }
+  };
+
+  const dismissIOSPrompt = () => {
+    setShowIOSInstall(false);
+    localStorage.setItem('ios-install-prompt-seen', 'true');
+  };
 
   useEffect(() => {
     if (!user) {
