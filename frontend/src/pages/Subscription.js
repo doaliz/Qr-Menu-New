@@ -125,7 +125,7 @@ export default function Subscription() {
         <div className="mb-6">
           <Button variant="ghost" onClick={() => navigate('/dashboard')} data-testid="back-button">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Dashboard'a Dön
+            Dashboard&apos;a Dön
           </Button>
         </div>
 
