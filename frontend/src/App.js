@@ -11,6 +11,7 @@ import PublicMenu from '@/pages/PublicMenu';
 import QRCodePage from '@/pages/QRCodePage';
 import Settings from '@/pages/Settings';
 import Subscription from '@/pages/Subscription';
+import ManualSubscription from '@/pages/ManualSubscription';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
