@@ -296,6 +296,40 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       <SubscriptionBanner />
+      
+      {/* iOS Install Banner */}
+      {showIOSInstall && (
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-3 md:hidden">
+          <div className="container mx-auto flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <Smartphone className="h-5 w-5 flex-shrink-0" />
+              <div className="text-xs">
+                <p className="font-medium">Masaüstüne Ekle</p>
+                <p className="opacity-90">Paylaş → Ana Ekrana Ekle</p>
+              </div>
+            </div>
+            <Button size="sm" variant="secondary" onClick={dismissIOSPrompt} className="flex-shrink-0 h-7 text-xs">
+              Tamam
+            </Button>
+          </div>
+        </div>
+      )}
+      
+      {/* Android/Chrome Install Banner */}
+      {showInstallButton && !isIOS && (
+        <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-3 md:hidden">
+          <div className="container mx-auto flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <Download className="h-5 w-5 flex-shrink-0" />
+              <p className="text-xs font-medium">Uygulamayı masaüstüne ekle</p>
+            </div>
+            <Button size="sm" variant="secondary" onClick={handleInstallClick} className="flex-shrink-0 h-7 text-xs">
+              Ekle
+            </Button>
+          </div>
+        </div>
+      )}
+      
       <header className="border-b sticky top-0 bg-background z-10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
@@ -322,6 +356,19 @@ export default function Dashboard() {
               )}
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
+              {/* Desktop Install Button */}
+              {showInstallButton && !isIOS && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleInstallClick}
+                  className="hidden md:flex"
+                  title="Masaüstüne Ekle"
+                >
+                  <Download className="h-4 w-4 mr-1" />
+                  Yükle
+                </Button>
+              )}
               <Button
                 variant="outline"
                 size="sm"
