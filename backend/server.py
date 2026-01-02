@@ -315,7 +315,7 @@ async def bulk_update_colors(input: BulkColorUpdate, restaurant_id: str = Depend
     else:
         raise HTTPException(status_code=400, detail="Invalid target")
 
-@api_router.get("/subscription/info", response_model=SubscriptionInfo)
+@api_router.post("/subscription/info", response_model=SubscriptionInfo)
 async def get_subscription_info(restaurant_id: str = Depends(get_current_restaurant)):
     restaurant = await db.restaurants.find_one({'id': restaurant_id}, {'_id': 0})
     if not restaurant:
@@ -342,6 +342,57 @@ async def get_subscription_info(restaurant_id: str = Depends(get_current_restaur
         days_remaining=days_remaining,
         is_active=is_active
     )
+
+@api_router.post("/admin/manual-subscription")
+async def create_manual_subscription(input: ManualSubscriptionRequest, restaurant_id: str = Depends(get_current_restaurant)):
+    # Check if current user has admin privileges (you can add role-based auth here)
+    # For now, any authenticated user can do this - you should add admin role check
+    
+    # Find target restaurant by email
+    target_restaurant = await db.restaurants.find_one({'email': input.email}, {'_id': 0})
+    if not target_restaurant:
+        raise HTTPException(status_code=404, detail="İşletme bulunamadı")
+    
+    # Calculate new subscription end date
+    now = datetime.now(timezone.utc)
+    
+    # If already has active subscription, extend from current end date
+    current_end = None
+    if target_restaurant.get('subscription_end_date'):
+        current_end = datetime.fromisoformat(target_restaurant['subscription_end_date'])
+    
+    if current_end and current_end > now:
+        # Extend existing subscription
+        new_end = current_end + timedelta(days=input.duration_days)
+    else:
+        # Create new subscription from now
+        new_end = now + timedelta(days=input.duration_days)
+    
+    # Update restaurant
+    await db.restaurants.update_one(
+        {'id': target_restaurant['id']},
+        {'$set': {
+            'subscription_status': 'active',
+            'subscription_end_date': new_end.isoformat()
+        }}
+    )
+    
+    # Log the manual subscription
+    await db.manual_subscriptions.insert_one({
+        'target_restaurant_id': target_restaurant['id'],
+        'target_email': input.email,
+        'admin_restaurant_id': restaurant_id,
+        'duration_days': input.duration_days,
+        'created_at': datetime.now(timezone.utc).isoformat(),
+        'new_end_date': new_end.isoformat()
+    })
+    
+    return {
+        "message": "Manuel abonelik eklendi",
+        "restaurant_name": target_restaurant['name'],
+        "new_end_date": new_end.isoformat(),
+        "days_added": input.duration_days
+    }
 
 @api_router.post("/payments/checkout")
 async def create_checkout(request: CheckoutRequest, restaurant_id: str = Depends(get_current_restaurant)):
