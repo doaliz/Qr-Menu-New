@@ -369,6 +369,128 @@ export default function Settings() {
               </div>
             </div>
 
+            {/* Password Change Section */}
+            <div className="border-t pt-6">
+              <h3 className="text-xl font-semibold mb-4">Güvenlik</h3>
+              <Dialog open={showPasswordModal} onOpenChange={setShowPasswordModal}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="w-full sm:w-auto">
+                    <Lock className="h-4 w-4 mr-2" />
+                    Şifre Değiştir
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Şifre Değiştir</DialogTitle>
+                    <DialogDescription>
+                      Hesabınızın güvenliği için şifrenizi değiştirin
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 mt-4">
+                    <div className="space-y-2">
+                      <Label>Mevcut Şifre</Label>
+                      <Input
+                        type="password"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        placeholder="••••••••"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Yeni Şifre</Label>
+                      <Input
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="••••••••"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Yeni Şifre (Tekrar)</Label>
+                      <Input
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="••••••••"
+                      />
+                    </div>
+                    <Button 
+                      onClick={handlePasswordChange} 
+                      className="w-full"
+                      disabled={changingPassword || !currentPassword || !newPassword || !confirmPassword}
+                    >
+                      {changingPassword ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Değiştiriliyor...
+                        </>
+                      ) : (
+                        'Şifreyi Değiştir'
+                      )}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            {/* Account Deletion Section */}
+            <div className="border-t pt-6">
+              <h3 className="text-xl font-semibold mb-2 text-destructive">Tehlikeli Bölge</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Hesabınızı silmek istiyorsanız talep gönderebilirsiniz. Bu işlem geri alınamaz.
+              </p>
+              <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+                <DialogTrigger asChild>
+                  <Button variant="destructive" className="w-full sm:w-auto">
+                    <AlertTriangle className="h-4 w-4 mr-2" />
+                    Hesap Silme Talebi
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle className="text-destructive">Hesap Silme Talebi</DialogTitle>
+                    <DialogDescription>
+                      Bu işlem tüm verilerinizi kalıcı olarak silecektir. Talebiniz onaylandıktan sonra geri alınamaz.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 mt-4">
+                    <div className="p-3 bg-destructive/10 rounded-lg border border-destructive/20">
+                      <p className="text-sm text-destructive font-medium">Uyarı!</p>
+                      <ul className="text-xs text-muted-foreground mt-1 list-disc list-inside space-y-1">
+                        <li>Tüm menü ve ürün bilgileriniz silinecek</li>
+                        <li>QR kodunuz çalışmayacak</li>
+                        <li>Bu işlem geri alınamaz</li>
+                      </ul>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Silme Sebebi (Opsiyonel)</Label>
+                      <Textarea
+                        value={deleteReason}
+                        onChange={(e) => setDeleteReason(e.target.value)}
+                        placeholder="Hesabınızı neden silmek istediğinizi belirtebilirsiniz..."
+                        rows={3}
+                      />
+                    </div>
+                    <Button 
+                      variant="destructive"
+                      onClick={handleRequestDeletion} 
+                      className="w-full"
+                      disabled={requestingDeletion}
+                    >
+                      {requestingDeletion ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Gönderiliyor...
+                        </>
+                      ) : (
+                        'Silme Talebi Gönder'
+                      )}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+
             <div className="border-t pt-6">
               <h3 className="text-xl font-semibold mb-4">Toplu Renk Ayarları</h3>
               <p className="text-sm text-muted-foreground mb-4">
