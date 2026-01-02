@@ -112,51 +112,63 @@ user_problem_statement: |
 backend:
   - task: "Super Admin - List All Restaurants"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented GET /api/admin/restaurants endpoint. Returns list of all restaurants. Only accessible by super admin."
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - Super admin can successfully list all restaurants. Fixed data migration issue for missing fields. Regular users correctly get 403 Forbidden."
 
   - task: "Super Admin - Create Restaurant"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented POST /api/admin/restaurants endpoint. Creates new restaurant with name, email, phone, password. Only accessible by super admin."
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - Super admin can successfully create new restaurants. Access control working correctly - regular users get 403 Forbidden."
 
   - task: "Super Admin - Manual Subscription"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented POST /api/admin/manual-subscription endpoint. Adds subscription days to a restaurant by email. Only accessible by super admin."
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - Super admin can successfully add manual subscriptions. Correctly extends existing subscriptions or creates new ones. Access control working properly."
 
   - task: "Subscription Info with is_super_admin flag"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "GET /api/subscription/info now returns is_super_admin flag. Super admin check is done by comparing email with SUPER_ADMIN_EMAIL env variable."
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - Subscription info correctly returns is_super_admin: true for admin@qrmenu.com and is_super_admin: false for regular users."
 
 frontend:
   - task: "Super Admin Dashboard Page"
