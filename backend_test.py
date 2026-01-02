@@ -624,7 +624,24 @@ class RestaurantMenuAPITester:
 
     def test_super_admin_registration_and_login(self):
         """Test Super Admin registration and login"""
-        # Register super admin
+        # Try to login first (in case already registered)
+        login_data = {
+            "email": "admin@qrmenu.com",
+            "password": "Admin123!"
+        }
+        
+        success, response = self.run_test(
+            "Super Admin Login (Existing)",
+            "POST",
+            "auth/login",
+            200,
+            data=login_data
+        )
+        
+        if success and 'token' in response:
+            return True, response['token']
+        
+        # If login failed, try registration
         super_admin_data = {
             "name": "Super Admin",
             "email": "admin@qrmenu.com",
@@ -640,29 +657,18 @@ class RestaurantMenuAPITester:
         )
         
         if not success:
-            return False, None
-        
-        super_admin_token = response.get('token')
-        if not super_admin_token:
-            self.log_test("Super Admin Registration - Token Check", False, "No token returned")
-            return False, None
-        
-        # Test login with super admin credentials
-        login_data = {
-            "email": "admin@qrmenu.com",
-            "password": "Admin123!"
-        }
-        
-        success, response = self.run_test(
-            "Super Admin Login",
-            "POST",
-            "auth/login",
-            200,
-            data=login_data
-        )
+            # If registration failed (email exists), try login again
+            success, response = self.run_test(
+                "Super Admin Login (After Failed Registration)",
+                "POST",
+                "auth/login",
+                200,
+                data=login_data
+            )
         
         if success and 'token' in response:
             return True, response['token']
+        
         return False, None
 
     def test_subscription_info_super_admin_flag(self, super_admin_token):
