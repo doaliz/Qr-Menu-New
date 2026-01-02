@@ -622,6 +622,231 @@ class RestaurantMenuAPITester:
         
         return public_menu_success
 
+    def test_super_admin_registration_and_login(self):
+        """Test Super Admin registration and login"""
+        # Register super admin
+        super_admin_data = {
+            "name": "Super Admin",
+            "email": "admin@qrmenu.com",
+            "password": "Admin123!"
+        }
+        
+        success, response = self.run_test(
+            "Super Admin Registration",
+            "POST",
+            "auth/register",
+            200,
+            data=super_admin_data
+        )
+        
+        if not success:
+            return False, None
+        
+        super_admin_token = response.get('token')
+        if not super_admin_token:
+            self.log_test("Super Admin Registration - Token Check", False, "No token returned")
+            return False, None
+        
+        # Test login with super admin credentials
+        login_data = {
+            "email": "admin@qrmenu.com",
+            "password": "Admin123!"
+        }
+        
+        success, response = self.run_test(
+            "Super Admin Login",
+            "POST",
+            "auth/login",
+            200,
+            data=login_data
+        )
+        
+        if success and 'token' in response:
+            return True, response['token']
+        return False, None
+
+    def test_subscription_info_super_admin_flag(self, super_admin_token):
+        """Test subscription info returns is_super_admin flag"""
+        # Save current token
+        original_token = self.token
+        
+        # Test with super admin token
+        self.token = super_admin_token
+        success, response = self.run_test(
+            "Subscription Info - Super Admin Flag",
+            "GET",
+            "subscription/info",
+            200
+        )
+        
+        if success:
+            is_super_admin = response.get('is_super_admin', False)
+            if is_super_admin:
+                self.log_test("Super Admin Flag Check", True)
+            else:
+                self.log_test("Super Admin Flag Check", False, "is_super_admin should be true for super admin")
+                success = False
+        
+        # Test with regular user token
+        self.token = original_token
+        success_regular, response_regular = self.run_test(
+            "Subscription Info - Regular User Flag",
+            "GET",
+            "subscription/info",
+            200
+        )
+        
+        if success_regular:
+            is_super_admin_regular = response_regular.get('is_super_admin', True)  # Default to True to catch errors
+            if not is_super_admin_regular:
+                self.log_test("Regular User Flag Check", True)
+            else:
+                self.log_test("Regular User Flag Check", False, "is_super_admin should be false for regular user")
+                success_regular = False
+        
+        return success and success_regular
+
+    def test_super_admin_list_restaurants(self, super_admin_token):
+        """Test super admin can list all restaurants"""
+        # Save current token
+        original_token = self.token
+        
+        # Test with super admin token
+        self.token = super_admin_token
+        success, response = self.run_test(
+            "Super Admin - List All Restaurants",
+            "GET",
+            "admin/restaurants",
+            200
+        )
+        
+        if success:
+            if isinstance(response, list):
+                self.log_test("List Restaurants Response Format", True)
+            else:
+                self.log_test("List Restaurants Response Format", False, "Response should be a list")
+                success = False
+        
+        # Test with regular user token (should fail)
+        self.token = original_token
+        success_regular, response_regular = self.run_test(
+            "Regular User - List Restaurants (Should Fail)",
+            "GET",
+            "admin/restaurants",
+            403
+        )
+        
+        return success and success_regular
+
+    def test_super_admin_create_restaurant(self, super_admin_token):
+        """Test super admin can create new restaurants"""
+        # Save current token
+        original_token = self.token
+        
+        # Test with super admin token
+        self.token = super_admin_token
+        timestamp = datetime.now().strftime('%H%M%S')
+        restaurant_data = {
+            "name": f"Admin Created Restaurant {timestamp}",
+            "email": f"admin_created_{timestamp}@restaurant.com",
+            "phone": "+90555123456",
+            "password": "AdminCreated123!"
+        }
+        
+        success, response = self.run_test(
+            "Super Admin - Create Restaurant",
+            "POST",
+            "admin/restaurants",
+            200,
+            data=restaurant_data
+        )
+        
+        if success:
+            if 'restaurant_id' in response and 'message' in response:
+                self.log_test("Create Restaurant Response Format", True)
+            else:
+                self.log_test("Create Restaurant Response Format", False, "Missing required fields in response")
+                success = False
+        
+        # Test with regular user token (should fail)
+        self.token = original_token
+        regular_restaurant_data = {
+            "name": f"Regular User Restaurant {timestamp}",
+            "email": f"regular_created_{timestamp}@restaurant.com",
+            "phone": "+90555654321",
+            "password": "RegularCreated123!"
+        }
+        
+        success_regular, response_regular = self.run_test(
+            "Regular User - Create Restaurant (Should Fail)",
+            "POST",
+            "admin/restaurants",
+            403,
+            data=regular_restaurant_data
+        )
+        
+        return success and success_regular
+
+    def test_super_admin_manual_subscription(self, super_admin_token):
+        """Test super admin can add manual subscriptions"""
+        # Save current token
+        original_token = self.token
+        
+        # First create a test restaurant to add subscription to
+        self.token = super_admin_token
+        timestamp = datetime.now().strftime('%H%M%S')
+        restaurant_data = {
+            "name": f"Subscription Test Restaurant {timestamp}",
+            "email": f"sub_test_{timestamp}@restaurant.com",
+            "phone": "+90555789123",
+            "password": "SubTest123!"
+        }
+        
+        success, response = self.run_test(
+            "Create Restaurant for Subscription Test",
+            "POST",
+            "admin/restaurants",
+            200,
+            data=restaurant_data
+        )
+        
+        if not success:
+            self.token = original_token
+            return False
+        
+        # Test manual subscription addition
+        subscription_data = {
+            "email": restaurant_data["email"],
+            "duration_days": 30
+        }
+        
+        success, response = self.run_test(
+            "Super Admin - Add Manual Subscription",
+            "POST",
+            "admin/manual-subscription",
+            200,
+            data=subscription_data
+        )
+        
+        if success:
+            if 'message' in response and 'new_end_date' in response:
+                self.log_test("Manual Subscription Response Format", True)
+            else:
+                self.log_test("Manual Subscription Response Format", False, "Missing required fields in response")
+                success = False
+        
+        # Test with regular user token (should fail)
+        self.token = original_token
+        success_regular, response_regular = self.run_test(
+            "Regular User - Add Manual Subscription (Should Fail)",
+            "POST",
+            "admin/manual-subscription",
+            403,
+            data=subscription_data
+        )
+        
+        return success and success_regular
+
     def cleanup_test_data(self, category_id):
         """Clean up test data"""
         if category_id:
