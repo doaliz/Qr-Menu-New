@@ -342,6 +342,7 @@ export default function AdminDashboard() {
                       <TableHead>İletişim</TableHead>
                       <TableHead>Durum</TableHead>
                       <TableHead>Kayıt Tarihi</TableHead>
+                      <TableHead className="text-right">İşlemler</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -376,6 +377,16 @@ export default function AdminDashboard() {
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
                           {new Date(restaurant.created_at).toLocaleDateString('tr-TR')}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => openLicenseModal(restaurant)}
+                          >
+                            <Key className="h-3 w-3 mr-1" />
+                            Lisans Ekle
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
