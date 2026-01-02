@@ -12,6 +12,7 @@ import QRCodePage from '@/pages/QRCodePage';
 import Settings from '@/pages/Settings';
 import Subscription from '@/pages/Subscription';
 import ManualSubscription from '@/pages/ManualSubscription';
+import AdminDashboard from '@/pages/AdminDashboard';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -21,6 +22,20 @@ const ProtectedRoute = ({ children }) => {
   }
   
   return user ? children : <Navigate to="/login" />;
+};
+
+const SuperAdminRoute = ({ children }) => {
+  const { user, loading, isSuperAdmin } = useAuth();
+  
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Yükleniyor...</div>;
+  }
+  
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
+  
+  return isSuperAdmin ? children : <Navigate to="/dashboard" />;
 };
 
 function App() {
@@ -62,9 +77,14 @@ function App() {
               </ProtectedRoute>
             } />
             <Route path="/manual-subscription" element={
-              <ProtectedRoute>
+              <SuperAdminRoute>
                 <ManualSubscription />
-              </ProtectedRoute>
+              </SuperAdminRoute>
+            } />
+            <Route path="/admin" element={
+              <SuperAdminRoute>
+                <AdminDashboard />
+              </SuperAdminRoute>
             } />
             <Route path="/menu/:restaurantId" element={<PublicMenu />} />
             <Route path="/" element={<Navigate to="/login" />} />
