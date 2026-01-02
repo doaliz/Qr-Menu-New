@@ -101,3 +101,150 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: |
+  QR menü yönetim sistemi - Cafe ve restoran sahipleri için. Super Admin sistemi eklenmesi gerekiyor:
+  - Super admin tüm işletmeleri görebilmeli
+  - Super admin yeni işletme kaydedebilmeli
+  - Manuel lisans aktivasyonu sadece super admin tarafından yapılabilmeli
+  - Ödeme sistemi şimdilik devre dışı (Türk ödeme sağlayıcısı sonra eklenecek)
+
+backend:
+  - task: "Super Admin - List All Restaurants"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented GET /api/admin/restaurants endpoint. Returns list of all restaurants. Only accessible by super admin."
+
+  - task: "Super Admin - Create Restaurant"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented POST /api/admin/restaurants endpoint. Creates new restaurant with name, email, phone, password. Only accessible by super admin."
+
+  - task: "Super Admin - Manual Subscription"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented POST /api/admin/manual-subscription endpoint. Adds subscription days to a restaurant by email. Only accessible by super admin."
+
+  - task: "Subscription Info with is_super_admin flag"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "GET /api/subscription/info now returns is_super_admin flag. Super admin check is done by comparing email with SUPER_ADMIN_EMAIL env variable."
+
+frontend:
+  - task: "Super Admin Dashboard Page"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/AdminDashboard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Created AdminDashboard page with restaurant list, search, stats cards, and add new restaurant modal. Route protected with SuperAdminRoute."
+
+  - task: "Manual Subscription Page - Super Admin Only"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/ManualSubscription.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added super admin check. Non-super admin users are redirected to dashboard. Route protected with SuperAdminRoute in App.js."
+
+  - task: "Subscription Page - Hide Admin Buttons for Regular Users"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/Subscription.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added isSuperAdmin check. Admin Panel and Manuel Lisans Ekle buttons only shown to super admin. Stripe button disabled with 'Yakında Aktif Olacak' message."
+
+  - task: "AuthContext - Super Admin State"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/contexts/AuthContext.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added isSuperAdmin state to AuthContext. Fetches subscription info on login and exposes isSuperAdmin flag to all components."
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: true
+
+test_plan:
+  current_focus:
+    - "Super Admin - List All Restaurants"
+    - "Super Admin - Create Restaurant"
+    - "Super Admin - Manual Subscription"
+    - "Super Admin Dashboard Page"
+    - "Manual Subscription Page - Super Admin Only"
+    - "Subscription Page - Hide Admin Buttons for Regular Users"
+  stuck_tasks: []
+  test_all: true
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: |
+      Implemented Super Admin system. Please test the following:
+      
+      1. BACKEND TESTS:
+         - Create a super admin account with email: admin@qrmenu.com (from SUPER_ADMIN_EMAIL in .env)
+         - Test GET /api/admin/restaurants - should return all restaurants (only for super admin)
+         - Test POST /api/admin/restaurants - create new restaurant (only for super admin)
+         - Test POST /api/admin/manual-subscription - add subscription days (only for super admin)
+         - Test that regular users get 403 Forbidden on these endpoints
+      
+      2. FRONTEND TESTS:
+         - Login as super admin (email: admin@qrmenu.com)
+         - Go to /subscription page - should see "Admin Panel" and "Manuel Lisans Ekle" buttons
+         - Go to /admin page - should see Super Admin Dashboard with restaurant list
+         - Test add new restaurant modal
+         - Login as regular user - should NOT see admin buttons on /subscription page
+         - Regular user should be redirected from /admin and /manual-subscription pages
+      
+      3. SUPER_ADMIN_EMAIL: admin@qrmenu.com (set in /app/backend/.env)
+      
+      Note: Stripe payment button is disabled - shows "Yakında Aktif Olacak" message.
