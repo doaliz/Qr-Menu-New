@@ -453,6 +453,27 @@ export default function AdminDashboard() {
                       data-testid="new-restaurant-password"
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label>Lisans Türü</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        type="button"
+                        variant={newRestaurant.licenseType === 'trial' ? 'default' : 'outline'}
+                        onClick={() => setNewRestaurant({ ...newRestaurant, licenseType: 'trial' })}
+                        className="w-full"
+                      >
+                        7 Gün Deneme
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={newRestaurant.licenseType === 'yearly' ? 'default' : 'outline'}
+                        onClick={() => setNewRestaurant({ ...newRestaurant, licenseType: 'yearly' })}
+                        className="w-full"
+                      >
+                        1 Yıllık Lisans
+                      </Button>
+                    </div>
+                  </div>
                   <Button type="submit" className="w-full" disabled={addingRestaurant}>
                     {addingRestaurant ? (
                       <>
@@ -460,7 +481,7 @@ export default function AdminDashboard() {
                         Oluşturuluyor...
                       </>
                     ) : (
-                      'İşletme Oluştur'
+                      newRestaurant.licenseType === 'yearly' ? 'İşletme Oluştur + 1 Yıl Lisans' : 'İşletme Oluştur (Deneme)'
                     )}
                   </Button>
                 </form>
