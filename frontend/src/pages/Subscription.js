@@ -239,20 +239,16 @@ export default function Subscription() {
 
               <Button
                 onClick={handleSubscribe}
-                disabled={processingPayment}
+                disabled={true}
                 className="w-full"
                 size="lg"
                 data-testid="subscribe-button"
               >
-                {processingPayment ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Yönlendiriliyor...
-                  </>
-                ) : (
-                  'Aboneliği Başlat'
-                )}
+                Yakında Aktif Olacak
               </Button>
+              <p className="text-xs text-center text-muted-foreground mt-2">
+                Online ödeme sistemi yakında aktif olacaktır. Şimdilik iletişime geçerek manuel aktivasyon yapabilirsiniz.
+              </p>
             </CardContent>
           </Card>
         </div>
