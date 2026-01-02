@@ -103,11 +103,183 @@
 #====================================================================================================
 
 user_problem_statement: |
-  QR menü yönetim sistemi - Cafe ve restoran sahipleri için. Super Admin sistemi eklenmesi gerekiyor:
-  - Super admin tüm işletmeleri görebilmeli
-  - Super admin yeni işletme kaydedebilmeli
-  - Manuel lisans aktivasyonu sadece super admin tarafından yapılabilmeli
-  - Ödeme sistemi şimdilik devre dışı (Türk ödeme sağlayıcısı sonra eklenecek)
+  QR menü yönetim sistemi güncellemeleri:
+  - Lisans ekleme sonrası doğru gün sayısı gösterimi (deneme değil, abonelik süresi)
+  - Super admin panelinden kullanıcı dashboard kaldırıldı
+  - Kullanıcı şifre değiştirme özelliği
+  - Kullanıcı hesap silme talebi gönderme
+  - Super admin'e silme talepleri bölümü ve kullanıcı silme özelliği
+
+backend:
+  - task: "Password Change API"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "POST /api/auth/change-password - verifies current password, updates with new one"
+
+  - task: "Account Deletion Request API"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "POST /api/auth/request-deletion - creates deletion request for super admin review"
+
+  - task: "Get Deletion Requests (Super Admin)"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "GET /api/admin/deletion-requests - returns pending deletion requests"
+
+  - task: "Delete Restaurant (Super Admin)"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "DELETE /api/admin/restaurants/{id} - deletes restaurant and all related data"
+
+  - task: "Subscription Info Fix"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Fixed: Active subscription now takes priority over trial. days_remaining shows actual subscription days (364), not trial days (6)."
+
+frontend:
+  - task: "Settings - Password Change"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/Settings.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added 'Şifre Değiştir' button with modal dialog for changing password"
+
+  - task: "Settings - Account Deletion Request"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/Settings.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added 'Hesap Silme Talebi' button in Tehlikeli Bölge section with confirmation modal"
+
+  - task: "Admin Dashboard - Deletion Requests Tab"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/AdminDashboard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added 'Silme Talepleri' tab showing pending deletion requests with approve/reject buttons"
+
+  - task: "Admin Dashboard - Delete Restaurant"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/AdminDashboard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added delete button (trash icon) for each restaurant row with confirmation dialog"
+
+  - task: "Admin Dashboard - Remove Dashboard Link"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/AdminDashboard.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Removed 'Dashboard'a Dön' link, added 'Çıkış Yap' button instead. Admin panel is now standalone."
+
+metadata:
+  created_by: "main_agent"
+  version: "2.0"
+  test_sequence: 2
+  run_ui: true
+
+test_plan:
+  current_focus:
+    - "Password Change API and UI"
+    - "Account Deletion Request flow"
+    - "Admin deletion requests management"
+    - "Restaurant deletion by super admin"
+  stuck_tasks: []
+  test_all: true
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: |
+      Implemented new features. Please test:
+      
+      1. PASSWORD CHANGE:
+         - Login as regulartest@test.com / Test123!
+         - Go to Settings
+         - Click "Şifre Değiştir" - should open modal
+         - Test with wrong current password - should show error
+         - Test with correct password - should succeed
+      
+      2. ACCOUNT DELETION REQUEST:
+         - As regular user, go to Settings
+         - Click "Hesap Silme Talebi" in Tehlikeli Bölge
+         - Submit request with optional reason
+         - Should see success message
+      
+      3. SUPER ADMIN - DELETION REQUESTS:
+         - Login as admin@qrmenu.com / Admin123!
+         - Go to /admin
+         - Check "Silme Talepleri" tab
+         - Should see pending requests if any
+         - Can approve (delete) or reject requests
+      
+      4. SUPER ADMIN - DELETE RESTAURANT:
+         - In restaurant list, each row has a red trash button
+         - Clicking opens confirmation dialog
+         - Can delete any restaurant (except super admin)
+      
+      5. SUBSCRIPTION INFO FIX:
+         - Already verified via API: regulartest@test.com shows 364 days (subscription), not 6 days (trial)
 
 backend:
   - task: "Super Admin - List All Restaurants"
