@@ -196,6 +196,10 @@ async def get_current_restaurant(credentials: HTTPAuthorizationCredentials = Dep
         if not restaurant:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Restaurant not found")
         
+        # Super admin bypass subscription check
+        if restaurant.get('email') == SUPER_ADMIN_EMAIL:
+            return restaurant_id
+        
         # Migrate old data: Add trial if missing
         if not restaurant.get('trial_end_date'):
             trial_end = datetime.now(timezone.utc) + timedelta(days=TRIAL_DAYS)
@@ -234,6 +238,12 @@ async def get_current_restaurant(credentials: HTTPAuthorizationCredentials = Dep
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+
+def is_super_admin(restaurant_id: str) -> bool:
+    """Check if current user is super admin"""
+    # This should be called after get_current_restaurant
+    # For now, check in the caller function
+    return False
 
 @api_router.post("/auth/register", response_model=TokenResponse)
 async def register(input: RestaurantCreate):
