@@ -7,8 +7,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { ArrowLeft, Upload, Trash2, Loader2 } from 'lucide-react';
+import { ArrowLeft, Upload, Trash2, Loader2, Lock, AlertTriangle } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -31,6 +40,18 @@ export default function Settings() {
   const [itemNameColor, setItemNameColor] = useState('#000000');
   const [itemBgColor, setItemBgColor] = useState('#FFFFFF');
   const [updatingColors, setUpdatingColors] = useState(false);
+
+  // Password change
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
+
+  // Account deletion
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteReason, setDeleteReason] = useState('');
+  const [requestingDeletion, setRequestingDeletion] = useState(false);
 
   const headers = { Authorization: `Bearer ${token}` };
 
