@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ArrowLeft, Loader2, Users, Plus, Search, Calendar, Mail, Phone, Building } from 'lucide-react';
+import { ArrowLeft, Loader2, Users, Plus, Search, Calendar, Mail, Phone, Building, Key } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -24,6 +24,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -42,6 +49,12 @@ export default function AdminDashboard() {
     phone: '',
     password: ''
   });
+  
+  // License modal state
+  const [showLicenseModal, setShowLicenseModal] = useState(false);
+  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+  const [licenseLoading, setLicenseLoading] = useState(false);
+  const [licenseDuration, setLicenseDuration] = useState('365');
 
   const headers = { Authorization: `Bearer ${token}` };
 
