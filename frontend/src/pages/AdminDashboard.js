@@ -92,6 +92,15 @@ export default function AdminDashboard() {
     }
   };
 
+  const fetchDeletionRequests = async () => {
+    try {
+      const response = await axios.get(`${API}/admin/deletion-requests`, { headers });
+      setDeletionRequests(response.data);
+    } catch (error) {
+      console.error('Deletion requests fetch error:', error);
+    }
+  };
+
   const handleAddRestaurant = async (e) => {
     e.preventDefault();
     
@@ -139,9 +148,47 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleDeleteRestaurant = async () => {
+    if (!restaurantToDelete) return;
+    
+    setDeleting(true);
+    try {
+      await axios.delete(`${API}/admin/restaurants/${restaurantToDelete.id}`, { headers });
+      toast.success(`${restaurantToDelete.name} silindi`);
+      setShowDeleteConfirm(false);
+      setRestaurantToDelete(null);
+      fetchRestaurants();
+      fetchDeletionRequests();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'İşletme silinemedi');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleRejectDeletion = async (requestId) => {
+    try {
+      await axios.post(`${API}/admin/deletion-requests/${requestId}/reject`, {}, { headers });
+      toast.success('Silme talebi reddedildi');
+      fetchDeletionRequests();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'İşlem başarısız');
+    }
+  };
+
   const openLicenseModal = (restaurant) => {
     setSelectedRestaurant(restaurant);
     setShowLicenseModal(true);
+  };
+
+  const openDeleteConfirm = (restaurant) => {
+    setRestaurantToDelete(restaurant);
+    setShowDeleteConfirm(true);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
   };
 
   const getStatusBadge = (status, trialEnd, subEnd) => {
