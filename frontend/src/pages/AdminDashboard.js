@@ -220,15 +220,14 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-background p-4">
       <div className="container mx-auto max-w-6xl">
         <div className="mb-6 flex items-center justify-between">
-          <Button variant="ghost" onClick={() => navigate('/dashboard')} data-testid="back-button">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Dashboard&apos;a Dön
+          <div>
+            <h1 className="text-3xl font-bold playfair">Super Admin Panel</h1>
+            <p className="text-muted-foreground">Tüm işletmeleri yönetin</p>
+          </div>
+          <Button variant="outline" onClick={handleLogout}>
+            <LogOut className="h-4 w-4 mr-2" />
+            Çıkış Yap
           </Button>
-        </div>
-
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold playfair mb-2">Super Admin Panel</h1>
-          <p className="text-muted-foreground">Tüm işletmeleri yönetin</p>
         </div>
 
         {/* Stats Cards */}
