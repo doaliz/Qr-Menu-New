@@ -231,7 +231,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
@@ -275,9 +275,36 @@ export default function AdminDashboard() {
               </div>
             </CardContent>
           </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-full bg-orange-100 dark:bg-orange-900">
+                  <AlertTriangle className="h-6 w-6 text-orange-600 dark:text-orange-300" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Silme Talepleri</p>
+                  <p className="text-2xl font-bold">{deletionRequests.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Actions */}
+        {/* Tabs */}
+        <Tabs defaultValue="restaurants" className="mb-8">
+          <TabsList className="mb-4">
+            <TabsTrigger value="restaurants">İşletmeler</TabsTrigger>
+            <TabsTrigger value="deletion-requests" className="relative">
+              Silme Talepleri
+              {deletionRequests.length > 0 && (
+                <span className="ml-2 px-2 py-0.5 text-xs bg-destructive text-destructive-foreground rounded-full">
+                  {deletionRequests.length}
+                </span>
+              )}
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="restaurants">
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
