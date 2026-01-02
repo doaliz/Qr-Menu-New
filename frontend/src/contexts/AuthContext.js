@@ -18,6 +18,20 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
+  const [subscriptionInfo, setSubscriptionInfo] = useState(null);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+
+  const fetchSubscriptionInfo = async (authToken) => {
+    try {
+      const response = await axios.get(`${API}/subscription/info`, {
+        headers: { Authorization: `Bearer ${authToken}` }
+      });
+      setSubscriptionInfo(response.data);
+      setIsSuperAdmin(response.data.is_super_admin || false);
+    } catch (error) {
+      console.error('Failed to fetch subscription info:', error);
+    }
+  };
 
   useEffect(() => {
     if (token) {
@@ -26,6 +40,7 @@ export const AuthProvider = ({ children }) => {
       })
       .then(response => {
         setUser(response.data);
+        fetchSubscriptionInfo(token);
         setLoading(false);
       })
       .catch(() => {
@@ -60,10 +75,28 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     setToken(null);
     setUser(null);
+    setSubscriptionInfo(null);
+    setIsSuperAdmin(false);
+  };
+
+  const refreshSubscriptionInfo = () => {
+    if (token) {
+      fetchSubscriptionInfo(token);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      token, 
+      login, 
+      register, 
+      logout, 
+      loading, 
+      subscriptionInfo, 
+      isSuperAdmin,
+      refreshSubscriptionInfo 
+    }}>
       {children}
     </AuthContext.Provider>
   );
