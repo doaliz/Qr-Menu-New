@@ -61,6 +61,11 @@ function App() {
                 <Subscription />
               </ProtectedRoute>
             } />
+            <Route path="/manual-subscription" element={
+              <ProtectedRoute>
+                <ManualSubscription />
+              </ProtectedRoute>
+            } />
             <Route path="/menu/:restaurantId" element={<PublicMenu />} />
             <Route path="/" element={<Navigate to="/login" />} />
           </Routes>
