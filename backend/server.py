@@ -258,6 +258,7 @@ async def register(input: RestaurantCreate):
         'name': input.name,
         'email': input.email,
         'password': hashed_password,
+        'phone': None,
         'logo_url': None,
         'hero_image_url': None,
         'instagram_url': None,
