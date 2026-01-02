@@ -249,16 +249,16 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-4">
+    <div className="min-h-screen bg-background p-3 md:p-4">
       <div className="container mx-auto max-w-6xl">
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-4 md:mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold playfair">Super Admin Panel</h1>
-            <p className="text-muted-foreground">Tüm işletmeleri yönetin</p>
+            <h1 className="text-xl md:text-3xl font-bold playfair">Super Admin Panel</h1>
+            <p className="text-xs md:text-sm text-muted-foreground">Tüm işletmeleri yönetin</p>
           </div>
-          <Button variant="outline" onClick={handleLogout}>
-            <LogOut className="h-4 w-4 mr-2" />
-            Çıkış Yap
+          <Button variant="outline" onClick={handleLogout} size="sm" className="md:size-default">
+            <LogOut className="h-4 w-4 md:mr-2" />
+            <span className="hidden md:inline">Çıkış Yap</span>
           </Button>
         </div>
 
