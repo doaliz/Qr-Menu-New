@@ -101,6 +101,45 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleAddLicense = async () => {
+    if (!selectedRestaurant) return;
+    
+    setLicenseLoading(true);
+    try {
+      const response = await axios.post(
+        `${API}/admin/manual-subscription`,
+        {
+          email: selectedRestaurant.email,
+          duration_days: parseInt(licenseDuration)
+        },
+        { headers }
+      );
+      toast.success(`${response.data.restaurant_name} için ${response.data.days_added} gün lisans eklendi`);
+      setShowLicenseModal(false);
+      setSelectedRestaurant(null);
+      setLicenseDuration('365');
+      fetchRestaurants();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Lisans eklenemedi');
+    } finally {
+      setLicenseLoading(false);
+    }
+  };
+
+  const openLicenseModal = (restaurant) => {
+    setSelectedRestaurant(restaurant);
+    setShowLicenseModal(true);
+  };
+      setShowAddModal(false);
+      setNewRestaurant({ name: '', email: '', phone: '', password: '' });
+      fetchRestaurants();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'İşletme oluşturulamadı');
+    } finally {
+      setAddingRestaurant(false);
+    }
+  };
+
   const getStatusBadge = (status, trialEnd, subEnd) => {
     const now = new Date();
     const trialEndDate = trialEnd ? new Date(trialEnd) : null;
