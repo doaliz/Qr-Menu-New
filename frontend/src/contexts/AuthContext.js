@@ -18,10 +18,12 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
+  const [subscriptionLoading, setSubscriptionLoading] = useState(true);
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
   const fetchSubscriptionInfo = async (authToken) => {
+    setSubscriptionLoading(true);
     try {
       const response = await axios.get(`${API}/subscription/info`, {
         headers: { Authorization: `Bearer ${authToken}` }
@@ -30,6 +32,9 @@ export const AuthProvider = ({ children }) => {
       setIsSuperAdmin(response.data.is_super_admin || false);
     } catch (error) {
       console.error('Failed to fetch subscription info:', error);
+      setIsSuperAdmin(false);
+    } finally {
+      setSubscriptionLoading(false);
     }
   };
 
@@ -38,17 +43,19 @@ export const AuthProvider = ({ children }) => {
       axios.get(`${API}/auth/me`, {
         headers: { Authorization: `Bearer ${token}` }
       })
-      .then(response => {
+      .then(async (response) => {
         setUser(response.data);
-        fetchSubscriptionInfo(token);
+        await fetchSubscriptionInfo(token);
         setLoading(false);
       })
       .catch(() => {
         localStorage.removeItem('token');
         setToken(null);
+        setSubscriptionLoading(false);
         setLoading(false);
       });
     } else {
+      setSubscriptionLoading(false);
       setLoading(false);
     }
   }, [token]);
@@ -92,7 +99,7 @@ export const AuthProvider = ({ children }) => {
       login, 
       register, 
       logout, 
-      loading, 
+      loading: loading || subscriptionLoading, 
       subscriptionInfo, 
       isSuperAdmin,
       refreshSubscriptionInfo 
