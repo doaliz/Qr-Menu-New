@@ -349,16 +349,6 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         </div>
-                  <AlertTriangle className="h-6 w-6 text-orange-600 dark:text-orange-300" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Silme Talepleri</p>
-                  <p className="text-2xl font-bold">{deletionRequests.length}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Tabs */}
         <Tabs defaultValue="restaurants" className="mb-8">
@@ -375,6 +365,22 @@ export default function AdminDashboard() {
           </TabsList>
 
           <TabsContent value="restaurants">
+            {/* Filter indicator */}
+            {statusFilter !== 'all' && (
+              <div className="mb-4 flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Filtre:</span>
+                <span className={`px-2 py-1 text-xs rounded-full ${
+                  statusFilter === 'active' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' :
+                  statusFilter === 'trial' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100' :
+                  'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100'
+                }`}>
+                  {statusFilter === 'active' ? 'Aktif' : statusFilter === 'trial' ? 'Deneme' : 'Süresi Dolmuş'}
+                </span>
+                <Button variant="ghost" size="sm" onClick={() => setStatusFilter('all')} className="h-6 px-2">
+                  ✕ Temizle
+                </Button>
+              </div>
+            )}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
