@@ -861,7 +861,7 @@ class RestaurantMenuAPITester:
 
     def run_all_tests(self):
         """Run all tests"""
-        print("🚀 Starting Restaurant Menu API Tests - New Features Focus")
+        print("🚀 Starting Restaurant Menu API Tests - Super Admin System Focus")
         print(f"Testing against: {self.base_url}")
         print("=" * 50)
         
@@ -878,6 +878,23 @@ class RestaurantMenuAPITester:
         
         # Test invalid auth
         self.test_invalid_auth()
+        
+        # Test SUPER ADMIN FEATURES
+        print("\n🔍 Testing SUPER ADMIN SYSTEM")
+        super_admin_success, super_admin_token = self.test_super_admin_registration_and_login()
+        
+        if super_admin_success and super_admin_token:
+            print("✅ Super Admin registration and login successful")
+            
+            # Test subscription info with super admin flag
+            self.test_subscription_info_super_admin_flag(super_admin_token)
+            
+            # Test super admin endpoints
+            self.test_super_admin_list_restaurants(super_admin_token)
+            self.test_super_admin_create_restaurant(super_admin_token)
+            self.test_super_admin_manual_subscription(super_admin_token)
+        else:
+            print("❌ Super Admin registration/login failed, skipping admin tests")
         
         # Test NEW FEATURES - File Upload
         print("\n🔍 Testing NEW FEATURE: File Upload Validation")
