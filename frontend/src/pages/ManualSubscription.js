@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import axios from 'axios';
@@ -14,7 +14,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 export default function ManualSubscription() {
-  const { user, token } = useAuth();
+  const { user, token, isSuperAdmin } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [durationType, setDurationType] = useState('365'); // 365 days = 1 year
@@ -29,6 +29,15 @@ export default function ManualSubscription() {
     { value: '365', label: '1 Yıl (365 Gün)' },
     { value: '730', label: '2 Yıl (730 Gün)' }
   ];
+
+  // Redirect if not super admin
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    } else if (!isSuperAdmin) {
+      navigate('/dashboard');
+    }
+  }, [user, isSuperAdmin, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -59,8 +68,7 @@ export default function ManualSubscription() {
     }
   };
 
-  if (!user) {
-    navigate('/login');
+  if (!user || !isSuperAdmin) {
     return null;
   }
 
