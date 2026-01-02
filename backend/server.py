@@ -128,6 +128,10 @@ class CheckoutRequest(BaseModel):
     package_id: str
     origin_url: str
 
+class ManualSubscriptionRequest(BaseModel):
+    email: str
+    duration_days: int  # Number of days to add
+
 class SubscriptionInfo(BaseModel):
     subscription_status: str
     trial_end_date: Optional[datetime]
