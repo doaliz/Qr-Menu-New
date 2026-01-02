@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ArrowLeft, Loader2, Users, Plus, Search, Calendar, Mail, Phone, Building, Key } from 'lucide-react';
+import { Loader2, Users, Plus, Search, Calendar, Mail, Phone, Building, Key, Trash2, AlertTriangle, LogOut } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -31,14 +31,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 export default function AdminDashboard() {
-  const { user, token, isSuperAdmin } = useAuth();
+  const { user, token, isSuperAdmin, logout } = useAuth();
   const navigate = useNavigate();
   const [restaurants, setRestaurants] = useState([]);
+  const [deletionRequests, setDeletionRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -56,6 +63,11 @@ export default function AdminDashboard() {
   const [licenseLoading, setLicenseLoading] = useState(false);
   const [licenseDuration, setLicenseDuration] = useState('365');
 
+  // Delete confirmation
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [restaurantToDelete, setRestaurantToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+
   const headers = { Authorization: `Bearer ${token}` };
 
   useEffect(() => {
@@ -65,6 +77,7 @@ export default function AdminDashboard() {
       navigate('/dashboard');
     } else {
       fetchRestaurants();
+      fetchDeletionRequests();
     }
   }, [user, isSuperAdmin, navigate]);
 
