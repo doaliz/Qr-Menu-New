@@ -90,9 +90,17 @@ export default function Subscription() {
       );
 
       if (response.data.url) {
-        window.location.href = response.data.url;
+        // Redirect to Stripe
+        toast.success('Ödeme sayfasına yönlendiriliyorsunuz...');
+        setTimeout(() => {
+          window.location.href = response.data.url;
+        }, 500);
+      } else {
+        toast.error('Ödeme URL\'i alınamadı');
+        setProcessingPayment(false);
       }
     } catch (error) {
+      console.error('Checkout error:', error);
       toast.error(error.response?.data?.detail || 'Ödeme başlatılamadı');
       setProcessingPayment(false);
     }
