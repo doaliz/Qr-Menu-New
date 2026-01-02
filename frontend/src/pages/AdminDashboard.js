@@ -263,19 +263,19 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Cards - Clickable for filtering */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-4 mb-4 md:mb-8">
           <Card 
             className={`cursor-pointer transition-all hover:shadow-md ${statusFilter === 'all' ? 'ring-2 ring-primary' : ''}`}
             onClick={() => setStatusFilter('all')}
           >
-            <CardContent className="p-4 md:p-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 md:p-3 rounded-full bg-primary/10">
-                  <Users className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+            <CardContent className="p-2 md:p-4">
+              <div className="flex flex-col md:flex-row items-center gap-1 md:gap-3">
+                <div className="p-1.5 md:p-2 rounded-full bg-primary/10">
+                  <Users className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                 </div>
-                <div>
-                  <p className="text-xs md:text-sm text-muted-foreground">Toplam</p>
-                  <p className="text-xl md:text-2xl font-bold">{statusCounts.all}</p>
+                <div className="text-center md:text-left">
+                  <p className="text-[10px] md:text-xs text-muted-foreground">Toplam</p>
+                  <p className="text-lg md:text-xl font-bold">{statusCounts.all}</p>
                 </div>
               </div>
             </CardContent>
@@ -284,14 +284,14 @@ export default function AdminDashboard() {
             className={`cursor-pointer transition-all hover:shadow-md ${statusFilter === 'active' ? 'ring-2 ring-green-500' : ''}`}
             onClick={() => setStatusFilter('active')}
           >
-            <CardContent className="p-4 md:p-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 md:p-3 rounded-full bg-green-100 dark:bg-green-900">
-                  <Calendar className="h-5 w-5 md:h-6 md:w-6 text-green-600 dark:text-green-300" />
+            <CardContent className="p-2 md:p-4">
+              <div className="flex flex-col md:flex-row items-center gap-1 md:gap-3">
+                <div className="p-1.5 md:p-2 rounded-full bg-green-100 dark:bg-green-900">
+                  <Calendar className="h-4 w-4 md:h-5 md:w-5 text-green-600 dark:text-green-300" />
                 </div>
-                <div>
-                  <p className="text-xs md:text-sm text-muted-foreground">Aktif</p>
-                  <p className="text-xl md:text-2xl font-bold">{statusCounts.active}</p>
+                <div className="text-center md:text-left">
+                  <p className="text-[10px] md:text-xs text-muted-foreground">Aktif</p>
+                  <p className="text-lg md:text-xl font-bold">{statusCounts.active}</p>
                 </div>
               </div>
             </CardContent>
@@ -300,14 +300,14 @@ export default function AdminDashboard() {
             className={`cursor-pointer transition-all hover:shadow-md ${statusFilter === 'trial' ? 'ring-2 ring-blue-500' : ''}`}
             onClick={() => setStatusFilter('trial')}
           >
-            <CardContent className="p-4 md:p-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 md:p-3 rounded-full bg-blue-100 dark:bg-blue-900">
-                  <Calendar className="h-5 w-5 md:h-6 md:w-6 text-blue-600 dark:text-blue-300" />
+            <CardContent className="p-2 md:p-4">
+              <div className="flex flex-col md:flex-row items-center gap-1 md:gap-3">
+                <div className="p-1.5 md:p-2 rounded-full bg-blue-100 dark:bg-blue-900">
+                  <Calendar className="h-4 w-4 md:h-5 md:w-5 text-blue-600 dark:text-blue-300" />
                 </div>
-                <div>
-                  <p className="text-xs md:text-sm text-muted-foreground">Deneme</p>
-                  <p className="text-xl md:text-2xl font-bold">{statusCounts.trial}</p>
+                <div className="text-center md:text-left">
+                  <p className="text-[10px] md:text-xs text-muted-foreground">Deneme</p>
+                  <p className="text-lg md:text-xl font-bold">{statusCounts.trial}</p>
                 </div>
               </div>
             </CardContent>
@@ -316,27 +316,27 @@ export default function AdminDashboard() {
             className={`cursor-pointer transition-all hover:shadow-md ${statusFilter === 'expired' ? 'ring-2 ring-red-500' : ''}`}
             onClick={() => setStatusFilter('expired')}
           >
-            <CardContent className="p-4 md:p-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 md:p-3 rounded-full bg-red-100 dark:bg-red-900">
-                  <AlertTriangle className="h-5 w-5 md:h-6 md:w-6 text-red-600 dark:text-red-300" />
+            <CardContent className="p-2 md:p-4">
+              <div className="flex flex-col md:flex-row items-center gap-1 md:gap-3">
+                <div className="p-1.5 md:p-2 rounded-full bg-red-100 dark:bg-red-900">
+                  <AlertTriangle className="h-4 w-4 md:h-5 md:w-5 text-red-600 dark:text-red-300" />
                 </div>
-                <div>
-                  <p className="text-xs md:text-sm text-muted-foreground">Süresi Dolmuş</p>
-                  <p className="text-xl md:text-2xl font-bold">{statusCounts.expired}</p>
+                <div className="text-center md:text-left">
+                  <p className="text-[10px] md:text-xs text-muted-foreground">Dolmuş</p>
+                  <p className="text-lg md:text-xl font-bold">{statusCounts.expired}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="p-4 md:p-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 md:p-3 rounded-full bg-orange-100 dark:bg-orange-900">
-                  <Trash2 className="h-5 w-5 md:h-6 md:w-6 text-orange-600 dark:text-orange-300" />
+          <Card className="col-span-3 md:col-span-1">
+            <CardContent className="p-2 md:p-4">
+              <div className="flex flex-col md:flex-row items-center gap-1 md:gap-3">
+                <div className="p-1.5 md:p-2 rounded-full bg-orange-100 dark:bg-orange-900">
+                  <Trash2 className="h-4 w-4 md:h-5 md:w-5 text-orange-600 dark:text-orange-300" />
                 </div>
-                <div>
-                  <p className="text-xs md:text-sm text-muted-foreground">Silme Talepleri</p>
-                  <p className="text-xl md:text-2xl font-bold">{deletionRequests.length}</p>
+                <div className="text-center md:text-left">
+                  <p className="text-[10px] md:text-xs text-muted-foreground">Silme Talepleri</p>
+                  <p className="text-lg md:text-xl font-bold">{deletionRequests.length}</p>
                 </div>
               </div>
             </CardContent>
