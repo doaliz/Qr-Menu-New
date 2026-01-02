@@ -384,16 +384,18 @@ async def get_subscription_info(restaurant_id: str = Depends(get_current_restaur
     
     is_active = False
     days_remaining = None
+    current_status = restaurant.get('subscription_status', 'trial')
     
-    if trial_end and now < trial_end:
-        is_active = True
-        days_remaining = (trial_end - now).days
-    elif subscription_end and now < subscription_end:
+    # Priority: Active subscription > Trial
+    if subscription_end and now < subscription_end and current_status == 'active':
         is_active = True
         days_remaining = (subscription_end - now).days
+    elif trial_end and now < trial_end:
+        is_active = True
+        days_remaining = (trial_end - now).days
     
     return SubscriptionInfo(
-        subscription_status=restaurant.get('subscription_status', 'trial'),
+        subscription_status=current_status,
         trial_end_date=trial_end,
         subscription_end_date=subscription_end,
         days_remaining=days_remaining,
