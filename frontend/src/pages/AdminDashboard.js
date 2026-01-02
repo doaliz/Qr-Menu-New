@@ -240,9 +240,6 @@ export default function AdminDashboard() {
             />
           </div>
           <div className="flex gap-2">
-            <Button onClick={() => navigate('/manual-subscription')} variant="outline">
-              Manuel Lisans Ekle
-            </Button>
             <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
               <DialogTrigger asChild>
                 <Button data-testid="add-restaurant-button">
