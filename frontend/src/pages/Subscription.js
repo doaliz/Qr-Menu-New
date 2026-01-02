@@ -11,7 +11,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 export default function Subscription() {
-  const { user, token } = useAuth();
+  const { user, token, isSuperAdmin } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
@@ -129,16 +129,26 @@ export default function Subscription() {
           </Button>
         </div>
 
-        <div className="mb-6 flex justify-end">
-          <Button 
-            variant="outline" 
-            onClick={() => navigate('/manual-subscription')}
-            data-testid="manual-subscription-button"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
-            Manuel Lisans Ekle
-          </Button>
-        </div>
+        {isSuperAdmin && (
+          <div className="mb-6 flex justify-end gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/admin')}
+              data-testid="admin-dashboard-button"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Admin Panel
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/manual-subscription')}
+              data-testid="manual-subscription-button"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+              Manuel Lisans Ekle
+            </Button>
+          </div>
+        )}
 
         <div className="grid md:grid-cols-2 gap-6">
           <Card data-testid="current-status-card">
