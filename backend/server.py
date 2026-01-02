@@ -386,8 +386,10 @@ async def get_subscription_info(restaurant_id: str = Depends(get_current_restaur
 
 @api_router.post("/admin/manual-subscription")
 async def create_manual_subscription(input: ManualSubscriptionRequest, restaurant_id: str = Depends(get_current_restaurant)):
-    # Check if current user has admin privileges (you can add role-based auth here)
-    # For now, any authenticated user can do this - you should add admin role check
+    # Check if super admin
+    admin_restaurant = await db.restaurants.find_one({'id': restaurant_id}, {'_id': 0})
+    if not admin_restaurant or admin_restaurant.get('email') != SUPER_ADMIN_EMAIL:
+        raise HTTPException(status_code=403, detail="Sadece super admin bu işlemi yapabilir")
     
     # Find target restaurant by email
     target_restaurant = await db.restaurants.find_one({'email': input.email}, {'_id': 0})
@@ -434,6 +436,84 @@ async def create_manual_subscription(input: ManualSubscriptionRequest, restauran
         "new_end_date": new_end.isoformat(),
         "days_added": input.duration_days
     }
+
+@api_router.get("/admin/restaurants", response_model=List[RestaurantListItem])
+async def list_all_restaurants(restaurant_id: str = Depends(get_current_restaurant)):
+    # Check if super admin
+    admin_restaurant = await db.restaurants.find_one({'id': restaurant_id}, {'_id': 0})
+    if not admin_restaurant or admin_restaurant.get('email') != SUPER_ADMIN_EMAIL:
+        raise HTTPException(status_code=403, detail="Sadece super admin bu işlemi yapabilir")
+    
+    restaurants = await db.restaurants.find({}, {'_id': 0, 'password': 0}).to_list(1000)
+    return [RestaurantListItem(**r) for r in restaurants]
+
+@api_router.post("/admin/restaurants")
+async def create_restaurant_by_admin(input: SuperAdminRestaurantCreate, restaurant_id: str = Depends(get_current_restaurant)):
+    # Check if super admin
+    admin_restaurant = await db.restaurants.find_one({'id': restaurant_id}, {'_id': 0})
+    if not admin_restaurant or admin_restaurant.get('email') != SUPER_ADMIN_EMAIL:
+        raise HTTPException(status_code=403, detail="Sadece super admin bu işlemi yapabilir")
+    
+    # Check if email already exists
+    existing = await db.restaurants.find_one({'email': input.email}, {'_id': 0})
+    if existing:
+        raise HTTPException(status_code=400, detail="Bu email adresi zaten kayıtlı")
+    
+    # Create restaurant
+    hashed_password = hash_password(input.password)
+    trial_end = datetime.now(timezone.utc) + timedelta(days=TRIAL_DAYS)
+    
+    restaurant_dict = {
+        'id': str(uuid.uuid4()),
+        'name': input.name,
+        'email': input.email,
+        'phone': input.phone,
+        'password': hashed_password,
+        'logo_url': None,
+        'hero_image_url': None,
+        'instagram_url': None,
+        'trial_end_date': trial_end.isoformat(),
+        'subscription_status': 'trial',
+        'subscription_end_date': None,
+        'created_at': datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.restaurants.insert_one(restaurant_dict)
+    
+    return {
+        "message": "İşletme oluşturuldu",
+        "restaurant_id": restaurant_dict['id'],
+        "name": restaurant_dict['name'],
+        "email": restaurant_dict['email']
+    }
+
+@api_router.get("/payment-gateway/config")
+async def get_payment_config(restaurant_id: str = Depends(get_current_restaurant)):
+    # Check if super admin
+    admin_restaurant = await db.restaurants.find_one({'id': restaurant_id}, {'_id': 0})
+    if not admin_restaurant or admin_restaurant.get('email') != SUPER_ADMIN_EMAIL:
+        raise HTTPException(status_code=403, detail="Sadece super admin bu işlemi yapabilir")
+    
+    config = await db.payment_gateway_config.find_one({}, {'_id': 0})
+    if not config:
+        return PaymentGatewayConfig(gateway_name="none", is_active=False)
+    
+    return PaymentGatewayConfig(**config)
+
+@api_router.post("/payment-gateway/config")
+async def update_payment_config(input: PaymentGatewayConfig, restaurant_id: str = Depends(get_current_restaurant)):
+    # Check if super admin
+    admin_restaurant = await db.restaurants.find_one({'id': restaurant_id}, {'_id': 0})
+    if not admin_restaurant or admin_restaurant.get('email') != SUPER_ADMIN_EMAIL:
+        raise HTTPException(status_code=403, detail="Sadece super admin bu işlemi yapabilir")
+    
+    config_dict = input.model_dump()
+    config_dict['updated_at'] = datetime.now(timezone.utc).isoformat()
+    
+    await db.payment_gateway_config.delete_many({})
+    await db.payment_gateway_config.insert_one(config_dict)
+    
+    return {"message": "Ödeme yapılandırması güncellendi"}
 
 @api_router.post("/payments/checkout")
 async def create_checkout(request: CheckoutRequest, restaurant_id: str = Depends(get_current_restaurant)):
