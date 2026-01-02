@@ -7,6 +7,10 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -20,9 +24,23 @@ export default function Login() {
     setLoading(true);
     
     try {
-      await login(email, password);
+      const restaurant = await login(email, password);
       toast.success('Giriş başarılı!');
-      navigate('/dashboard');
+      
+      // Check if super admin and redirect accordingly
+      const token = localStorage.getItem('token');
+      try {
+        const subResponse = await axios.get(`${API}/subscription/info`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (subResponse.data.is_super_admin) {
+          navigate('/admin');
+        } else {
+          navigate('/dashboard');
+        }
+      } catch {
+        navigate('/dashboard');
+      }
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Giriş başarısız');
     } finally {
