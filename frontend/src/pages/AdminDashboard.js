@@ -269,55 +269,86 @@ export default function AdminDashboard() {
           </Button>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-full bg-primary/10">
-                  <Users className="h-6 w-6 text-primary" />
+        {/* Stats Cards - Clickable for filtering */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+          <Card 
+            className={`cursor-pointer transition-all hover:shadow-md ${statusFilter === 'all' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setStatusFilter('all')}
+          >
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 md:p-3 rounded-full bg-primary/10">
+                  <Users className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Toplam İşletme</p>
-                  <p className="text-2xl font-bold">{restaurants.length}</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">Toplam</p>
+                  <p className="text-xl md:text-2xl font-bold">{statusCounts.all}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card 
+            className={`cursor-pointer transition-all hover:shadow-md ${statusFilter === 'active' ? 'ring-2 ring-green-500' : ''}`}
+            onClick={() => setStatusFilter('active')}
+          >
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 md:p-3 rounded-full bg-green-100 dark:bg-green-900">
+                  <Calendar className="h-5 w-5 md:h-6 md:w-6 text-green-600 dark:text-green-300" />
+                </div>
+                <div>
+                  <p className="text-xs md:text-sm text-muted-foreground">Aktif</p>
+                  <p className="text-xl md:text-2xl font-bold">{statusCounts.active}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card 
+            className={`cursor-pointer transition-all hover:shadow-md ${statusFilter === 'trial' ? 'ring-2 ring-blue-500' : ''}`}
+            onClick={() => setStatusFilter('trial')}
+          >
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 md:p-3 rounded-full bg-blue-100 dark:bg-blue-900">
+                  <Calendar className="h-5 w-5 md:h-6 md:w-6 text-blue-600 dark:text-blue-300" />
+                </div>
+                <div>
+                  <p className="text-xs md:text-sm text-muted-foreground">Deneme</p>
+                  <p className="text-xl md:text-2xl font-bold">{statusCounts.trial}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card 
+            className={`cursor-pointer transition-all hover:shadow-md ${statusFilter === 'expired' ? 'ring-2 ring-red-500' : ''}`}
+            onClick={() => setStatusFilter('expired')}
+          >
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 md:p-3 rounded-full bg-red-100 dark:bg-red-900">
+                  <AlertTriangle className="h-5 w-5 md:h-6 md:w-6 text-red-600 dark:text-red-300" />
+                </div>
+                <div>
+                  <p className="text-xs md:text-sm text-muted-foreground">Süresi Dolmuş</p>
+                  <p className="text-xl md:text-2xl font-bold">{statusCounts.expired}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-full bg-green-100 dark:bg-green-900">
-                  <Calendar className="h-6 w-6 text-green-600 dark:text-green-300" />
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 md:p-3 rounded-full bg-orange-100 dark:bg-orange-900">
+                  <Trash2 className="h-5 w-5 md:h-6 md:w-6 text-orange-600 dark:text-orange-300" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Aktif Abonelik</p>
-                  <p className="text-2xl font-bold">
-                    {restaurants.filter(r => r.subscription_status === 'active').length}
-                  </p>
+                  <p className="text-xs md:text-sm text-muted-foreground">Silme Talepleri</p>
+                  <p className="text-xl md:text-2xl font-bold">{deletionRequests.length}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-full bg-blue-100 dark:bg-blue-900">
-                  <Calendar className="h-6 w-6 text-blue-600 dark:text-blue-300" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Deneme Süresinde</p>
-                  <p className="text-2xl font-bold">
-                    {restaurants.filter(r => r.subscription_status === 'trial').length}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-full bg-orange-100 dark:bg-orange-900">
+        </div>
                   <AlertTriangle className="h-6 w-6 text-orange-600 dark:text-orange-300" />
                 </div>
                 <div>
