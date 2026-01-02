@@ -647,9 +647,9 @@ export default function AdminDashboard() {
         <Dialog open={showLicenseModal} onOpenChange={setShowLicenseModal}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Lisans Ekle</DialogTitle>
+              <DialogTitle>1 Yıllık Lisans Ekle</DialogTitle>
               <DialogDescription>
-                {selectedRestaurant?.name} için lisans süresi ekleyin
+                {selectedRestaurant?.name} için 1 yıllık lisans ekleyin
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 mt-4">
@@ -657,20 +657,10 @@ export default function AdminDashboard() {
                 <p className="text-sm"><strong>İşletme:</strong> {selectedRestaurant?.name}</p>
                 <p className="text-sm"><strong>Email:</strong> {selectedRestaurant?.email}</p>
               </div>
-              <div className="space-y-2">
-                <Label>Lisans Süresi</Label>
-                <Select value={licenseDuration} onValueChange={setLicenseDuration}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Süre seçin" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="30">1 Ay (30 Gün)</SelectItem>
-                    <SelectItem value="90">3 Ay (90 Gün)</SelectItem>
-                    <SelectItem value="180">6 Ay (180 Gün)</SelectItem>
-                    <SelectItem value="365">1 Yıl (365 Gün)</SelectItem>
-                    <SelectItem value="730">2 Yıl (730 Gün)</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="p-3 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
+                <p className="text-sm text-green-800 dark:text-green-200">
+                  <strong>Eklenecek:</strong> 365 gün (1 yıl)
+                </p>
               </div>
               <Button 
                 onClick={handleAddLicense} 
@@ -683,7 +673,7 @@ export default function AdminDashboard() {
                     Ekleniyor...
                   </>
                 ) : (
-                  'Lisans Ekle'
+                  '1 Yıllık Lisans Ekle'
                 )}
               </Button>
             </div>
