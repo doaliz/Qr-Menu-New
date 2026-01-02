@@ -483,13 +483,10 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Restaurants Table */}
+        {/* Restaurants Table/Cards */}
         <Card>
-          <CardHeader>
-            <CardTitle>İşletmeler</CardTitle>
-            <CardDescription>
-              Sistemde kayıtlı tüm işletmelerin listesi
-            </CardDescription>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">İşletmeler ({filteredRestaurants.length})</CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -498,10 +495,62 @@ export default function AdminDashboard() {
               </div>
             ) : filteredRestaurants.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
-                {searchTerm ? 'Arama sonucu bulunamadı' : 'Henüz kayıtlı işletme yok'}
+                {searchTerm || statusFilter !== 'all' ? 'Sonuç bulunamadı' : 'Henüz kayıtlı işletme yok'}
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <>
+                {/* Mobile Card View */}
+                <div className="md:hidden space-y-3">
+                  {filteredRestaurants.map((restaurant) => (
+                    <div key={restaurant.id} className="border rounded-lg p-3 space-y-2">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-2">
+                          <Building className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                          <span className="font-medium text-sm">{restaurant.name}</span>
+                        </div>
+                        {getStatusBadge(
+                          restaurant.subscription_status,
+                          restaurant.trial_end_date,
+                          restaurant.subscription_end_date
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground space-y-1">
+                        <div className="flex items-center gap-1">
+                          <Mail className="h-3 w-3" />
+                          <span className="truncate">{restaurant.email}</span>
+                        </div>
+                        {restaurant.phone && (
+                          <div className="flex items-center gap-1">
+                            <Phone className="h-3 w-3" />
+                            {restaurant.phone}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex gap-2 pt-1">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => openLicenseModal(restaurant)}
+                          className="flex-1 h-8 text-xs"
+                        >
+                          <Key className="h-3 w-3 mr-1" />
+                          Lisans
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="destructive"
+                          onClick={() => openDeleteConfirm(restaurant)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop Table View */}
+                <div className="hidden md:block overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
