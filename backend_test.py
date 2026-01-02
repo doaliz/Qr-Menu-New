@@ -1242,7 +1242,7 @@ class RestaurantMenuAPITester:
 
     def run_all_tests(self):
         """Run all tests"""
-        print("🚀 Starting Restaurant Menu API Tests - Super Admin System Focus")
+        print("🚀 Starting Restaurant Menu API Tests - User Management Features Focus")
         print(f"Testing against: {self.base_url}")
         print("=" * 50)
         
@@ -1276,6 +1276,37 @@ class RestaurantMenuAPITester:
             self.test_super_admin_manual_subscription(super_admin_token)
         else:
             print("❌ Super Admin registration/login failed, skipping admin tests")
+        
+        # Test NEW USER MANAGEMENT FEATURES
+        print("\n🔍 Testing NEW USER MANAGEMENT FEATURES")
+        
+        # Test regular user login
+        regular_success, regular_token = self.test_regular_user_login()
+        
+        if regular_success and regular_token:
+            print("✅ Regular test user login successful")
+            
+            # Test password change
+            print("\n🔍 Testing Password Change Feature")
+            self.test_password_change(regular_token)
+            
+            # Test account deletion request
+            print("\n🔍 Testing Account Deletion Request Feature")
+            self.test_account_deletion_request(regular_token)
+            
+            # Test subscription info fix
+            print("\n🔍 Testing Subscription Info Fix")
+            self.test_subscription_info_fix(regular_token)
+        else:
+            print("❌ Regular test user login failed, skipping user management tests")
+        
+        # Test admin deletion management (requires super admin)
+        if super_admin_success and super_admin_token:
+            print("\n🔍 Testing Admin Deletion Management")
+            self.test_admin_deletion_requests(super_admin_token)
+            
+            print("\n🔍 Testing Admin Restaurant Deletion")
+            self.test_admin_delete_restaurant(super_admin_token)
         
         # Test NEW FEATURES - File Upload
         print("\n🔍 Testing NEW FEATURE: File Upload Validation")
