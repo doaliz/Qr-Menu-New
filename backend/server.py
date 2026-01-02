@@ -131,7 +131,32 @@ class CheckoutRequest(BaseModel):
 
 class ManualSubscriptionRequest(BaseModel):
     email: str
-    duration_days: int  # Number of days to add
+    duration_days: int
+
+class SuperAdminRestaurantCreate(BaseModel):
+    name: str
+    email: EmailStr
+    phone: str
+    password: str
+
+class RestaurantListItem(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str
+    name: str
+    email: EmailStr
+    phone: Optional[str] = None
+    subscription_status: str
+    trial_end_date: Optional[datetime]
+    subscription_end_date: Optional[datetime]
+    created_at: datetime
+
+class PaymentGatewayConfig(BaseModel):
+    gateway_name: str  # 'iyzico', 'paytr', 'stripe', etc.
+    api_key: Optional[str] = None
+    secret_key: Optional[str] = None
+    merchant_id: Optional[str] = None
+    webhook_url: Optional[str] = None
+    is_active: bool = False
 
 class SubscriptionInfo(BaseModel):
     subscription_status: str
@@ -139,6 +164,7 @@ class SubscriptionInfo(BaseModel):
     subscription_end_date: Optional[datetime]
     days_remaining: Optional[int]
     is_active: bool
+    is_super_admin: bool = False
 
 class TokenResponse(BaseModel):
     token: str
