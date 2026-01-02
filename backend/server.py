@@ -836,6 +836,108 @@ async def get_public_menu(restaurant_id: str):
         'categories': categories_with_items
     }
 
+# Password change endpoint
+@api_router.post("/auth/change-password")
+async def change_password(input: PasswordChangeRequest, restaurant_id: str = Depends(get_current_restaurant)):
+    restaurant = await db.restaurants.find_one({'id': restaurant_id}, {'_id': 0})
+    if not restaurant:
+        raise HTTPException(status_code=404, detail="Restaurant not found")
+    
+    # Verify current password
+    if not verify_password(input.current_password, restaurant['password']):
+        raise HTTPException(status_code=400, detail="Mevcut şifre yanlış")
+    
+    # Hash new password and update
+    new_hashed = hash_password(input.new_password)
+    await db.restaurants.update_one(
+        {'id': restaurant_id},
+        {'$set': {'password': new_hashed}}
+    )
+    
+    return {"message": "Şifre başarıyla değiştirildi"}
+
+# Account deletion request endpoint
+@api_router.post("/auth/request-deletion")
+async def request_account_deletion(input: AccountDeletionRequest, restaurant_id: str = Depends(get_current_restaurant)):
+    restaurant = await db.restaurants.find_one({'id': restaurant_id}, {'_id': 0})
+    if not restaurant:
+        raise HTTPException(status_code=404, detail="Restaurant not found")
+    
+    # Check if there's already a pending request
+    existing = await db.deletion_requests.find_one({
+        'restaurant_id': restaurant_id,
+        'status': 'pending'
+    }, {'_id': 0})
+    
+    if existing:
+        raise HTTPException(status_code=400, detail="Zaten bekleyen bir silme talebiniz var")
+    
+    # Create deletion request
+    request_dict = {
+        'id': str(uuid.uuid4()),
+        'restaurant_id': restaurant_id,
+        'restaurant_name': restaurant['name'],
+        'restaurant_email': restaurant['email'],
+        'reason': input.reason,
+        'status': 'pending',
+        'created_at': datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.deletion_requests.insert_one(request_dict)
+    
+    return {"message": "Hesap silme talebiniz alındı. En kısa sürede işleme alınacaktır."}
+
+# Get deletion requests for super admin
+@api_router.get("/admin/deletion-requests", response_model=List[DeletionRequestItem])
+async def get_deletion_requests(restaurant_id: str = Depends(get_current_restaurant)):
+    admin_restaurant = await db.restaurants.find_one({'id': restaurant_id}, {'_id': 0})
+    if not admin_restaurant or admin_restaurant.get('email') != SUPER_ADMIN_EMAIL:
+        raise HTTPException(status_code=403, detail="Sadece super admin bu işlemi yapabilir")
+    
+    requests = await db.deletion_requests.find({'status': 'pending'}, {'_id': 0}).sort('created_at', -1).to_list(1000)
+    return [DeletionRequestItem(**r) for r in requests]
+
+# Delete restaurant by super admin
+@api_router.delete("/admin/restaurants/{target_restaurant_id}")
+async def delete_restaurant(target_restaurant_id: str, restaurant_id: str = Depends(get_current_restaurant)):
+    admin_restaurant = await db.restaurants.find_one({'id': restaurant_id}, {'_id': 0})
+    if not admin_restaurant or admin_restaurant.get('email') != SUPER_ADMIN_EMAIL:
+        raise HTTPException(status_code=403, detail="Sadece super admin bu işlemi yapabilir")
+    
+    # Find target restaurant
+    target = await db.restaurants.find_one({'id': target_restaurant_id}, {'_id': 0})
+    if not target:
+        raise HTTPException(status_code=404, detail="İşletme bulunamadı")
+    
+    # Don't allow deleting super admin
+    if target.get('email') == SUPER_ADMIN_EMAIL:
+        raise HTTPException(status_code=400, detail="Super admin hesabı silinemez")
+    
+    # Delete all related data
+    await db.categories.delete_many({'restaurant_id': target_restaurant_id})
+    await db.menu_items.delete_many({'restaurant_id': target_restaurant_id})
+    await db.deletion_requests.delete_many({'restaurant_id': target_restaurant_id})
+    await db.restaurants.delete_one({'id': target_restaurant_id})
+    
+    return {"message": f"{target['name']} işletmesi ve tüm verileri silindi"}
+
+# Reject deletion request
+@api_router.post("/admin/deletion-requests/{request_id}/reject")
+async def reject_deletion_request(request_id: str, restaurant_id: str = Depends(get_current_restaurant)):
+    admin_restaurant = await db.restaurants.find_one({'id': restaurant_id}, {'_id': 0})
+    if not admin_restaurant or admin_restaurant.get('email') != SUPER_ADMIN_EMAIL:
+        raise HTTPException(status_code=403, detail="Sadece super admin bu işlemi yapabilir")
+    
+    result = await db.deletion_requests.update_one(
+        {'id': request_id},
+        {'$set': {'status': 'rejected', 'processed_at': datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Talep bulunamadı")
+    
+    return {"message": "Silme talebi reddedildi"}
+
 app.include_router(api_router)
 
 app.add_middleware(
