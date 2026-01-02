@@ -113,51 +113,63 @@ user_problem_statement: |
 backend:
   - task: "Password Change API"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "POST /api/auth/change-password - verifies current password, updates with new one"
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - Password change API working correctly. Wrong current password returns 400 with 'Mevcut şifre yanlış' error. Correct password change succeeds and new password works for login. Password successfully changed back to original for testing continuity."
 
   - task: "Account Deletion Request API"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "POST /api/auth/request-deletion - creates deletion request for super admin review"
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - Account deletion request API working correctly. Creates deletion request with optional reason. Duplicate requests correctly return 400 with 'Zaten bekleyen bir silme talebiniz var' error message. Both with and without reason work properly."
 
   - task: "Get Deletion Requests (Super Admin)"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "GET /api/admin/deletion-requests - returns pending deletion requests"
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - Super admin can successfully get deletion requests. Returns list of pending requests. Regular users correctly get 403 Forbidden. Reject functionality also working - can reject deletion requests via POST /api/admin/deletion-requests/{id}/reject."
 
   - task: "Delete Restaurant (Super Admin)"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "DELETE /api/admin/restaurants/{id} - deletes restaurant and all related data"
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - Super admin can successfully delete restaurants. Correctly prevents deletion of super admin account with 'Super admin hesabı silinemez' error. Regular users get 403 Forbidden. Deletes restaurant and all related data properly."
 
   - task: "Subscription Info Fix"
     implemented: true
