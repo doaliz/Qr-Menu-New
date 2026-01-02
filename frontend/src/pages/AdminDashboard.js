@@ -202,13 +202,29 @@ export default function AdminDashboard() {
     navigate('/login');
   };
 
+  // Helper to get actual status of restaurant
+  const getActualStatus = (restaurant) => {
+    const now = new Date();
+    const trialEndDate = restaurant.trial_end_date ? new Date(restaurant.trial_end_date) : null;
+    const subEndDate = restaurant.subscription_end_date ? new Date(restaurant.subscription_end_date) : null;
+
+    if (restaurant.subscription_status === 'active' && subEndDate && subEndDate > now) {
+      return 'active';
+    } else if (restaurant.subscription_status === 'trial' && trialEndDate && trialEndDate > now) {
+      return 'trial';
+    } else {
+      return 'expired';
+    }
+  };
+
   const getStatusBadge = (status, trialEnd, subEnd) => {
     const now = new Date();
     const trialEndDate = trialEnd ? new Date(trialEnd) : null;
     const subEndDate = subEnd ? new Date(subEnd) : null;
 
     if (status === 'active' && subEndDate && subEndDate > now) {
-      return <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">Aktif</span>;
+      const daysLeft = Math.ceil((subEndDate - now) / (1000 * 60 * 60 * 24));
+      return <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">Aktif ({daysLeft} gün)</span>;
     } else if (status === 'trial' && trialEndDate && trialEndDate > now) {
       const daysLeft = Math.ceil((trialEndDate - now) / (1000 * 60 * 60 * 24));
       return <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">Deneme ({daysLeft} gün)</span>;
@@ -217,11 +233,23 @@ export default function AdminDashboard() {
     }
   };
 
-  const filteredRestaurants = restaurants.filter(r => 
-    r.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    r.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    r.phone?.includes(searchTerm)
-  );
+  // Calculate counts for each status
+  const statusCounts = {
+    all: restaurants.length,
+    active: restaurants.filter(r => getActualStatus(r) === 'active').length,
+    trial: restaurants.filter(r => getActualStatus(r) === 'trial').length,
+    expired: restaurants.filter(r => getActualStatus(r) === 'expired').length
+  };
+
+  // Filter restaurants by search term and status
+  const filteredRestaurants = restaurants.filter(r => {
+    const matchesSearch = r.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      r.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      r.phone?.includes(searchTerm);
+    
+    if (statusFilter === 'all') return matchesSearch;
+    return matchesSearch && getActualStatus(r) === statusFilter;
+  });
 
   if (!user || !isSuperAdmin) {
     return null;
