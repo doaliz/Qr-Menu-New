@@ -155,7 +155,7 @@ export default function Settings() {
         <div className="container mx-auto px-4 py-4">
           <Button variant="ghost" onClick={() => navigate('/dashboard')} data-testid="back-button">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Dashboard'a Dön
+            Dashboard&apos;a Dön
           </Button>
         </div>
       </header>
