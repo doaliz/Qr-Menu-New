@@ -239,15 +239,13 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Super Admin - List All Restaurants"
-    - "Super Admin - Create Restaurant"
-    - "Super Admin - Manual Subscription"
     - "Super Admin Dashboard Page"
     - "Manual Subscription Page - Super Admin Only"
-    - "Subscription Page - Hide Admin Buttons for Regular Users"
-  stuck_tasks: []
-  test_all: true
-  test_priority: "high_first"
+  stuck_tasks:
+    - "Super Admin Dashboard Page"
+    - "Manual Subscription Page - Super Admin Only"
+  test_all: false
+  test_priority: "stuck_first"
 
 agent_communication:
   - agent: "main"
