@@ -456,14 +456,23 @@ export default function AdminDashboard() {
                           {new Date(restaurant.created_at).toLocaleDateString('tr-TR')}
                         </TableCell>
                         <TableCell className="text-right">
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => openLicenseModal(restaurant)}
-                          >
-                            <Key className="h-3 w-3 mr-1" />
-                            Lisans Ekle
-                          </Button>
+                          <div className="flex gap-2 justify-end">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => openLicenseModal(restaurant)}
+                            >
+                              <Key className="h-3 w-3 mr-1" />
+                              Lisans
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="destructive"
+                              onClick={() => openDeleteConfirm(restaurant)}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -473,6 +482,69 @@ export default function AdminDashboard() {
             )}
           </CardContent>
         </Card>
+        </TabsContent>
+
+        {/* Deletion Requests Tab */}
+        <TabsContent value="deletion-requests">
+          <Card>
+            <CardHeader>
+              <CardTitle>Hesap Silme Talepleri</CardTitle>
+              <CardDescription>
+                Kullanıcılardan gelen hesap silme talepleri
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {deletionRequests.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  Bekleyen silme talebi yok
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {deletionRequests.map((request) => (
+                    <div key={request.id} className="border rounded-lg p-4">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                        <div className="space-y-1">
+                          <p className="font-medium">{request.restaurant_name}</p>
+                          <p className="text-sm text-muted-foreground">{request.restaurant_email}</p>
+                          {request.reason && (
+                            <div className="mt-2 p-2 bg-muted rounded text-sm">
+                              <p className="font-medium text-xs text-muted-foreground mb-1">Sebep:</p>
+                              {request.reason}
+                            </div>
+                          )}
+                          <p className="text-xs text-muted-foreground">
+                            Talep: {new Date(request.created_at).toLocaleDateString('tr-TR')}
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button 
+                            size="sm" 
+                            variant="destructive"
+                            onClick={() => {
+                              const restaurant = restaurants.find(r => r.id === request.restaurant_id);
+                              if (restaurant) openDeleteConfirm(restaurant);
+                            }}
+                          >
+                            <Trash2 className="h-3 w-3 mr-1" />
+                            Sil
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handleRejectDeletion(request.id)}
+                          >
+                            Reddet
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        </Tabs>
 
         {/* License Modal */}
         <Dialog open={showLicenseModal} onOpenChange={setShowLicenseModal}>
@@ -517,6 +589,48 @@ export default function AdminDashboard() {
                   'Lisans Ekle'
                 )}
               </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Modal */}
+        <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="text-destructive">İşletmeyi Sil</DialogTitle>
+              <DialogDescription>
+                Bu işlem geri alınamaz. İşletmenin tüm verileri silinecektir.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 mt-4">
+              <div className="p-3 bg-destructive/10 rounded-lg border border-destructive/20">
+                <p className="text-sm font-medium">{restaurantToDelete?.name}</p>
+                <p className="text-sm text-muted-foreground">{restaurantToDelete?.email}</p>
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="flex-1"
+                >
+                  İptal
+                </Button>
+                <Button 
+                  variant="destructive"
+                  onClick={handleDeleteRestaurant}
+                  disabled={deleting}
+                  className="flex-1"
+                >
+                  {deleting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Siliniyor...
+                    </>
+                  ) : (
+                    'Evet, Sil'
+                  )}
+                </Button>
+              </div>
             </div>
           </DialogContent>
         </Dialog>
