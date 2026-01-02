@@ -360,40 +360,40 @@ export default function AdminDashboard() {
           <TabsContent value="restaurants">
             {/* Filter indicator */}
             {statusFilter !== 'all' && (
-              <div className="mb-4 flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Filtre:</span>
-                <span className={`px-2 py-1 text-xs rounded-full ${
+              <div className="mb-3 flex items-center gap-2 flex-wrap">
+                <span className="text-xs text-muted-foreground">Filtre:</span>
+                <span className={`px-2 py-0.5 text-xs rounded-full ${
                   statusFilter === 'active' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' :
                   statusFilter === 'trial' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100' :
                   'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100'
                 }`}>
                   {statusFilter === 'active' ? 'Aktif' : statusFilter === 'trial' ? 'Deneme' : 'Süresi Dolmuş'}
                 </span>
-                <Button variant="ghost" size="sm" onClick={() => setStatusFilter('all')} className="h-6 px-2">
+                <Button variant="ghost" size="sm" onClick={() => setStatusFilter('all')} className="h-6 px-2 text-xs">
                   ✕ Temizle
                 </Button>
               </div>
             )}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <div className="relative flex-1">
+        <div className="flex flex-col gap-3 mb-4">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="İşletme ara (isim, email, telefon)..."
+              placeholder="İşletme ara..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
               data-testid="search-input"
             />
           </div>
-          <div className="flex gap-2">
+          <div>
             <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
               <DialogTrigger asChild>
-                <Button data-testid="add-restaurant-button">
+                <Button data-testid="add-restaurant-button" className="w-full md:w-auto">
                   <Plus className="h-4 w-4 mr-2" />
                   Yeni İşletme
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-w-[95vw] md:max-w-md">
                 <DialogHeader>
                   <DialogTitle>Yeni İşletme Ekle</DialogTitle>
                   <DialogDescription>
