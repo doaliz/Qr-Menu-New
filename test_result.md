@@ -173,51 +173,63 @@ backend:
 frontend:
   - task: "Super Admin Dashboard Page"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/frontend/src/pages/AdminDashboard.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Created AdminDashboard page with restaurant list, search, stats cards, and add new restaurant modal. Route protected with SuperAdminRoute."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL ISSUE: SuperAdminRoute is redirecting super admin away from /admin page to /dashboard. Super admin login works, isSuperAdmin state is set correctly (admin buttons visible on subscription page), but there's a timing/race condition in SuperAdminRoute component causing redirects. Backend also has validation errors for missing subscription fields in list_all_restaurants endpoint."
 
   - task: "Manual Subscription Page - Super Admin Only"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/frontend/src/pages/ManualSubscription.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Added super admin check. Non-super admin users are redirected to dashboard. Route protected with SuperAdminRoute in App.js."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL ISSUE: SuperAdminRoute is redirecting super admin away from /manual-subscription page to /dashboard. Same timing/race condition issue as admin dashboard. The page components are implemented correctly but route protection is malfunctioning."
 
   - task: "Subscription Page - Hide Admin Buttons for Regular Users"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/pages/Subscription.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Added isSuperAdmin check. Admin Panel and Manuel Lisans Ekle buttons only shown to super admin. Stripe button disabled with 'Yakında Aktif Olacak' message."
+      - working: true
+        agent: "testing"
+        comment: "✅ WORKING: Super admin can see 'Admin Panel' and 'Manuel Lisans Ekle' buttons. Regular users cannot see these buttons. Subscribe button correctly shows 'Yakında Aktif Olacak' and is disabled. Access control working perfectly on subscription page."
 
   - task: "AuthContext - Super Admin State"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/contexts/AuthContext.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Added isSuperAdmin state to AuthContext. Fetches subscription info on login and exposes isSuperAdmin flag to all components."
+      - working: true
+        agent: "testing"
+        comment: "✅ WORKING: AuthContext correctly sets isSuperAdmin state. Super admin login works, token is stored, subscription info is fetched, and isSuperAdmin flag is properly exposed. The issue is not with AuthContext but with SuperAdminRoute timing."
 
 metadata:
   created_by: "main_agent"
