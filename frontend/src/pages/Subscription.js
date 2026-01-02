@@ -194,14 +194,6 @@ export default function Subscription() {
               <CardDescription>Sınırsız erişim</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-bold">999₺</span>
-                  <span className="text-muted-foreground">/yıl</span>
-                </div>
-                <p className="text-sm text-muted-foreground mt-1">Aylık sadece 83₺</p>
-              </div>
-
               <ul className="space-y-3">
                 <li className="flex items-start gap-2">
                   <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
@@ -229,18 +221,11 @@ export default function Subscription() {
                 </li>
               </ul>
 
-              <Button
-                onClick={handleSubscribe}
-                disabled={true}
-                className="w-full"
-                size="lg"
-                data-testid="subscribe-button"
-              >
-                Yakında Aktif Olacak
-              </Button>
-              <p className="text-xs text-center text-muted-foreground mt-2">
-                Online ödeme sistemi yakında aktif olacaktır. Şimdilik iletişime geçerek manuel aktivasyon yapabilirsiniz.
-              </p>
+              <div className="p-4 bg-muted rounded-lg text-center">
+                <p className="text-sm text-muted-foreground">
+                  Abonelik için bizimle iletişime geçin
+                </p>
+              </div>
             </CardContent>
           </Card>
         </div>
