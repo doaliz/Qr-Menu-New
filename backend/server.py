@@ -166,6 +166,23 @@ class SubscriptionInfo(BaseModel):
     is_active: bool
     is_super_admin: bool = False
 
+class PasswordChangeRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+class AccountDeletionRequest(BaseModel):
+    reason: Optional[str] = None
+
+class DeletionRequestItem(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str
+    restaurant_id: str
+    restaurant_name: str
+    restaurant_email: str
+    reason: Optional[str] = None
+    status: str
+    created_at: datetime
+
 class TokenResponse(BaseModel):
     token: str
     restaurant: Restaurant
