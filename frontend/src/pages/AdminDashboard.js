@@ -396,6 +396,53 @@ export default function AdminDashboard() {
             )}
           </CardContent>
         </Card>
+
+        {/* License Modal */}
+        <Dialog open={showLicenseModal} onOpenChange={setShowLicenseModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Lisans Ekle</DialogTitle>
+              <DialogDescription>
+                {selectedRestaurant?.name} için lisans süresi ekleyin
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 mt-4">
+              <div className="p-3 bg-muted rounded-lg">
+                <p className="text-sm"><strong>İşletme:</strong> {selectedRestaurant?.name}</p>
+                <p className="text-sm"><strong>Email:</strong> {selectedRestaurant?.email}</p>
+              </div>
+              <div className="space-y-2">
+                <Label>Lisans Süresi</Label>
+                <Select value={licenseDuration} onValueChange={setLicenseDuration}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Süre seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="30">1 Ay (30 Gün)</SelectItem>
+                    <SelectItem value="90">3 Ay (90 Gün)</SelectItem>
+                    <SelectItem value="180">6 Ay (180 Gün)</SelectItem>
+                    <SelectItem value="365">1 Yıl (365 Gün)</SelectItem>
+                    <SelectItem value="730">2 Yıl (730 Gün)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button 
+                onClick={handleAddLicense} 
+                className="w-full" 
+                disabled={licenseLoading}
+              >
+                {licenseLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Ekleniyor...
+                  </>
+                ) : (
+                  'Lisans Ekle'
+                )}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
