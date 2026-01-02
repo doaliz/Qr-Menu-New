@@ -252,12 +252,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Password Change API and UI"
-    - "Account Deletion Request flow"
-    - "Admin deletion requests management"
-    - "Restaurant deletion by super admin"
+    - "Frontend Settings - Password Change UI"
+    - "Frontend Settings - Account Deletion Request UI"
+    - "Frontend Admin Dashboard - Deletion Requests Tab"
+    - "Frontend Admin Dashboard - Delete Restaurant UI"
   stuck_tasks: []
-  test_all: true
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:
