@@ -130,15 +130,6 @@ export default function AdminDashboard() {
     setSelectedRestaurant(restaurant);
     setShowLicenseModal(true);
   };
-      setShowAddModal(false);
-      setNewRestaurant({ name: '', email: '', phone: '', password: '' });
-      fetchRestaurants();
-    } catch (error) {
-      toast.error(error.response?.data?.detail || 'İşletme oluşturulamadı');
-    } finally {
-      setAddingRestaurant(false);
-    }
-  };
 
   const getStatusBadge = (status, trialEnd, subEnd) => {
     const now = new Date();
