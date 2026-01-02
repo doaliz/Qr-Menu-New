@@ -136,8 +136,9 @@ class ManualSubscriptionRequest(BaseModel):
 class SuperAdminRestaurantCreate(BaseModel):
     name: str
     email: EmailStr
-    phone: str
+    phone: Optional[str] = None
     password: str
+    license_type: Optional[str] = 'trial'  # 'trial' or 'yearly'
 
 class RestaurantListItem(BaseModel):
     model_config = ConfigDict(extra="ignore")
