@@ -26,6 +26,7 @@ app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
 SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'your-secret-key-change-in-production')
+SUPER_ADMIN_EMAIL = os.environ.get('SUPER_ADMIN_EMAIL', 'admin@qrmenu.com')
 STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY', 'sk_test_emergent')
 TRIAL_DAYS = 7
 YEARLY_PRICE = 999.00
