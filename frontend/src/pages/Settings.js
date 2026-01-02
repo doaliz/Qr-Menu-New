@@ -170,6 +170,52 @@ export default function Settings() {
     }
   };
 
+  const handlePasswordChange = async () => {
+    if (newPassword !== confirmPassword) {
+      toast.error('Yeni şifreler eşleşmiyor');
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast.error('Yeni şifre en az 6 karakter olmalı');
+      return;
+    }
+
+    setChangingPassword(true);
+    try {
+      await axios.post(`${API}/auth/change-password`, {
+        current_password: currentPassword,
+        new_password: newPassword
+      }, { headers });
+      
+      toast.success('Şifre başarıyla değiştirildi');
+      setShowPasswordModal(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Şifre değiştirilemedi');
+    } finally {
+      setChangingPassword(false);
+    }
+  };
+
+  const handleRequestDeletion = async () => {
+    setRequestingDeletion(true);
+    try {
+      await axios.post(`${API}/auth/request-deletion`, {
+        reason: deleteReason
+      }, { headers });
+      
+      toast.success('Hesap silme talebiniz alındı');
+      setShowDeleteModal(false);
+      setDeleteReason('');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Talep gönderilemedi');
+    } finally {
+      setRequestingDeletion(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b sticky top-0 bg-background z-10">
