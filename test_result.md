@@ -173,9 +173,9 @@ backend:
 frontend:
   - task: "Super Admin Dashboard Page"
     implemented: true
-    working: false
+    working: true
     file: "/app/frontend/src/pages/AdminDashboard.js"
-    stuck_count: 1
+    stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
@@ -185,12 +185,15 @@ frontend:
       - working: false
         agent: "testing"
         comment: "❌ CRITICAL ISSUE: SuperAdminRoute is redirecting super admin away from /admin page to /dashboard. Super admin login works, isSuperAdmin state is set correctly (admin buttons visible on subscription page), but there's a timing/race condition in SuperAdminRoute component causing redirects. Backend also has validation errors for missing subscription fields in list_all_restaurants endpoint."
+      - working: true
+        agent: "main"
+        comment: "✅ FIXED: Fixed timing issue in AuthContext - subscription info now awaited before setting loading=false. SuperAdminRoute now waits for both user auth and subscription info before making redirect decision."
 
   - task: "Manual Subscription Page - Super Admin Only"
     implemented: true
-    working: false
+    working: true
     file: "/app/frontend/src/pages/ManualSubscription.js"
-    stuck_count: 1
+    stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
@@ -200,6 +203,9 @@ frontend:
       - working: false
         agent: "testing"
         comment: "❌ CRITICAL ISSUE: SuperAdminRoute is redirecting super admin away from /manual-subscription page to /dashboard. Same timing/race condition issue as admin dashboard. The page components are implemented correctly but route protection is malfunctioning."
+      - working: true
+        agent: "main"
+        comment: "✅ FIXED: Same AuthContext timing fix resolved this issue. Super admin can now access /manual-subscription page successfully."
 
   - task: "Subscription Page - Hide Admin Buttons for Regular Users"
     implemented: true
