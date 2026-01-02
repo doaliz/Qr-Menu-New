@@ -112,10 +112,21 @@ export default function AdminDashboard() {
 
     setAddingRestaurant(true);
     try {
-      await axios.post(`${API}/admin/restaurants`, newRestaurant, { headers });
-      toast.success('İşletme başarıyla oluşturuldu');
+      // Create restaurant with license type
+      const response = await axios.post(`${API}/admin/restaurants`, {
+        name: newRestaurant.name,
+        email: newRestaurant.email,
+        phone: newRestaurant.phone,
+        password: newRestaurant.password,
+        license_type: newRestaurant.licenseType
+      }, { headers });
+      
+      const successMsg = newRestaurant.licenseType === 'yearly' 
+        ? 'İşletme oluşturuldu ve 1 yıllık lisans eklendi' 
+        : 'İşletme oluşturuldu (7 günlük deneme)';
+      toast.success(successMsg);
       setShowAddModal(false);
-      setNewRestaurant({ name: '', email: '', phone: '', password: '' });
+      setNewRestaurant({ name: '', email: '', phone: '', password: '', licenseType: 'trial' });
       fetchRestaurants();
     } catch (error) {
       toast.error(error.response?.data?.detail || 'İşletme oluşturulamadı');
