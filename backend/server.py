@@ -353,11 +353,13 @@ async def bulk_update_colors(input: BulkColorUpdate, restaurant_id: str = Depend
     else:
         raise HTTPException(status_code=400, detail="Invalid target")
 
-@api_router.post("/subscription/info", response_model=SubscriptionInfo)
+@api_router.get("/subscription/info", response_model=SubscriptionInfo)
 async def get_subscription_info(restaurant_id: str = Depends(get_current_restaurant)):
     restaurant = await db.restaurants.find_one({'id': restaurant_id}, {'_id': 0})
     if not restaurant:
         raise HTTPException(status_code=404, detail="Restaurant not found")
+    
+    is_super_admin_user = restaurant.get('email') == SUPER_ADMIN_EMAIL
     
     now = datetime.now(timezone.utc)
     trial_end = datetime.fromisoformat(restaurant['trial_end_date']) if restaurant.get('trial_end_date') else None
@@ -378,7 +380,8 @@ async def get_subscription_info(restaurant_id: str = Depends(get_current_restaur
         trial_end_date=trial_end,
         subscription_end_date=subscription_end,
         days_remaining=days_remaining,
-        is_active=is_active
+        is_active=is_active,
+        is_super_admin=is_super_admin_user
     )
 
 @api_router.post("/admin/manual-subscription")
