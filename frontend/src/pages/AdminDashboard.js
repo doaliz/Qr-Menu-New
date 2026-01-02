@@ -144,14 +144,13 @@ export default function AdminDashboard() {
         `${API}/admin/manual-subscription`,
         {
           email: selectedRestaurant.email,
-          duration_days: parseInt(licenseDuration)
+          duration_days: 365 // Always 1 year
         },
         { headers }
       );
-      toast.success(`${response.data.restaurant_name} için ${response.data.days_added} gün lisans eklendi`);
+      toast.success(`${response.data.restaurant_name} için 1 yıllık lisans eklendi`);
       setShowLicenseModal(false);
       setSelectedRestaurant(null);
-      setLicenseDuration('365');
       fetchRestaurants();
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Lisans eklenemedi');
