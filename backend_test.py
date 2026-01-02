@@ -853,6 +853,381 @@ class RestaurantMenuAPITester:
         
         return success and success_regular
 
+    def test_regular_user_login(self):
+        """Test login with regular test user"""
+        login_data = {
+            "email": "regulartest@test.com",
+            "password": "Test123!"
+        }
+        
+        success, response = self.run_test(
+            "Regular Test User Login",
+            "POST",
+            "auth/login",
+            200,
+            data=login_data
+        )
+        
+        if success and 'token' in response:
+            return True, response['token']
+        
+        return False, None
+
+    def test_password_change(self, regular_token):
+        """Test password change functionality"""
+        # Save current token
+        original_token = self.token
+        
+        # Test with regular user token
+        self.token = regular_token
+        
+        # Test 1: Wrong current password
+        wrong_password_data = {
+            "current_password": "WrongPassword123!",
+            "new_password": "NewPassword123!"
+        }
+        
+        success, response = self.run_test(
+            "Password Change - Wrong Current Password",
+            "POST",
+            "auth/change-password",
+            400,
+            data=wrong_password_data
+        )
+        
+        if success:
+            # Check if error message is correct
+            try:
+                error_response = requests.post(
+                    f"{self.api_url}/auth/change-password",
+                    json=wrong_password_data,
+                    headers={'Authorization': f'Bearer {self.token}', 'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                if error_response.status_code == 400:
+                    error_data = error_response.json()
+                    if error_data.get('detail') == "Mevcut şifre yanlış":
+                        self.log_test("Password Change - Correct Error Message", True)
+                    else:
+                        self.log_test("Password Change - Correct Error Message", False, f"Expected 'Mevcut şifre yanlış', got '{error_data.get('detail')}'")
+            except Exception as e:
+                self.log_test("Password Change - Error Message Check", False, f"Error: {str(e)}")
+        
+        # Test 2: Correct current password
+        correct_password_data = {
+            "current_password": "Test123!",
+            "new_password": "NewTestPassword123!"
+        }
+        
+        success, response = self.run_test(
+            "Password Change - Correct Current Password",
+            "POST",
+            "auth/change-password",
+            200,
+            data=correct_password_data
+        )
+        
+        if success:
+            # Try to login with new password to verify change
+            new_login_data = {
+                "email": "regulartest@test.com",
+                "password": "NewTestPassword123!"
+            }
+            
+            success_new_login, response_new_login = self.run_test(
+                "Login with New Password",
+                "POST",
+                "auth/login",
+                200,
+                data=new_login_data
+            )
+            
+            if success_new_login:
+                # Change password back to original
+                change_back_data = {
+                    "current_password": "NewTestPassword123!",
+                    "new_password": "Test123!"
+                }
+                
+                # Update token to new one
+                self.token = response_new_login['token']
+                
+                self.run_test(
+                    "Change Password Back to Original",
+                    "POST",
+                    "auth/change-password",
+                    200,
+                    data=change_back_data
+                )
+        
+        # Restore original token
+        self.token = original_token
+        
+        return success
+
+    def test_account_deletion_request(self, regular_token):
+        """Test account deletion request functionality"""
+        # Save current token
+        original_token = self.token
+        
+        # Test with regular user token
+        self.token = regular_token
+        
+        # Test 1: Create deletion request with reason
+        deletion_data = {
+            "reason": "Test deletion request - automated testing"
+        }
+        
+        success, response = self.run_test(
+            "Account Deletion Request - With Reason",
+            "POST",
+            "auth/request-deletion",
+            200,
+            data=deletion_data
+        )
+        
+        if success:
+            # Test 2: Try to create another request (should fail)
+            success_duplicate, response_duplicate = self.run_test(
+                "Account Deletion Request - Duplicate (Should Fail)",
+                "POST",
+                "auth/request-deletion",
+                400,
+                data=deletion_data
+            )
+            
+            if success_duplicate:
+                # Check error message
+                try:
+                    error_response = requests.post(
+                        f"{self.api_url}/auth/request-deletion",
+                        json=deletion_data,
+                        headers={'Authorization': f'Bearer {self.token}', 'Content-Type': 'application/json'},
+                        timeout=10
+                    )
+                    if error_response.status_code == 400:
+                        error_data = error_response.json()
+                        if error_data.get('detail') == "Zaten bekleyen bir silme talebiniz var":
+                            self.log_test("Deletion Request - Correct Duplicate Error", True)
+                        else:
+                            self.log_test("Deletion Request - Correct Duplicate Error", False, f"Expected 'Zaten bekleyen bir silme talebiniz var', got '{error_data.get('detail')}'")
+                except Exception as e:
+                    self.log_test("Deletion Request - Duplicate Error Check", False, f"Error: {str(e)}")
+        
+        # Test 3: Create deletion request without reason
+        deletion_no_reason = {}
+        
+        success_no_reason, response_no_reason = self.run_test(
+            "Account Deletion Request - No Reason",
+            "POST",
+            "auth/request-deletion",
+            200,
+            data=deletion_no_reason
+        )
+        
+        # Restore original token
+        self.token = original_token
+        
+        return success
+
+    def test_admin_deletion_requests(self, super_admin_token):
+        """Test super admin deletion requests management"""
+        # Save current token
+        original_token = self.token
+        
+        # Test with super admin token
+        self.token = super_admin_token
+        
+        # Test 1: Get deletion requests
+        success, response = self.run_test(
+            "Super Admin - Get Deletion Requests",
+            "GET",
+            "admin/deletion-requests",
+            200
+        )
+        
+        if success:
+            if isinstance(response, list):
+                self.log_test("Deletion Requests Response Format", True)
+                
+                # If there are requests, test reject functionality
+                if len(response) > 0:
+                    request_id = response[0].get('id')
+                    if request_id:
+                        # Test reject deletion request
+                        success_reject, response_reject = self.run_test(
+                            "Super Admin - Reject Deletion Request",
+                            "POST",
+                            f"admin/deletion-requests/{request_id}/reject",
+                            200
+                        )
+                        
+                        if success_reject:
+                            self.log_test("Deletion Request Rejection", True)
+                        else:
+                            self.log_test("Deletion Request Rejection", False, "Failed to reject deletion request")
+            else:
+                self.log_test("Deletion Requests Response Format", False, "Response should be a list")
+                success = False
+        
+        # Test with regular user token (should fail)
+        self.token = original_token
+        success_regular, response_regular = self.run_test(
+            "Regular User - Get Deletion Requests (Should Fail)",
+            "GET",
+            "admin/deletion-requests",
+            403
+        )
+        
+        return success and success_regular
+
+    def test_admin_delete_restaurant(self, super_admin_token):
+        """Test super admin restaurant deletion"""
+        # Save current token
+        original_token = self.token
+        
+        # First create a test restaurant to delete
+        self.token = super_admin_token
+        timestamp = datetime.now().strftime('%H%M%S')
+        restaurant_data = {
+            "name": f"Delete Test Restaurant {timestamp}",
+            "email": f"delete_test_{timestamp}@restaurant.com",
+            "phone": "+90555999888",
+            "password": "DeleteTest123!"
+        }
+        
+        success, response = self.run_test(
+            "Create Restaurant for Deletion Test",
+            "POST",
+            "admin/restaurants",
+            200,
+            data=restaurant_data
+        )
+        
+        if not success:
+            self.token = original_token
+            return False
+        
+        # Get the restaurant ID from the list
+        success_list, response_list = self.run_test(
+            "List Restaurants to Find Test Restaurant",
+            "GET",
+            "admin/restaurants",
+            200
+        )
+        
+        if not success_list:
+            self.token = original_token
+            return False
+        
+        # Find our test restaurant
+        test_restaurant_id = None
+        for restaurant in response_list:
+            if restaurant.get('email') == restaurant_data['email']:
+                test_restaurant_id = restaurant.get('id')
+                break
+        
+        if not test_restaurant_id:
+            self.log_test("Find Test Restaurant for Deletion", False, "Could not find test restaurant")
+            self.token = original_token
+            return False
+        
+        # Test 1: Delete restaurant as super admin
+        success, response = self.run_test(
+            "Super Admin - Delete Restaurant",
+            "DELETE",
+            f"admin/restaurants/{test_restaurant_id}",
+            200
+        )
+        
+        # Test 2: Try to delete super admin (should fail)
+        # First get super admin restaurant ID
+        success_admin_list, response_admin_list = self.run_test(
+            "List Restaurants to Find Super Admin",
+            "GET",
+            "admin/restaurants",
+            200
+        )
+        
+        super_admin_restaurant_id = None
+        if success_admin_list:
+            for restaurant in response_admin_list:
+                if restaurant.get('email') == 'admin@qrmenu.com':
+                    super_admin_restaurant_id = restaurant.get('id')
+                    break
+        
+        if super_admin_restaurant_id:
+            success_admin_delete, response_admin_delete = self.run_test(
+                "Super Admin - Try Delete Super Admin (Should Fail)",
+                "DELETE",
+                f"admin/restaurants/{super_admin_restaurant_id}",
+                400
+            )
+            
+            if success_admin_delete:
+                # Check error message
+                try:
+                    error_response = requests.delete(
+                        f"{self.api_url}/admin/restaurants/{super_admin_restaurant_id}",
+                        headers={'Authorization': f'Bearer {self.token}', 'Content-Type': 'application/json'},
+                        timeout=10
+                    )
+                    if error_response.status_code == 400:
+                        error_data = error_response.json()
+                        if error_data.get('detail') == "Super admin hesabı silinemez":
+                            self.log_test("Super Admin Deletion Prevention", True)
+                        else:
+                            self.log_test("Super Admin Deletion Prevention", False, f"Expected 'Super admin hesabı silinemez', got '{error_data.get('detail')}'")
+                except Exception as e:
+                    self.log_test("Super Admin Deletion Error Check", False, f"Error: {str(e)}")
+        
+        # Test 3: Try to delete restaurant as regular user (should fail)
+        self.token = original_token
+        success_regular, response_regular = self.run_test(
+            "Regular User - Delete Restaurant (Should Fail)",
+            "DELETE",
+            f"admin/restaurants/{test_restaurant_id}",
+            403
+        )
+        
+        return success and success_regular
+
+    def test_subscription_info_fix(self, regular_token):
+        """Test subscription info fix verification"""
+        # Save current token
+        original_token = self.token
+        
+        # Test with regular user token
+        self.token = regular_token
+        
+        success, response = self.run_test(
+            "Subscription Info Fix - Regular User",
+            "GET",
+            "subscription/info",
+            200
+        )
+        
+        if success:
+            subscription_status = response.get('subscription_status')
+            days_remaining = response.get('days_remaining')
+            
+            # Check if subscription_status is "active" and days_remaining is around 364 (not trial days)
+            if subscription_status == 'active':
+                self.log_test("Subscription Status - Active", True)
+                
+                if days_remaining and days_remaining > 300:  # Should be around 364, not 6
+                    self.log_test("Days Remaining - Subscription Days (Not Trial)", True)
+                else:
+                    self.log_test("Days Remaining - Subscription Days (Not Trial)", False, f"Expected >300 days, got {days_remaining}")
+            else:
+                self.log_test("Subscription Status - Active", False, f"Expected 'active', got '{subscription_status}'")
+                success = False
+        
+        # Restore original token
+        self.token = original_token
+        
+        return success
+
     def cleanup_test_data(self, category_id):
         """Clean up test data"""
         if category_id:
