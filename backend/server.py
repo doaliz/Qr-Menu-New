@@ -497,7 +497,19 @@ async def create_restaurant_by_admin(input: SuperAdminRestaurantCreate, restaura
     
     # Create restaurant
     hashed_password = hash_password(input.password)
-    trial_end = datetime.now(timezone.utc) + timedelta(days=TRIAL_DAYS)
+    now = datetime.now(timezone.utc)
+    
+    # Determine subscription based on license_type
+    if input.license_type == 'yearly':
+        # Create with 1 year subscription
+        subscription_status = 'active'
+        trial_end_date = None
+        subscription_end_date = (now + timedelta(days=365)).isoformat()
+    else:
+        # Create with 7 day trial
+        subscription_status = 'trial'
+        trial_end_date = (now + timedelta(days=TRIAL_DAYS)).isoformat()
+        subscription_end_date = None
     
     restaurant_dict = {
         'id': str(uuid.uuid4()),
@@ -508,19 +520,22 @@ async def create_restaurant_by_admin(input: SuperAdminRestaurantCreate, restaura
         'logo_url': None,
         'hero_image_url': None,
         'instagram_url': None,
-        'trial_end_date': trial_end.isoformat(),
-        'subscription_status': 'trial',
-        'subscription_end_date': None,
-        'created_at': datetime.now(timezone.utc).isoformat()
+        'trial_end_date': trial_end_date,
+        'subscription_status': subscription_status,
+        'subscription_end_date': subscription_end_date,
+        'created_at': now.isoformat()
     }
     
     await db.restaurants.insert_one(restaurant_dict)
     
+    license_info = "1 yıllık lisans ile" if input.license_type == 'yearly' else "7 günlük deneme ile"
+    
     return {
-        "message": "İşletme oluşturuldu",
+        "message": f"İşletme oluşturuldu ({license_info})",
         "restaurant_id": restaurant_dict['id'],
         "name": restaurant_dict['name'],
-        "email": restaurant_dict['email']
+        "email": restaurant_dict['email'],
+        "license_type": input.license_type
     }
 
 @api_router.get("/payment-gateway/config")
