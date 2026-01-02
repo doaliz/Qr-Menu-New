@@ -445,7 +445,23 @@ async def list_all_restaurants(restaurant_id: str = Depends(get_current_restaura
         raise HTTPException(status_code=403, detail="Sadece super admin bu işlemi yapabilir")
     
     restaurants = await db.restaurants.find({}, {'_id': 0, 'password': 0}).to_list(1000)
-    return [RestaurantListItem(**r) for r in restaurants]
+    
+    # Migrate old data: Add missing fields for compatibility
+    restaurant_list = []
+    for r in restaurants:
+        # Ensure all required fields exist with defaults
+        if 'subscription_status' not in r:
+            r['subscription_status'] = 'trial'
+        if 'trial_end_date' not in r:
+            r['trial_end_date'] = None
+        if 'subscription_end_date' not in r:
+            r['subscription_end_date'] = None
+        if 'phone' not in r:
+            r['phone'] = None
+        
+        restaurant_list.append(RestaurantListItem(**r))
+    
+    return restaurant_list
 
 @api_router.post("/admin/restaurants")
 async def create_restaurant_by_admin(input: SuperAdminRestaurantCreate, restaurant_id: str = Depends(get_current_restaurant)):
