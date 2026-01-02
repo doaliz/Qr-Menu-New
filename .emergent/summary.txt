@@ -1,0 +1,381 @@
+<analysis>**original_problem_statement:**
+The user wants to build a QR menu management system for cafes and restaurants.
+
+**PRODUCT REQUIREMENTS:**
+- **Core Functionality:** Businesses should be able to create an admin account, build a menu by adding categories and products (with names, descriptions, prices). The menu should be accessible via a QR code and update in real-time.
+- **Admin Panel Features:**
+    - Each business has its own separate admin panel.
+    - **Customization:**
+        - Light and dark theme options for the panel.
+        - Ability to upload a business logo and a hero image for the public menu.
+        - Ability to customize the colors of category and product text/backgrounds, with a bulk update option.
+        - Add a business Instagram link to the public menu.
+    - **Product Management:**
+        - Upload product photos (as files: jpg, jpeg, png), which should appear as squares to the left of the product info on both the admin panel and public menu.
+        - Toggle product availability (on/off for sale) directly from the dashboard product list.
+- **Subscription & Monetization:**
+    - A 7-day trial for new sign-ups.
+    - A single yearly subscription plan is required after the trial.
+    - An online payment system is needed. The user initially requested Stripe but is now asking for a system that can accommodate other Turkish payment providers.
+    - A manual license activation system for the super admin to handle in-person sales.
+- **Super Admin Functionality:**
+    - A super admin role for the system owner.
+    - This super admin should have a private dashboard to:
+        - View a list of all registered businesses (name, email, phone).
+        - Register new businesses manually.
+        - Access the manual license activation feature (which should be hidden from regular business users).
+- **UI/UX:**
+    - The admin panel must be mobile-responsive.
+    - Don't log the user out after they update their profile.
+    - On the public menu, if a logo is present, hide the business name.
+
+**User's preferred language**: Turkish
+
+**what currently exists?**
+A full-stack application (FastAPI + React + MongoDB) that allows restaurant owners to register, log in, and manage their QR menu. The system supports creating categories and menu items with optional image uploads. Users can customize their profile (logo, hero image, Instagram link) and apply custom colors to menu elements. A basic subscription model with a 7-day trial and a yearly plan is in place, with non-functional Stripe integration. The admin panel is mobile-responsive. Implementation of a super admin system has just begun.
+
+**Last working item**:
+- **Last item agent was working:** The agent was in the middle of implementing a Super Admin system. This involves creating a special administrative role that can view all registered businesses, create new business accounts manually, and manage subscriptions, features that should be hidden from regular restaurant owners.
+- **Status:** IN PROGRESS
+- **Agent Testing Done:** N
+- **Which testing method agent to use?** both
+- **User Testing Done:** N
+
+**All Pending/In progress Issue list**:
+- **Issue 1:** Stripe Payment Integration is Broken (P0)
+- **Issue 2:** Manual License page is visible to all users (P1)
+
+**Issues Detail:**
+- **Issue 1:**
+    - **Description:** When a user clicks the Start Subscription button, they are redirected to a blank white screen instead of the Stripe checkout page. This is a critical blocker for monetization.
+    - **Attempted fixes:** The agent added a  block, console logging, and a  to the redirection logic in . These fixes were not effective as the user reported the issue persists.
+    - **Next debug checklist:**
+        1.  In , find the  endpoint. Log the generated  from Stripe before returning it to confirm it's a valid URL.
+        2.  Check the backend logs for any errors during the Stripe API call: ==> /var/log/supervisor/backend.err.log <==
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [10124] using WatchFiles
+INFO:     Started server process [10126]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+2026-01-01 19:20:52,339 - stripe - INFO - message='Request to Stripe api' method=post url=https://integrations.emergentagent.com/stripe/v1/checkout/sessions
+2026-01-01 19:20:52,780 - stripe - INFO - message='Stripe API response' path=https://integrations.emergentagent.com/stripe/v1/checkout/sessions response_code=200
+2026-01-01 19:22:14,121 - stripe - INFO - message='Request to Stripe api' method=post url=https://integrations.emergentagent.com/stripe/v1/checkout/sessions
+2026-01-01 19:22:14,486 - stripe - INFO - message='Stripe API response' path=https://integrations.emergentagent.com/stripe/v1/checkout/sessions response_code=200
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [48] using WatchFiles
+INFO:     Started server process [86]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+2026-01-02 05:39:03,443 - stripe - INFO - message='Request to Stripe api' method=post url=https://integrations.emergentagent.com/stripe/v1/checkout/sessions
+2026-01-02 05:39:03,902 - stripe - INFO - message='Stripe API response' path=https://integrations.emergentagent.com/stripe/v1/checkout/sessions response_code=200
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [86]
+INFO:     Started server process [263]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [263]
+INFO:     Started server process [279]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [279]
+INFO:     Stopping reloader process [48]
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [434] using WatchFiles
+INFO:     Started server process [436]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+2026-01-02 05:44:42,669 - stripe - INFO - message='Request to Stripe api' method=post url=https://integrations.emergentagent.com/stripe/v1/checkout/sessions
+2026-01-02 05:44:43,131 - stripe - INFO - message='Stripe API response' path=https://integrations.emergentagent.com/stripe/v1/checkout/sessions response_code=200
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [436]
+INFO:     Started server process [689]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [689]
+INFO:     Started server process [709]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [709]
+INFO:     Started server process [743]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [743]
+INFO:     Started server process [791]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [791]
+INFO:     Started server process [811]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [811]
+INFO:     Started server process [845]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [47] using WatchFiles
+INFO:     Started server process [85]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+
+==> /var/log/supervisor/backend.out.log <==
+INFO:     10.64.141.75:34764 - "GET /api/menu-items HTTP/1.1" 200 OK
+INFO:     10.64.141.76:60770 - "GET /api/subscription/info HTTP/1.1" 200 OK
+INFO:     10.64.141.76:60770 - "GET /api/subscription/info HTTP/1.1" 200 OK
+INFO:     10.64.133.143:47226 - "GET /api/subscription/info HTTP/1.1" 200 OK
+INFO:     10.64.141.73:45822 - "GET /api/subscription/info HTTP/1.1" 200 OK
+INFO:     10.64.133.160:49160 - "GET /api/subscription/info HTTP/1.1" 200 OK
+INFO:     10.64.141.75:33008 - "POST /api/payments/checkout HTTP/1.1" 200 OK
+INFO:     10.64.141.76:46034 - "GET /api/subscription/info HTTP/1.1" 200 OK
+INFO:     10.64.141.76:46034 - "GET /api/subscription/info HTTP/1.1" 200 OK
+INFO:     10.64.133.143:43512 - "GET /api/menu-items HTTP/1.1" 200 OK
+INFO:     10.64.133.160:36586 - "GET /api/subscription/info HTTP/1.1" 200 OK
+INFO:     10.64.141.73:60628 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     10.64.141.75:43774 - "GET /api/menu-items HTTP/1.1" 200 OK
+INFO:     10.64.141.73:60628 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     10.64.141.75:43774 - "GET /api/subscription/info HTTP/1.1" 200 OK
+INFO:     10.64.133.143:43512 - "GET /api/subscription/info HTTP/1.1" 200 OK
+INFO:     10.64.141.76:45444 - "GET /api/subscription/info HTTP/1.1" 200 OK
+INFO:     10.64.141.75:33112 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.64.141.73:40026 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.64.128.53:47550 - "GET /api/menu/public/4a31695a-9a3b-4461-b52c-99030c86cdbc HTTP/1.1" 200 OK
+INFO:     10.64.128.8:39798 - "GET /api/menu/public/4a31695a-9a3b-4461-b52c-99030c86cdbc HTTP/1.1" 200 OK
+INFO:     10.64.128.53:57884 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.64.130.160:51808 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.64.130.161:44030 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     10.64.130.167:45998 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.64.130.166:33628 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     10.64.130.167:45998 - "GET /api/subscription/info HTTP/1.1" 200 OK
+INFO:     10.64.130.160:58444 - "GET /api/menu-items HTTP/1.1" 200 OK
+INFO:     10.64.128.53:57896 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     10.64.130.160:58446 - "GET /api/subscription/info HTTP/1.1" 200 OK
+INFO:     10.64.130.160:58446 - "GET /api/menu-items HTTP/1.1" 200 OK
+INFO:     10.64.130.161:44030 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     10.64.128.53:57896 - "GET /api/subscription/info HTTP/1.1" 200 OK
+INFO:     10.64.130.161:44030 - "GET /api/menu-items HTTP/1.1" 200 OK
+INFO:     10.64.130.160:58444 - "GET /api/subscription/info HTTP/1.1" 200 OK
+INFO:     10.64.130.161:44030 - "GET /api/subscription/info HTTP/1.1" 200 OK
+INFO:     10.64.128.53:46764 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.64.128.6:54672 - "GET /api/menu/public/4a31695a-9a3b-4461-b52c-99030c86cdbc HTTP/1.1" 200 OK
+INFO:     10.64.131.73:35546 - "GET /api/subscription/info HTTP/1.1" 200 OK
+INFO:     10.64.131.76:50990 - "GET /api/subscription/info HTTP/1.1" 200 OK
+INFO:     10.64.131.73:35546 - "POST /api/payments/checkout HTTP/1.1" 200 OK
+INFO:     10.64.131.73:36980 - "OPTIONS /api/auth/login HTTP/1.1" 200 OK
+INFO:     10.64.131.76:38362 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     10.64.131.73:36980 - "OPTIONS /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.64.131.76:38362 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.64.131.73:36980 - "OPTIONS /api/categories HTTP/1.1" 200 OK
+INFO:     10.64.131.73:36996 - "OPTIONS /api/subscription/info HTTP/1.1" 200 OK
+INFO:     10.64.131.73:36988 - "OPTIONS /api/menu-items HTTP/1.1" 200 OK
+INFO:     10.64.131.73:37012 - "OPTIONS /api/menu-items HTTP/1.1" 200 OK
+INFO:     10.64.131.76:38364 - "OPTIONS /api/subscription/info HTTP/1.1" 200 OK
+INFO:     10.64.131.73:36996 - "OPTIONS /api/categories HTTP/1.1" 200 OK
+INFO:     10.64.131.76:38364 - "GET /api/menu-items HTTP/1.1" 200 OK
+INFO:     10.64.131.76:38380 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.131.76:38380 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.131.73:37012 - "OPTIONS /api/categories HTTP/1.1" 200 OK
+INFO:     10.64.131.76:38362 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     10.64.131.73:37012 - "GET /api/menu-items HTTP/1.1" 200 OK
+INFO:     10.64.131.73:36988 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.131.73:36988 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     10.64.131.73:37012 - "GET /api/menu-items HTTP/1.1" 200 OK
+INFO:     10.64.131.76:38380 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.131.76:38380 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.131.76:38364 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     10.64.131.76:38380 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.131.73:37012 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.131.76:40438 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.64.131.73:49970 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.64.131.73:49970 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.131.76:40438 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.131.76:40438 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.128.6:33010 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.64.131.73:49984 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.64.130.167:35954 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     10.64.130.167:35954 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     10.64.131.73:46784 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.131.76:36494 - "GET /api/menu-items HTTP/1.1" 200 OK
+INFO:     10.64.131.76:36510 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     10.64.131.73:46784 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.128.53:60946 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     10.64.130.165:35900 - "GET /api/menu-items HTTP/1.1" 200 OK
+INFO:     10.64.128.6:49626 - "GET /api/menu-items HTTP/1.1" 200 OK
+INFO:     10.64.130.166:55050 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     10.64.130.167:35954 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.128.8:43036 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.131.73:46784 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.128.6:49626 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.128.53:60960 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.131.76:44186 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     10.64.130.160:44304 - "GET /api/menu-items HTTP/1.1" 200 OK
+INFO:     10.64.131.73:45694 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.128.53:51658 - "GET /api/categories HTTP/1.1" 200 OK
+INFO:     10.64.130.166:50214 - "GET /api/menu-items HTTP/1.1" 200 OK
+INFO:     10.64.131.73:45694 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.130.161:54448 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.131.76:44186 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.130.161:38366 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.131.73:41532 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
+INFO:     10.64.128.6:47184 - "POST /api/payments/checkout HTTP/1.1" 200 OK
+INFO:     10.64.131.76:37946 - "GET /api/menu/public/4a31695a-9a3b-4461-b52c-99030c86cdbc HTTP/1.1" 200 OK
+INFO:     10.64.131.73:52590 - "GET /api/menu/public/4a31695a-9a3b-4461-b52c-99030c86cdbc HTTP/1.1" 200 OK.
+        3.  In , inside the  function, add  to inspect the full response from the backend API call.
+        4.  Verify that the  in  is being loaded correctly by the application.
+    - **Why fix this issue and what will be achieved with the fix?** Fixing this will make the primary monetization feature of the application functional, allowing users to purchase subscriptions.
+    - **Status:** IN PROGRESS
+    - **Is recurring issue?** Y
+    - **Should Test frontend/backend/both after fix?** both
+    - **Blocked on other issue:** None
+
+- **Issue 2:**
+    - **Description:** The Manual Subscription feature, intended only for the super admin, is currently accessible to all logged-in users.
+    - **Attempted fixes:** The agent has started creating the super admin backend logic but has not yet implemented the frontend logic to hide the button/page.
+    - **Next debug checklist:**
+        1.  In , ensure the user object returned after login includes the  flag.
+        2.  In , wrap the  to  in a conditional render that checks .
+        3.  In , protect the  route so it's only accessible to super admins, redirecting others if they try to access the URL directly.
+    - **Why fix this issue and what will be achieved with the fix?** This will secure the administrative functionality and prevent regular users from accessing features not intended for them.
+    - **Status:** NOT STARTED
+    - **Is recurring issue?** N
+    - **Should Test frontend/backend/both after fix?** frontend
+    - **Blocked on other issue:** In progress Task 1 (Complete Super Admin feature)
+
+**In progress Task List**:
+- **Task 1:** Complete Super Admin feature (P0)
+    - **Where to resume:** The agent has added  to the  model and  to the  file. The next steps are:
+        1.  Finish coding the super admin API endpoints in : one to list all restaurants () and another to register a new business ().
+        2.  Create a new frontend page for the super admin dashboard.
+        3.  Implement the UI to list all businesses and a form to add a new business.
+    - **What will be achieved with this?** The system owner will have a dedicated panel to manage all client accounts, fulfilling a key user requirement.
+    - **Status:** IN PROGRESS
+    - **Should Test frontend/backend/both after fix?** both
+    - **Blocked on something:** None
+
+**Upcoming and Future Tasks**
+- **Upcoming Tasks:**
+    - **Task 1 (P1):** Implement a Pluggable Payment Provider System. The user wants to use Turkish payment gateways instead of just Stripe. This will require refactoring the backend payment logic to be more abstract, potentially reading provider details (API keys, endpoints) from a configuration.
+    - **Task 2 (P2):** Build the Super Admin Frontend UI. After the backend endpoints are ready, a new section or page needs to be created in the frontend that is only visible to the super admin for managing businesses.
+
+**Completed work in this session**
+- **Feature:** QR Menu CRUD (Create, Read, Update, Delete for categories and products).
+- **Feature:** User Authentication (Register/Login for restaurant owners).
+- **Feature:** Product Image Upload (JPG, PNG, JPEG).
+- **Feature:** Product Availability Toggle (on/off for sale).
+- **Feature:** Profile Management (update restaurant name, logo, hero image, Instagram link).
+- **Feature:** Menu Color Customization (for individual items/categories and in bulk).
+- **Feature:** Mobile Responsive Admin Panel.
+- **Feature:** Subscription Model (7-day trial, yearly plan concept).
+- **Fix:** Data loading issue for existing users after subscription fields were added.
+- **Fix:** Public menu layout consistency with admin panel dashboard.
+- **Fix:** Hero image deletion functionality.
+- **Feature:** Manual Subscription creation page (backend and frontend structure).
+
+**Earlier issues found/mentioned but not fixed**
+- **Issue 1:** Stripe payment integration has been reported as non-functional (white screen issue) multiple times and is still not resolved.
+
+**Code Architecture**
+
+
+**Key Technical Concepts**
+- **Backend:** FastAPI, MongoDB (using ), JWT for authentication.
+- **Frontend:** React,  for API calls, TailwindCSS for styling,  for icons.
+- **Integrations:**  for Stripe (currently non-functional).
+- **Deployment:** Services are managed by .
+
+**key DB schema**
+- **restaurants:** 
+- **categories:** 
+- **menu_items:** 
+
+**changes in tech stack**
+-  library was added for Stripe integration.
+
+**All files of reference**
+- : Contains all backend logic, API endpoints, and database models. It's the most frequently modified file.
+- : The main page for restaurant owners, containing menu and product management logic.
+- : Handles profile updates and bulk color changes.
+- : Manages the subscription and payment process.
+- : Renders the public-facing QR menu.
+- : The new page for manual license activation.
+- : Contains critical credentials, including the new .
+- : Manages authentication state on the frontend.
+
+**key api endpoints**
+- , 
+-  (GET, PUT)
+- ,  (CRUD)
+- ,  (CRUD)
+-  (PATCH)
+-  (GET)
+-  (POST)
+-  (POST)
+- **(In Progress):**  (GET),  (POST)
+- **(In Progress):**  (POST)
+
+**Critical Info for New Agent**
+- The project has pivoted to include a Super Admin layer. You must complete this feature first.
+- The Stripe payment integration is broken and has been a recurring problem. The user is also requesting to support other Turkish payment providers, so a more abstract payment solution should be planned after the immediate bugs are fixed.
+- The new  has been added to . You will need to use this to differentiate between a regular user and the super admin.
+- The next development steps involve finishing the super admin backend endpoints, then creating the corresponding frontend UI, and finally securing the manual subscription page so only the super admin can access it.
+
+**Last 10 User Messages and any pending HUMAN messages**
+10. **User:** The cover photo can't be removed. (COMPLETED - Agent implemented a fix)
+9.  **User:** The Start Subscription button gets stuck on a white screen. Also, I need a way to manually activate licenses for customers. (IN PROGRESS - Agent created a manual activation page and attempted a fix for the white screen)
+8.  **User:** The manual license page should only be for me (super admin), not customers. The payment system is still broken. I want to use other Turkish payment providers. I need a super admin panel to see all registered businesses and add new ones myself. (IN PROGRESS - Agent started building the super admin system)
+7.  **User:** The subscription trial info in the header is missing a button to go to the subscription page. (COMPLETED - Agent added the button)
+6.  **User:** The Settings and Subscription buttons are not visible on mobile. Product images should be square and on the left of the product name. (COMPLETED - Agent fixed mobile UI and updated product card layout)
+5.  **User:** The product image layout is fixed on the admin panel but still wrong on the public menu. (COMPLETED - Agent fixed the public menu layout)
+4.  **User:** The trial/remaining days text is in the header, but the actual Subscription page is missing. (This seems to be a rephrasing of message #7, which was resolved).
+3.  **User:** Subscription info isn't showing in the panel. Subscriptions should be yearly. Add a switch to the product card on the dashboard to toggle availability. (COMPLETED - Agent implemented these UI/UX improvements)
+2.  **User:** Data is not loading. Old menus/images are gone. I want to update colors for all items at once, not one by one. (COMPLETED - Agent fixed data migration and added bulk color update feature)
+1.  **User:** The panel shows a data could not be loaded error. (This is part of the previous message, which was resolved).
+
+**Project Health Check:**
+- **Broken:** The online payment subscription flow is non-functional due to the white screen issue with Stripe checkout.
+
+**3rd Party Integrations**
+- **Stripe (Payments)** — uses  library and requires a User API Key (which is set in the environment).
+
+**Testing status**
+- **Testing agent used after significant changes:** YES
+- **Troubleshoot agent used after agent stuck in loop:** NO
+- **Test files created:** None
+- **Known regressions:** The Stripe payment functionality was reported to work at one point but is now broken.
+
+**What agent forgot to execute**
+- The agent has not yet implemented the frontend logic to hide the Manual Subscription page from regular users, which was a key part of the last user request. This task is pending the completion of the backend super admin logic.</analysis>
