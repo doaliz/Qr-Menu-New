@@ -243,6 +243,21 @@ export default function PublicMenu() {
         <div className="sticky top-[137px] z-10 bg-background/95 backdrop-blur-sm border-b overflow-x-auto">
           <div className="container mx-auto px-4">
             <div className="flex gap-2 py-3">
+              {/* Campaign Category Tab - shown first if campaign items exist */}
+              {showCampaignCategory && (
+                <button
+                  onClick={() => setActiveCategory('campaign')}
+                  className={`px-4 py-2 rounded-full whitespace-nowrap font-medium transition-colors flex items-center gap-2 ${
+                    activeCategory === 'campaign'
+                      ? 'shadow-md bg-orange-500 text-white'
+                      : 'hover:opacity-80 border border-orange-500 text-orange-500'
+                  }`}
+                  data-testid="category-tab-campaign"
+                >
+                  <Megaphone className="h-4 w-4" />
+                  Kampanyalar
+                </button>
+              )}
               {menuData.categories.map((category) => (
                 <button
                   key={category.id}
