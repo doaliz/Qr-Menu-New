@@ -393,10 +393,7 @@ export default function PublicMenu() {
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-bold text-primary" data-testid={`item-price-${item.id}`}>
-                            {item.price} ₺
-                          </span>
+                        <div className="flex items-center justify-between gap-2">
                           <h3 
                             className="text-sm font-semibold truncate" 
                             style={{ color: item.name_color || '#000000' }}
@@ -404,6 +401,9 @@ export default function PublicMenu() {
                           >
                             {item.name}
                           </h3>
+                          <span className="text-sm font-bold text-primary flex-shrink-0" data-testid={`item-price-${item.id}`}>
+                            {item.price} ₺
+                          </span>
                         </div>
                         {item.description && (
                           <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
