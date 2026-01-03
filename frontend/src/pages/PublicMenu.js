@@ -299,12 +299,12 @@ export default function PublicMenu() {
               </button>
             </div>
             {searchResults.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 md:gap-3">
+              <div className="space-y-2">
                 {searchResults.map((item) => (
                   <div
                     key={item.id}
                     onClick={() => setSelectedItem(item)}
-                    className="border rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                    className="flex items-center gap-3 p-2 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.99]"
                     style={{
                       backgroundColor: item.bg_color || '#FFFFFF',
                       borderColor: item.bg_color || 'inherit'
@@ -312,7 +312,7 @@ export default function PublicMenu() {
                     data-testid={`search-result-${item.id}`}
                   >
                     {item.image_url && (
-                      <div className="w-full aspect-square overflow-hidden bg-muted">
+                      <div className="w-[52px] h-[52px] flex-shrink-0 rounded-md overflow-hidden bg-muted">
                         <img
                           src={item.image_url}
                           alt={item.name}
@@ -323,15 +323,15 @@ export default function PublicMenu() {
                         />
                       </div>
                     )}
-                    <div className="p-2">
-                      <p className="text-xs text-muted-foreground mb-0.5">{item.categoryName}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-muted-foreground">{item.categoryName}</p>
                       <h3 
-                        className="text-sm font-semibold line-clamp-2" 
+                        className="text-sm font-semibold truncate" 
                         style={{ color: item.name_color || '#000000' }}
                       >
                         {item.name}
                       </h3>
-                      <span className="text-sm font-bold text-primary mt-1 block">
+                      <span className="text-sm font-bold text-primary">
                         {item.price} ₺
                       </span>
                     </div>
