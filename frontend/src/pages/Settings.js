@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -8,8 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
-import { ArrowLeft, Upload, Trash2, Loader2, Lock, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Upload, Trash2, Loader2, Lock, AlertTriangle, Megaphone } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -53,7 +54,35 @@ export default function Settings() {
   const [deleteReason, setDeleteReason] = useState('');
   const [requestingDeletion, setRequestingDeletion] = useState(false);
 
+  // Campaign
+  const [campaign, setCampaign] = useState(null);
+  const [campaignTitle, setCampaignTitle] = useState('');
+  const [campaignDescription, setCampaignDescription] = useState('');
+  const [campaignImageUrl, setCampaignImageUrl] = useState('');
+  const [campaignActive, setCampaignActive] = useState(true);
+  const [savingCampaign, setSavingCampaign] = useState(false);
+  const [uploadingCampaignImage, setUploadingCampaignImage] = useState(false);
+
   const headers = { Authorization: `Bearer ${token}` };
+
+  // Fetch campaign on load
+  useEffect(() => {
+    const fetchCampaign = async () => {
+      try {
+        const response = await axios.get(`${API}/campaign`, { headers });
+        if (response.data) {
+          setCampaign(response.data);
+          setCampaignTitle(response.data.title || '');
+          setCampaignDescription(response.data.description || '');
+          setCampaignImageUrl(response.data.image_url || '');
+          setCampaignActive(response.data.is_active !== false);
+        }
+      } catch (error) {
+        // No campaign exists, that's fine
+      }
+    };
+    fetchCampaign();
+  }, []);
 
   const handleLogoUpload = async (e) => {
     const file = e.target.files?.[0];
