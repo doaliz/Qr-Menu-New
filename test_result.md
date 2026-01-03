@@ -554,6 +554,9 @@ backend:
       - working: true
         agent: "main"
         comment: "✅ Tested via curl - POST /api/campaign creates campaign, GET /api/campaign returns campaign data, DELETE /api/campaign removes campaign. All endpoints working correctly."
+      - working: true
+        agent: "testing"
+        comment: "✅ COMPREHENSIVE TESTING PASSED - Campaign CRUD API fully functional. GET /api/campaign returns existing campaign with title 'Yaz Kampanyası'. POST /api/campaign creates/updates campaigns correctly. DELETE /api/campaign removes campaigns properly. All response formats correct."
 
   - task: "Menu Items with Campaign Fields"
     implemented: true
@@ -566,6 +569,9 @@ backend:
       - working: true
         agent: "main"
         comment: "✅ Fixed missing is_campaign and campaign_only fields in create_menu_item endpoint. Now items can be created with campaign settings correctly saved to database."
+      - working: true
+        agent: "testing"
+        comment: "✅ COMPREHENSIVE TESTING PASSED - Menu items with campaign fields working perfectly. POST /api/menu-items with is_campaign=true, campaign_only=false saves fields correctly. POST /api/menu-items with is_campaign=true, campaign_only=true saves fields correctly. GET /api/menu-items returns campaign fields properly."
 
   - task: "Public Menu with Campaign Data"
     implemented: true
@@ -578,6 +584,9 @@ backend:
       - working: true
         agent: "main"
         comment: "✅ GET /api/menu/public/{restaurant_id} returns campaign info, campaign_items array, and correctly filters campaign_only items from regular categories."
+      - working: true
+        agent: "testing"
+        comment: "✅ COMPREHENSIVE TESTING PASSED - Public menu API working perfectly. GET /api/menu/public/{restaurant_id} returns: campaign object with title, description, image_url, is_active; campaign_items array with items where is_campaign=true; categories with items where campaign_only=true items are excluded. Specific restaurant 005267f6-9a4e-4e11-ba84-22322d1e0e25 verified with existing 'Yaz Kampanyası' campaign."
 
 frontend:
   - task: "Public Menu - Campaign Popup"
