@@ -179,6 +179,68 @@ export default function Settings() {
     }
   };
 
+  const handleCampaignImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Dosya boyutu 5MB\'dan küçük olmalı');
+      return;
+    }
+
+    setUploadingCampaignImage(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await axios.post(`${API}/upload-image`, formData, {
+        headers: { ...headers, 'Content-Type': 'multipart/form-data' }
+      });
+      setCampaignImageUrl(response.data.image_url);
+      toast.success('Kampanya görseli yüklendi');
+    } catch (error) {
+      toast.error('Görsel yüklenirken hata oluştu');
+    } finally {
+      setUploadingCampaignImage(false);
+    }
+  };
+
+  const handleSaveCampaign = async () => {
+    if (!campaignTitle.trim()) {
+      toast.error('Kampanya başlığı gerekli');
+      return;
+    }
+
+    setSavingCampaign(true);
+    try {
+      await axios.post(`${API}/campaign`, {
+        title: campaignTitle,
+        description: campaignDescription || null,
+        image_url: campaignImageUrl || null,
+        is_active: campaignActive
+      }, { headers });
+      
+      toast.success('Kampanya kaydedildi');
+    } catch (error) {
+      toast.error('Kampanya kaydedilirken hata oluştu');
+    } finally {
+      setSavingCampaign(false);
+    }
+  };
+
+  const handleDeleteCampaign = async () => {
+    try {
+      await axios.delete(`${API}/campaign`, { headers });
+      setCampaign(null);
+      setCampaignTitle('');
+      setCampaignDescription('');
+      setCampaignImageUrl('');
+      setCampaignActive(true);
+      toast.success('Kampanya silindi');
+    } catch (error) {
+      toast.error('Kampanya silinirken hata oluştu');
+    }
+  };
+
   const handleBulkColorUpdate = async (target) => {
     setUpdatingColors(true);
     try {
