@@ -659,7 +659,7 @@ export default function Settings() {
             </div>
 
             {/* Account Deletion Section */}
-            <div className="border-t pt-6">
+            <div>
               <h3 className="text-xl font-semibold mb-2 text-destructive">Tehlikeli Bölge</h3>
               <p className="text-sm text-muted-foreground mb-4">
                 Hesabınızı silmek istiyorsanız talep gönderebilirsiniz. Bu işlem geri alınamaz.
