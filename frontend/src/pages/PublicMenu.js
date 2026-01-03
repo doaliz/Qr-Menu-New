@@ -283,12 +283,12 @@ export default function PublicMenu() {
         </div>
       )}
 
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-4">
         {/* Search Results */}
         {showSearchResults ? (
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-base font-semibold">
                 "{searchQuery}" için {searchResults.length} sonuç
               </h2>
               <button 
@@ -299,49 +299,41 @@ export default function PublicMenu() {
               </button>
             </div>
             {searchResults.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 md:gap-3">
                 {searchResults.map((item) => (
                   <div
                     key={item.id}
-                    className="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                    onClick={() => setSelectedItem(item)}
+                    className="border rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
                     style={{
                       backgroundColor: item.bg_color || '#FFFFFF',
                       borderColor: item.bg_color || 'inherit'
                     }}
                     data-testid={`search-result-${item.id}`}
                   >
-                    <div className="flex items-start gap-4 p-4">
-                      {item.image_url && (
-                        <div className="w-24 h-24 md:w-28 md:h-28 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
-                          <img
-                            src={item.image_url}
-                            alt={item.name}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              e.target.parentElement.style.display = 'none';
-                            }}
-                          />
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs text-muted-foreground mb-1">{item.categoryName}</p>
-                        <div className="flex items-start justify-between gap-2">
-                          <h3 
-                            className="text-lg md:text-xl font-semibold" 
-                            style={{ color: item.name_color || '#000000' }}
-                          >
-                            {item.name}
-                          </h3>
-                          <span className="text-lg md:text-xl font-bold text-primary whitespace-nowrap">
-                            {item.price} ₺
-                          </span>
-                        </div>
-                        {item.description && (
-                          <p className="text-sm md:text-base text-muted-foreground mt-2">
-                            {item.description}
-                          </p>
-                        )}
+                    {item.image_url && (
+                      <div className="w-full aspect-square overflow-hidden bg-muted">
+                        <img
+                          src={item.image_url}
+                          alt={item.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.parentElement.style.display = 'none';
+                          }}
+                        />
                       </div>
+                    )}
+                    <div className="p-2">
+                      <p className="text-xs text-muted-foreground mb-0.5">{item.categoryName}</p>
+                      <h3 
+                        className="text-sm font-semibold line-clamp-2" 
+                        style={{ color: item.name_color || '#000000' }}
+                      >
+                        {item.name}
+                      </h3>
+                      <span className="text-sm font-bold text-primary mt-1 block">
+                        {item.price} ₺
+                      </span>
                     </div>
                   </div>
                 ))}
