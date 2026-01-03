@@ -40,6 +40,7 @@ export default function Dashboard() {
   const [itemForm, setItemForm] = useState({ name: '', description: '', price: '', category_id: '', image_url: '', is_available: true, is_campaign: false, campaign_only: false, name_color: '#000000', bg_color: '#FFFFFF' });
   const [editingItem, setEditingItem] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [productSearch, setProductSearch] = useState('');
 
   const headers = { Authorization: `Bearer ${token}` };
 
