@@ -639,6 +639,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "Code verified in Dashboard.js - 'Kampanyalı Ürün' and 'Sadece Kampanya Kategorisinde Göster' checkboxes exist in item form. Needs UI testing to confirm visibility and functionality."
+      - working: "NA"
+        agent: "testing"
+        comment: "BACKEND TESTING COMPLETED - Cannot test frontend UI components. All backend campaign APIs are working perfectly. Frontend UI testing required for dashboard campaign checkboxes."
 
 metadata:
   created_by: "main_agent"
