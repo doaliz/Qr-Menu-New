@@ -925,9 +925,16 @@ async def get_public_menu(restaurant_id: str):
         'is_available': {'$ne': False}
     }, {'_id': 0}).to_list(1000)
     
+    # Get campaign info
+    campaign = await db.campaigns.find_one({'restaurant_id': restaurant_id, 'is_active': True}, {'_id': 0})
+    
+    # Separate campaign items
+    campaign_items = [item for item in menu_items if item.get('is_campaign', False)]
+    
     categories_with_items = []
     for category in categories:
-        items = [item for item in menu_items if item['category_id'] == category['id']]
+        # Filter out campaign_only items from regular categories
+        items = [item for item in menu_items if item['category_id'] == category['id'] and not item.get('campaign_only', False)]
         categories_with_items.append({
             **category,
             'items': items
@@ -935,7 +942,9 @@ async def get_public_menu(restaurant_id: str):
     
     return {
         'restaurant': restaurant,
-        'categories': categories_with_items
+        'categories': categories_with_items,
+        'campaign': campaign,
+        'campaign_items': campaign_items
     }
 
 # Password change endpoint
