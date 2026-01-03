@@ -882,6 +882,8 @@ async def create_menu_item(input: MenuItemCreate, restaurant_id: str = Depends(g
         'price': input.price,
         'image_url': input.image_url,
         'is_available': input.is_available if input.is_available is not None else True,
+        'is_campaign': input.is_campaign if input.is_campaign is not None else False,
+        'campaign_only': input.campaign_only if input.campaign_only is not None else False,
         'name_color': input.name_color or '#000000',
         'bg_color': input.bg_color or '#FFFFFF',
         'created_at': datetime.now(timezone.utc).isoformat()
