@@ -225,6 +225,8 @@ export default function Dashboard() {
       category_id: item.category_id,
       image_url: item.image_url || '',
       is_available: item.is_available !== undefined ? item.is_available : true,
+      is_campaign: item.is_campaign || false,
+      campaign_only: item.campaign_only || false,
       name_color: item.name_color || '#000000',
       bg_color: item.bg_color || '#FFFFFF'
     });
