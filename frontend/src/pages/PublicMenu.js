@@ -54,6 +54,38 @@ export default function PublicMenu() {
 
   const activeCategoryData = menuData.categories.find(cat => cat.id === activeCategory);
 
+  // Get all items from all categories for search
+  const getAllItems = () => {
+    if (!menuData) return [];
+    return menuData.categories.flatMap(category => 
+      category.items
+        .filter(item => item.is_available !== false)
+        .map(item => ({
+          ...item,
+          categoryName: category.name,
+          categoryId: category.id
+        }))
+    );
+  };
+
+  // Filter items based on search query
+  const getSearchResults = () => {
+    if (!searchQuery.trim()) return [];
+    const query = searchQuery.toLowerCase().trim();
+    return getAllItems().filter(item =>
+      item.name.toLowerCase().includes(query) ||
+      (item.description && item.description.toLowerCase().includes(query))
+    );
+  };
+
+  const searchResults = getSearchResults();
+  const showSearchResults = searchQuery.trim().length > 0;
+
+  const clearSearch = () => {
+    setSearchQuery('');
+    setIsSearching(false);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {menuData.restaurant.hero_image_url && (
