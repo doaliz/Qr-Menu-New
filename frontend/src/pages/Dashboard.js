@@ -727,6 +727,32 @@ export default function Dashboard() {
                 />
                 <Label htmlFor="item-available">Satışta</Label>
               </div>
+              
+              {/* Campaign Options */}
+              <div className="border rounded-lg p-3 space-y-3 bg-orange-50 dark:bg-orange-950/30">
+                <p className="text-sm font-medium text-orange-800 dark:text-orange-200">Kampanya Ayarları</p>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="item-campaign"
+                    checked={itemForm.is_campaign}
+                    onCheckedChange={(checked) => setItemForm({ ...itemForm, is_campaign: checked })}
+                    data-testid="item-campaign-switch"
+                  />
+                  <Label htmlFor="item-campaign" className="text-sm">Kampanyalı Ürün</Label>
+                </div>
+                {itemForm.is_campaign && (
+                  <div className="flex items-center space-x-2 ml-4">
+                    <Switch
+                      id="item-campaign-only"
+                      checked={itemForm.campaign_only}
+                      onCheckedChange={(checked) => setItemForm({ ...itemForm, campaign_only: checked })}
+                      data-testid="item-campaign-only-switch"
+                    />
+                    <Label htmlFor="item-campaign-only" className="text-sm">Sadece Kampanya Kategorisinde Göster</Label>
+                  </div>
+                )}
+              </div>
+              
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="item-name-color">İsim Rengi</Label>
