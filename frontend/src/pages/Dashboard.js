@@ -232,7 +232,7 @@ export default function Dashboard() {
   };
 
   const openCreateItem = (categoryId) => {
-    setItemForm({ name: '', description: '', price: '', category_id: categoryId, image_url: '', is_available: true, name_color: '#000000', bg_color: '#FFFFFF' });
+    setItemForm({ name: '', description: '', price: '', category_id: categoryId, image_url: '', is_available: true, is_campaign: false, campaign_only: false, name_color: '#000000', bg_color: '#FFFFFF' });
     setItemDialogOpen(true);
   };
 
