@@ -304,7 +304,7 @@ export default function PublicMenu() {
                   <div
                     key={item.id}
                     onClick={() => setSelectedItem(item)}
-                    className="flex items-center gap-3 p-2 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.99]"
+                    className="flex items-start gap-3 p-2 border rounded-lg hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.99]"
                     style={{
                       backgroundColor: item.bg_color || '#FFFFFF',
                       borderColor: item.bg_color || 'inherit'
@@ -325,15 +325,22 @@ export default function PublicMenu() {
                     )}
                     <div className="flex-1 min-w-0">
                       <p className="text-xs text-muted-foreground">{item.categoryName}</p>
-                      <h3 
-                        className="text-sm font-semibold truncate" 
-                        style={{ color: item.name_color || '#000000' }}
-                      >
-                        {item.name}
-                      </h3>
-                      <span className="text-sm font-bold text-primary">
-                        {item.price} ₺
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-primary">
+                          {item.price} ₺
+                        </span>
+                        <h3 
+                          className="text-sm font-semibold truncate" 
+                          style={{ color: item.name_color || '#000000' }}
+                        >
+                          {item.name}
+                        </h3>
+                      </div>
+                      {item.description && (
+                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                          {item.description}
+                        </p>
+                      )}
                     </div>
                   </div>
                 ))}
