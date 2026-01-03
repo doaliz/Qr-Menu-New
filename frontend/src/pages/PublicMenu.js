@@ -363,55 +363,47 @@ export default function PublicMenu() {
           /* Category View */
           activeCategoryData && (
             <div>
-              <h2 className="text-2xl font-semibold mb-6 playfair" data-testid="active-category-title">
+              <h2 className="text-xl font-semibold mb-4 playfair" data-testid="active-category-title">
                 {activeCategoryData.name}
               </h2>
               {activeCategoryData.items.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 md:gap-3">
                   {activeCategoryData.items
                     .filter(item => item.is_available !== false)
                     .map((item) => (
                     <div
                       key={item.id}
-                      className="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                      onClick={() => setSelectedItem(item)}
+                      className="border rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
                       style={{
                         backgroundColor: item.bg_color || '#FFFFFF',
                         borderColor: item.bg_color || 'inherit'
                       }}
                       data-testid={`menu-item-${item.id}`}
                     >
-                      <div className="flex items-start gap-4 p-4">
-                        {item.image_url && (
-                          <div className="w-24 h-24 md:w-28 md:h-28 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
-                            <img
-                              src={item.image_url}
-                              alt={item.name}
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                e.target.parentElement.style.display = 'none';
-                              }}
-                            />
-                          </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-2">
-                            <h3 
-                              className="text-lg md:text-xl font-semibold" 
-                              style={{ color: item.name_color || '#000000' }}
-                              data-testid={`item-name-${item.id}`}
-                            >
-                              {item.name}
-                            </h3>
-                            <span className="text-lg md:text-xl font-bold text-primary whitespace-nowrap" data-testid={`item-price-${item.id}`}>
-                              {item.price} ₺
-                            </span>
-                          </div>
-                          {item.description && (
-                            <p className="text-sm md:text-base text-muted-foreground mt-2" data-testid={`item-description-${item.id}`}>
-                              {item.description}
-                            </p>
-                          )}
+                      {item.image_url && (
+                        <div className="w-full aspect-square overflow-hidden bg-muted">
+                          <img
+                            src={item.image_url}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.parentElement.style.display = 'none';
+                            }}
+                          />
                         </div>
+                      )}
+                      <div className="p-2">
+                        <h3 
+                          className="text-sm font-semibold line-clamp-2" 
+                          style={{ color: item.name_color || '#000000' }}
+                          data-testid={`item-name-${item.id}`}
+                        >
+                          {item.name}
+                        </h3>
+                        <span className="text-sm font-bold text-primary mt-1 block" data-testid={`item-price-${item.id}`}>
+                          {item.price} ₺
+                        </span>
                       </div>
                     </div>
                   ))}
@@ -425,6 +417,47 @@ export default function PublicMenu() {
           )
         )}
       </main>
+
+      {/* Item Detail Modal */}
+      <Dialog open={!!selectedItem} onOpenChange={(open) => !open && setSelectedItem(null)}>
+        <DialogContent className="max-w-[95vw] sm:max-w-md p-0 overflow-hidden">
+          {selectedItem?.image_url && (
+            <div className="w-full aspect-video overflow-hidden bg-muted">
+              <img 
+                src={selectedItem.image_url} 
+                alt={selectedItem.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+          <div className="p-4 sm:p-6">
+            <DialogHeader>
+              <DialogTitle 
+                className="text-xl sm:text-2xl"
+                style={{ color: selectedItem?.name_color || '#000000' }}
+              >
+                {selectedItem?.name}
+              </DialogTitle>
+            </DialogHeader>
+            {selectedItem?.description && (
+              <p className="mt-3 text-muted-foreground text-sm sm:text-base">
+                {selectedItem.description}
+              </p>
+            )}
+            <div className="mt-4 flex items-center justify-between">
+              <span className="text-xl sm:text-2xl font-bold text-primary">
+                {selectedItem?.price} ₺
+              </span>
+              <Button 
+                variant="outline"
+                onClick={() => setSelectedItem(null)}
+              >
+                Kapat
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
