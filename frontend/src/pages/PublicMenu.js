@@ -140,31 +140,60 @@ export default function PublicMenu() {
         </div>
       </header>
 
-      <div className="sticky top-[73px] z-10 bg-background/95 backdrop-blur-sm border-b overflow-x-auto">
-        <div className="container mx-auto px-4">
-          <div className="flex gap-2 py-3">
-            {menuData.categories.map((category) => (
+      {/* Search Bar - Always visible above categories */}
+      <div className="sticky top-[73px] z-20 bg-background/95 backdrop-blur-sm border-b">
+        <div className="container mx-auto px-4 py-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Menüde ara..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setIsSearching(true)}
+              className="pl-10 pr-10 h-11 text-base"
+              data-testid="menu-search"
+            />
+            {searchQuery && (
               <button
-                key={category.id}
-                onClick={() => setActiveCategory(category.id)}
-                className={`px-4 py-2 rounded-full whitespace-nowrap font-medium transition-colors ${
-                  activeCategory === category.id
-                    ? 'shadow-md'
-                    : 'hover:opacity-80'
-                }`}
-                style={{
-                  backgroundColor: activeCategory === category.id ? (category.bg_color || '#FFFFFF') : 'transparent',
-                  color: activeCategory === category.id ? (category.name_color || '#000000') : 'inherit',
-                  border: activeCategory === category.id ? 'none' : '1px solid currentColor'
-                }}
-                data-testid={`category-tab-${category.id}`}
+                onClick={clearSearch}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-full"
               >
-                {category.name}
+                <X className="h-4 w-4 text-muted-foreground" />
               </button>
-            ))}
+            )}
           </div>
         </div>
       </div>
+
+      {/* Category Tabs - Hidden when searching */}
+      {!showSearchResults && (
+        <div className="sticky top-[137px] z-10 bg-background/95 backdrop-blur-sm border-b overflow-x-auto">
+          <div className="container mx-auto px-4">
+            <div className="flex gap-2 py-3">
+              {menuData.categories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setActiveCategory(category.id)}
+                  className={`px-4 py-2 rounded-full whitespace-nowrap font-medium transition-colors ${
+                    activeCategory === category.id
+                      ? 'shadow-md'
+                      : 'hover:opacity-80'
+                  }`}
+                  style={{
+                    backgroundColor: activeCategory === category.id ? (category.bg_color || '#FFFFFF') : 'transparent',
+                    color: activeCategory === category.id ? (category.name_color || '#000000') : 'inherit',
+                    border: activeCategory === category.id ? 'none' : '1px solid currentColor'
+                  }}
+                  data-testid={`category-tab-${category.id}`}
+                >
+                  {category.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <main className="container mx-auto px-4 py-8">
         {activeCategoryData && (
