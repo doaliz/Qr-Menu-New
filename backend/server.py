@@ -97,6 +97,8 @@ class MenuItem(BaseModel):
     price: float
     image_url: Optional[str] = None
     is_available: bool = True
+    is_campaign: bool = False
+    campaign_only: bool = False
     name_color: Optional[str] = '#000000'
     bg_color: Optional[str] = '#FFFFFF'
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -108,6 +110,8 @@ class MenuItemCreate(BaseModel):
     price: float
     image_url: Optional[str] = None
     is_available: Optional[bool] = True
+    is_campaign: Optional[bool] = False
+    campaign_only: Optional[bool] = False
     name_color: Optional[str] = '#000000'
     bg_color: Optional[str] = '#FFFFFF'
 
@@ -118,8 +122,32 @@ class MenuItemUpdate(BaseModel):
     category_id: Optional[str] = None
     image_url: Optional[str] = None
     is_available: Optional[bool] = None
+    is_campaign: Optional[bool] = None
+    campaign_only: Optional[bool] = None
     name_color: Optional[str] = None
     bg_color: Optional[str] = None
+
+class Campaign(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str
+    restaurant_id: str
+    title: str
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CampaignCreate(BaseModel):
+    title: str
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+    is_active: Optional[bool] = True
+
+class CampaignUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+    is_active: Optional[bool] = None
 
 class ImageUpload(BaseModel):
     image_data: str
