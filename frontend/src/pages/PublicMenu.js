@@ -130,6 +130,36 @@ export default function PublicMenu() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Campaign Popup */}
+      <Dialog open={showCampaignPopup} onOpenChange={setShowCampaignPopup}>
+        <DialogContent className="max-w-[90vw] md:max-w-md p-0 overflow-hidden">
+          {menuData.campaign?.image_url && (
+            <img 
+              src={menuData.campaign.image_url} 
+              alt={menuData.campaign.title}
+              className="w-full h-48 object-cover"
+            />
+          )}
+          <div className="p-6">
+            <DialogHeader>
+              <DialogTitle className="text-xl flex items-center gap-2">
+                <Megaphone className="h-5 w-5 text-orange-500" />
+                {menuData.campaign?.title}
+              </DialogTitle>
+            </DialogHeader>
+            {menuData.campaign?.description && (
+              <p className="mt-3 text-muted-foreground">{menuData.campaign.description}</p>
+            )}
+            <Button 
+              className="w-full mt-6" 
+              onClick={closeCampaignPopup}
+            >
+              Menüyü Görüntüle
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {menuData.restaurant.hero_image_url && (
         <div className="w-full h-[20vh] overflow-hidden">
           <img
