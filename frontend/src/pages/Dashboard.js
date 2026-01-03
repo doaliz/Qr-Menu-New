@@ -569,7 +569,9 @@ export default function Dashboard() {
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">
                       <CardTitle className="text-lg md:text-xl truncate">{category.name}</CardTitle>
-                      <CardDescription>{items.length} ürün</CardDescription>
+                      <CardDescription>
+                        {productSearch ? `${items.length}/${allItems.length} ürün` : `${items.length} ürün`}
+                      </CardDescription>
                     </div>
                     <div className="flex gap-1 flex-shrink-0">
                       <Button
