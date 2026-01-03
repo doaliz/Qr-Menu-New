@@ -2,9 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useTheme } from '@/contexts/ThemeContext';
-import { Moon, Sun, Search, X } from 'lucide-react';
+import { Moon, Sun, Search, X, Megaphone } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -17,6 +24,8 @@ export default function PublicMenu() {
   const [activeCategory, setActiveCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const [showCampaignPopup, setShowCampaignPopup] = useState(false);
+  const [showCampaignCategory, setShowCampaignCategory] = useState(false);
 
   useEffect(() => {
     fetchMenu();
@@ -26,7 +35,24 @@ export default function PublicMenu() {
     try {
       const response = await axios.get(`${API}/menu/public/${restaurantId}`);
       setMenuData(response.data);
-      if (response.data.categories.length > 0) {
+      
+      // Check if there are campaign items
+      const hasCampaignItems = response.data.campaign_items && response.data.campaign_items.length > 0;
+      setShowCampaignCategory(hasCampaignItems);
+      
+      // Show campaign popup if active
+      if (response.data.campaign && response.data.campaign.is_active) {
+        // Check if popup was shown in this session
+        const popupShown = sessionStorage.getItem(`campaign-popup-${restaurantId}`);
+        if (!popupShown) {
+          setShowCampaignPopup(true);
+        }
+      }
+      
+      // Set initial category - campaign if exists, else first category
+      if (hasCampaignItems) {
+        setActiveCategory('campaign');
+      } else if (response.data.categories.length > 0) {
         setActiveCategory(response.data.categories[0].id);
       }
     } catch (error) {
@@ -34,6 +60,11 @@ export default function PublicMenu() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const closeCampaignPopup = () => {
+    setShowCampaignPopup(false);
+    sessionStorage.setItem(`campaign-popup-${restaurantId}`, 'true');
   };
 
   if (loading) {
