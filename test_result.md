@@ -540,3 +540,149 @@ agent_communication:
       1. Fix SuperAdminRoute component to handle async isSuperAdmin state properly
       2. Fix backend validation errors in list_all_restaurants endpoint
       3. Test admin dashboard functionality once route access is fixed
+# ============== CAMPAIGN FEATURE TESTING ==============
+
+backend:
+  - task: "Campaign CRUD API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "✅ Tested via curl - POST /api/campaign creates campaign, GET /api/campaign returns campaign data, DELETE /api/campaign removes campaign. All endpoints working correctly."
+
+  - task: "Menu Items with Campaign Fields"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "✅ Fixed missing is_campaign and campaign_only fields in create_menu_item endpoint. Now items can be created with campaign settings correctly saved to database."
+
+  - task: "Public Menu with Campaign Data"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "✅ GET /api/menu/public/{restaurant_id} returns campaign info, campaign_items array, and correctly filters campaign_only items from regular categories."
+
+frontend:
+  - task: "Public Menu - Campaign Popup"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/PublicMenu.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "✅ Screenshot verified - Campaign popup shows with image, title 'Yaz Kampanyası', description, and 'Menüyü Görüntüle' button. Popup appears on first visit and can be closed."
+
+  - task: "Public Menu - Kampanyalar Category Tab"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/PublicMenu.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "✅ Fixed - Added Kampanyalar category tab with orange styling and megaphone icon. Tab shows when campaign items exist and displays all is_campaign=true items."
+
+  - task: "Public Menu - Campaign Only Items Filter"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/PublicMenu.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "✅ Verified - Items with campaign_only=true only appear in Kampanyalar category, not in their original category. Items with is_campaign=true but campaign_only=false appear in both."
+
+  - task: "Settings - Campaign Management UI"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/Settings.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "✅ Screenshot verified - Kampanya Yönetimi section shows with Kampanya Aktif toggle, title input, description textarea, image upload with preview. Campaign data loads from API."
+
+  - task: "Dashboard - Campaign Checkboxes in Item Form"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/Dashboard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Code verified in Dashboard.js - 'Kampanyalı Ürün' and 'Sadece Kampanya Kategorisinde Göster' checkboxes exist in item form. Needs UI testing to confirm visibility and functionality."
+
+metadata:
+  created_by: "main_agent"
+  version: "3.0"
+  test_sequence: 3
+  run_ui: true
+
+test_plan:
+  current_focus:
+    - "Dashboard - Campaign Checkboxes in Item Form"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: |
+      CAMPAIGN FEATURE IMPLEMENTATION COMPLETE - NEEDS FINAL UI TESTING
+      
+      WHAT WAS DONE:
+      1. Fixed backend create_menu_item to save is_campaign and campaign_only fields
+      2. Fixed PublicMenu.js to show Kampanyalar category tab
+      
+      VERIFIED WORKING:
+      - Backend: Campaign CRUD API (POST, GET, DELETE /api/campaign)
+      - Backend: Menu items with campaign fields
+      - Backend: Public menu returns campaign data correctly
+      - Frontend: Campaign popup on public menu
+      - Frontend: Kampanyalar category tab with items
+      - Frontend: Campaign only items filtered from regular categories
+      - Frontend: Settings campaign management UI
+      
+      NEEDS TESTING:
+      - Dashboard: Add/Edit item dialog should show "Kampanyalı Ürün" switch
+      - When enabled, "Sadece Kampanya Kategorisinde Göster" option appears
+      
+      TEST CREDENTIALS:
+      - Super Admin: admin@qrmenu.com / Admin123!
+      - Public Menu URL: /menu/005267f6-9a4e-4e11-ba84-22322d1e0e25
+      
+      PLEASE TEST:
+      1. Login as admin@qrmenu.com
+      2. Go to Dashboard
+      3. Click edit on any item or add new item
+      4. Verify "Kampanyalı Ürün" switch exists
+      5. Enable it and verify "Sadece Kampanya Kategorisinde Göster" appears
+      6. Save and verify public menu reflects changes
