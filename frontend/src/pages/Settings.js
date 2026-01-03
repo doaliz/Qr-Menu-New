@@ -447,8 +447,142 @@ export default function Settings() {
                 )}
               </Button>
             </div>
+          </CardContent>
+        </Card>
 
-            <div className="border-t pt-6">
+        {/* Campaign Management Card */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Megaphone className="h-5 w-5 text-orange-500" />
+              Kampanya Yönetimi
+            </CardTitle>
+            <CardDescription>
+              Menünüzde gösterilecek kampanya/duyuru ayarları. Aktif kampanya varsa müşteri menüyü açtığında popup olarak görünür.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-950/30 rounded-lg">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">Kampanya Aktif</span>
+              </div>
+              <Switch
+                checked={campaignActive}
+                onCheckedChange={setCampaignActive}
+                data-testid="campaign-active-switch"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="campaign-title">Kampanya Başlığı *</Label>
+              <Input
+                id="campaign-title"
+                value={campaignTitle}
+                onChange={(e) => setCampaignTitle(e.target.value)}
+                placeholder="Örn: %20 İndirim Fırsatı!"
+                data-testid="campaign-title-input"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="campaign-description">Kampanya Açıklaması (Opsiyonel)</Label>
+              <Textarea
+                id="campaign-description"
+                value={campaignDescription}
+                onChange={(e) => setCampaignDescription(e.target.value)}
+                placeholder="Kampanya detaylarını yazın..."
+                rows={3}
+                data-testid="campaign-description-input"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Kampanya Görseli (Opsiyonel)</Label>
+              <div className="space-y-3">
+                <Input
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png"
+                  onChange={handleCampaignImageUpload}
+                  disabled={uploadingCampaignImage}
+                  data-testid="campaign-image-input"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Popup'ta gösterilecek görsel. Desteklenen formatlar: JPG, JPEG, PNG (Max 5MB)
+                </p>
+                {uploadingCampaignImage && (
+                  <div className="flex items-center gap-2 text-sm text-primary">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Yükleniyor...
+                  </div>
+                )}
+                {campaignImageUrl && (
+                  <div className="relative w-full max-w-md h-40 border rounded-lg overflow-hidden bg-muted">
+                    <img
+                      src={campaignImageUrl}
+                      alt="Kampanya Önizleme"
+                      className="w-full h-full object-cover"
+                    />
+                    <Button
+                      size="icon"
+                      variant="destructive"
+                      className="absolute top-2 right-2 h-8 w-8"
+                      onClick={() => setCampaignImageUrl('')}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex gap-2 flex-wrap">
+              <Button 
+                onClick={handleSaveCampaign} 
+                disabled={savingCampaign || !campaignTitle.trim()}
+                data-testid="save-campaign-button"
+              >
+                {savingCampaign ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Kaydediliyor...
+                  </>
+                ) : (
+                  'Kampanyayı Kaydet'
+                )}
+              </Button>
+              {campaign && (
+                <Button 
+                  variant="destructive" 
+                  onClick={handleDeleteCampaign}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Kampanyayı Sil
+                </Button>
+              )}
+            </div>
+
+            {campaignTitle && (
+              <div className="mt-4 p-4 border rounded-lg bg-muted/50">
+                <p className="text-xs text-muted-foreground mb-2">Önizleme:</p>
+                <div className="bg-background rounded-lg p-4 shadow-sm">
+                  {campaignImageUrl && (
+                    <img src={campaignImageUrl} alt="Preview" className="w-full h-32 object-cover rounded-lg mb-3" />
+                  )}
+                  <h4 className="font-bold text-lg">{campaignTitle}</h4>
+                  {campaignDescription && <p className="text-sm text-muted-foreground mt-1">{campaignDescription}</p>}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Settings Card Continues */}
+        <Card data-testid="settings-card">
+          <CardHeader>
+            <CardTitle>Diğer Ayarlar</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="border-b pb-6">
               <div className="bg-muted p-4 rounded-lg">
                 <h3 className="font-medium mb-2">Hesap Bilgileri</h3>
                 <p className="text-sm text-muted-foreground">
@@ -461,7 +595,7 @@ export default function Settings() {
             </div>
 
             {/* Password Change Section */}
-            <div className="border-t pt-6">
+            <div className="border-b pb-6">
               <h3 className="text-xl font-semibold mb-4">Güvenlik</h3>
               <Dialog open={showPasswordModal} onOpenChange={setShowPasswordModal}>
                 <DialogTrigger asChild>
