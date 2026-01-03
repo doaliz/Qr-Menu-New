@@ -195,17 +195,24 @@ export default function PublicMenu() {
         </div>
       )}
 
-      <main className="container mx-auto px-4 py-8">
-        {activeCategoryData && (
+      <main className="container mx-auto px-4 py-6">
+        {/* Search Results */}
+        {showSearchResults ? (
           <div>
-            <h2 className="text-2xl font-semibold mb-6 playfair" data-testid="active-category-title">
-              {activeCategoryData.name}
-            </h2>
-            {activeCategoryData.items.length > 0 ? (
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">
+                "{searchQuery}" için {searchResults.length} sonuç
+              </h2>
+              <button 
+                onClick={clearSearch}
+                className="text-sm text-primary hover:underline"
+              >
+                Aramayı Temizle
+              </button>
+            </div>
+            {searchResults.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {activeCategoryData.items
-                  .filter(item => item.is_available !== false)
-                  .map((item) => (
+                {searchResults.map((item) => (
                   <div
                     key={item.id}
                     className="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
@@ -213,7 +220,7 @@ export default function PublicMenu() {
                       backgroundColor: item.bg_color || '#FFFFFF',
                       borderColor: item.bg_color || 'inherit'
                     }}
-                    data-testid={`menu-item-${item.id}`}
+                    data-testid={`search-result-${item.id}`}
                   >
                     <div className="flex items-start gap-4 p-4">
                       {item.image_url && (
@@ -229,20 +236,20 @@ export default function PublicMenu() {
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
+                        <p className="text-xs text-muted-foreground mb-1">{item.categoryName}</p>
                         <div className="flex items-start justify-between gap-2">
                           <h3 
                             className="text-lg md:text-xl font-semibold" 
                             style={{ color: item.name_color || '#000000' }}
-                            data-testid={`item-name-${item.id}`}
                           >
                             {item.name}
                           </h3>
-                          <span className="text-lg md:text-xl font-bold text-primary whitespace-nowrap" data-testid={`item-price-${item.id}`}>
+                          <span className="text-lg md:text-xl font-bold text-primary whitespace-nowrap">
                             {item.price} ₺
                           </span>
                         </div>
                         {item.description && (
-                          <p className="text-sm md:text-base text-muted-foreground mt-2" data-testid={`item-description-${item.id}`}>
+                          <p className="text-sm md:text-base text-muted-foreground mt-2">
                             {item.description}
                           </p>
                         )}
@@ -252,11 +259,82 @@ export default function PublicMenu() {
                 ))}
               </div>
             ) : (
-              <p className="text-center text-muted-foreground py-12" data-testid="empty-category">
-                Bu kategoride henüz ürün bulunmamaktadır.
-              </p>
+              <div className="text-center py-12">
+                <Search className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <p className="text-muted-foreground">Aramanızla eşleşen ürün bulunamadı</p>
+                <button 
+                  onClick={clearSearch}
+                  className="mt-4 text-primary hover:underline"
+                >
+                  Tüm menüyü göster
+                </button>
+              </div>
             )}
           </div>
+        ) : (
+          /* Category View */
+          activeCategoryData && (
+            <div>
+              <h2 className="text-2xl font-semibold mb-6 playfair" data-testid="active-category-title">
+                {activeCategoryData.name}
+              </h2>
+              {activeCategoryData.items.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {activeCategoryData.items
+                    .filter(item => item.is_available !== false)
+                    .map((item) => (
+                    <div
+                      key={item.id}
+                      className="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                      style={{
+                        backgroundColor: item.bg_color || '#FFFFFF',
+                        borderColor: item.bg_color || 'inherit'
+                      }}
+                      data-testid={`menu-item-${item.id}`}
+                    >
+                      <div className="flex items-start gap-4 p-4">
+                        {item.image_url && (
+                          <div className="w-24 h-24 md:w-28 md:h-28 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
+                            <img
+                              src={item.image_url}
+                              alt={item.name}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.parentElement.style.display = 'none';
+                              }}
+                            />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <h3 
+                              className="text-lg md:text-xl font-semibold" 
+                              style={{ color: item.name_color || '#000000' }}
+                              data-testid={`item-name-${item.id}`}
+                            >
+                              {item.name}
+                            </h3>
+                            <span className="text-lg md:text-xl font-bold text-primary whitespace-nowrap" data-testid={`item-price-${item.id}`}>
+                              {item.price} ₺
+                            </span>
+                          </div>
+                          {item.description && (
+                            <p className="text-sm md:text-base text-muted-foreground mt-2" data-testid={`item-description-${item.id}`}>
+                              {item.description}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-muted-foreground py-12" data-testid="empty-category">
+                  Bu kategoride henüz ürün bulunmamaktadır.
+                </p>
+              )}
+            </div>
+          )
         )}
       </main>
     </div>
