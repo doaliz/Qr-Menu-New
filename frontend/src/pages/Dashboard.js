@@ -518,9 +518,51 @@ export default function Dashboard() {
           </Dialog>
         </div>
 
+        {/* Product Search */}
+        <div className="mb-4">
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Ürün ara..."
+              value={productSearch}
+              onChange={(e) => setProductSearch(e.target.value)}
+              className="pl-10 pr-10"
+              data-testid="product-search-input"
+            />
+            {productSearch && (
+              <button
+                onClick={() => setProductSearch('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-full"
+              >
+                <X className="h-4 w-4 text-muted-foreground" />
+              </button>
+            )}
+          </div>
+          {productSearch && (
+            <p className="text-sm text-muted-foreground mt-2">
+              "{productSearch}" için {menuItems.filter(item => 
+                item.name.toLowerCase().includes(productSearch.toLowerCase()) ||
+                (item.description && item.description.toLowerCase().includes(productSearch.toLowerCase()))
+              ).length} sonuç bulundu
+            </p>
+          )}
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
           {categories.map((category) => {
-            const items = menuItems.filter(item => item.category_id === category.id);
+            const allItems = menuItems.filter(item => item.category_id === category.id);
+            // Filter items based on search
+            const items = productSearch 
+              ? allItems.filter(item => 
+                  item.name.toLowerCase().includes(productSearch.toLowerCase()) ||
+                  (item.description && item.description.toLowerCase().includes(productSearch.toLowerCase()))
+                )
+              : allItems;
+            
+            // Hide category if search is active and no items match
+            if (productSearch && items.length === 0) return null;
+            
             return (
               <Card key={category.id} className="shadow-sm" data-testid={`category-${category.id}`}>
                 <CardHeader>
