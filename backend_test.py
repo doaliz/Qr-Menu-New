@@ -1649,7 +1649,7 @@ class RestaurantMenuAPITester:
 
     def run_all_tests(self):
         """Run all tests"""
-        print("🚀 Starting Restaurant Menu API Tests - User Management Features Focus")
+        print("🚀 Starting Restaurant Menu API Tests - Campaign Management System Focus")
         print(f"Testing against: {self.base_url}")
         print("=" * 50)
         
@@ -1666,6 +1666,28 @@ class RestaurantMenuAPITester:
         
         # Test invalid auth
         self.test_invalid_auth()
+        
+        # Test CAMPAIGN MANAGEMENT SYSTEM
+        print("\n🔍 Testing CAMPAIGN MANAGEMENT SYSTEM")
+        
+        # Test Campaign CRUD API
+        self.test_campaign_crud_api()
+        
+        # Test CRUD operations first to get category for campaign items
+        category_id = self.test_categories_crud()
+        if category_id:
+            # Test Menu Items with Campaign Fields
+            self.test_menu_items_with_campaign_fields(category_id)
+            
+            # Test regular menu items
+            self.test_menu_items_crud(category_id)
+            self.cleanup_test_data(category_id)
+        
+        # Test Public Menu with Campaign Data
+        self.test_public_menu_with_campaign_data()
+        
+        # Test Specific Restaurant Public Menu (from review request)
+        self.test_specific_restaurant_public_menu()
         
         # Test SUPER ADMIN FEATURES
         print("\n🔍 Testing SUPER ADMIN SYSTEM")
@@ -1684,8 +1706,8 @@ class RestaurantMenuAPITester:
         else:
             print("❌ Super Admin registration/login failed, skipping admin tests")
         
-        # Test NEW USER MANAGEMENT FEATURES
-        print("\n🔍 Testing NEW USER MANAGEMENT FEATURES")
+        # Test USER MANAGEMENT FEATURES
+        print("\n🔍 Testing USER MANAGEMENT FEATURES")
         
         # Test regular user login
         regular_success, regular_token = self.test_regular_user_login()
@@ -1715,23 +1737,19 @@ class RestaurantMenuAPITester:
             print("\n🔍 Testing Admin Restaurant Deletion")
             self.test_admin_delete_restaurant(super_admin_token)
         
-        # Test NEW FEATURES - File Upload
-        print("\n🔍 Testing NEW FEATURE: File Upload Validation")
+        # Test OTHER FEATURES
+        print("\n🔍 Testing OTHER FEATURES")
+        
+        # Test File Upload
         self.test_file_upload_validation()
         
-        # Test CRUD operations with availability features
-        category_id = self.test_categories_crud()
-        if category_id:
-            # Test NEW FEATURES - Product Availability Toggle
-            print("\n🔍 Testing NEW FEATURE: Product Availability Toggle")
-            self.test_product_availability_toggle(category_id)
-            
-            # Test regular menu items
-            self.test_menu_items_crud(category_id)
-            self.cleanup_test_data(category_id)
+        # Test Product Availability Toggle
+        category_id_2 = self.test_categories_crud()
+        if category_id_2:
+            self.test_product_availability_toggle(category_id_2)
+            self.cleanup_test_data(category_id_2)
         
-        # Test NEW FEATURES - Public Menu Filtering
-        print("\n🔍 Testing NEW FEATURE: Public Menu Filtering")
+        # Test Public Menu Filtering
         self.test_public_menu_filtering()
         
         # Test public endpoints
