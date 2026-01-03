@@ -1228,6 +1228,413 @@ class RestaurantMenuAPITester:
         
         return success
 
+    def test_campaign_crud_api(self):
+        """Test Campaign CRUD API operations"""
+        print("\n🔍 Testing CAMPAIGN CRUD API")
+        
+        # Test 1: GET campaign (should return existing campaign or null)
+        success, response = self.run_test(
+            "GET Campaign - Initial State",
+            "GET",
+            "campaign",
+            200
+        )
+        
+        initial_campaign = response if success else None
+        
+        # Test 2: POST campaign - Create/Update campaign
+        campaign_data = {
+            "title": "Test Kampanyası",
+            "description": "Test kampanya açıklaması",
+            "image_url": "https://example.com/campaign.jpg",
+            "is_active": True
+        }
+        
+        success, response = self.run_test(
+            "POST Campaign - Create/Update",
+            "POST",
+            "campaign",
+            200,
+            data=campaign_data
+        )
+        
+        if success:
+            if 'message' in response:
+                self.log_test("Campaign Create/Update Response Format", True)
+            else:
+                self.log_test("Campaign Create/Update Response Format", False, "Missing message in response")
+        
+        # Test 3: GET campaign after creation
+        success, response = self.run_test(
+            "GET Campaign - After Creation",
+            "GET",
+            "campaign",
+            200
+        )
+        
+        if success:
+            if response and response.get('title') == campaign_data['title']:
+                self.log_test("Campaign Data Verification", True)
+            else:
+                self.log_test("Campaign Data Verification", False, "Campaign data doesn't match")
+        
+        # Test 4: PUT campaign - Update existing
+        update_data = {
+            "title": "Updated Test Kampanyası",
+            "is_active": False
+        }
+        
+        success, response = self.run_test(
+            "PUT Campaign - Update Existing",
+            "PUT",
+            "campaign",
+            200,
+            data=update_data
+        )
+        
+        # Test 5: DELETE campaign
+        success, response = self.run_test(
+            "DELETE Campaign",
+            "DELETE",
+            "campaign",
+            200
+        )
+        
+        if success:
+            if 'message' in response:
+                self.log_test("Campaign Delete Response Format", True)
+            else:
+                self.log_test("Campaign Delete Response Format", False, "Missing message in response")
+        
+        # Test 6: GET campaign after deletion (should return null or 404)
+        success, response = self.run_test(
+            "GET Campaign - After Deletion",
+            "GET",
+            "campaign",
+            200
+        )
+        
+        if success and response is None:
+            self.log_test("Campaign Deletion Verification", True)
+        else:
+            self.log_test("Campaign Deletion Verification", False, "Campaign still exists after deletion")
+        
+        return True
+
+    def test_menu_items_with_campaign_fields(self, category_id):
+        """Test Menu Items with Campaign Fields"""
+        print("\n🔍 Testing MENU ITEMS WITH CAMPAIGN FIELDS")
+        
+        # Test 1: Create menu item with is_campaign=true, campaign_only=false
+        item_data_1 = {
+            "category_id": category_id,
+            "name": "Campaign Item - Both Categories",
+            "description": "Item that appears in both campaign and regular category",
+            "price": 25.00,
+            "is_campaign": True,
+            "campaign_only": False
+        }
+        
+        success, response = self.run_test(
+            "Create Menu Item - Campaign Item (Both Categories)",
+            "POST",
+            "menu-items",
+            200,
+            data=item_data_1
+        )
+        
+        item_1_id = None
+        if success:
+            item_1_id = response.get('id')
+            if response.get('is_campaign') == True and response.get('campaign_only') == False:
+                self.log_test("Campaign Fields Verification - Both Categories", True)
+            else:
+                self.log_test("Campaign Fields Verification - Both Categories", False, 
+                             f"Expected is_campaign=True, campaign_only=False, got is_campaign={response.get('is_campaign')}, campaign_only={response.get('campaign_only')}")
+        
+        # Test 2: Create menu item with is_campaign=true, campaign_only=true
+        item_data_2 = {
+            "category_id": category_id,
+            "name": "Campaign Item - Campaign Only",
+            "description": "Item that appears only in campaign category",
+            "price": 30.00,
+            "is_campaign": True,
+            "campaign_only": True
+        }
+        
+        success, response = self.run_test(
+            "Create Menu Item - Campaign Only",
+            "POST",
+            "menu-items",
+            200,
+            data=item_data_2
+        )
+        
+        item_2_id = None
+        if success:
+            item_2_id = response.get('id')
+            if response.get('is_campaign') == True and response.get('campaign_only') == True:
+                self.log_test("Campaign Fields Verification - Campaign Only", True)
+            else:
+                self.log_test("Campaign Fields Verification - Campaign Only", False, 
+                             f"Expected is_campaign=True, campaign_only=True, got is_campaign={response.get('is_campaign')}, campaign_only={response.get('campaign_only')}")
+        
+        # Test 3: GET menu items and verify campaign fields are returned
+        success, response = self.run_test(
+            "GET Menu Items - Campaign Fields Included",
+            "GET",
+            "menu-items",
+            200
+        )
+        
+        if success:
+            campaign_items = [item for item in response if item.get('is_campaign', False)]
+            if len(campaign_items) >= 2:
+                self.log_test("Campaign Items in Menu Items List", True)
+                
+                # Verify specific items
+                item_1_found = any(item.get('id') == item_1_id for item in campaign_items)
+                item_2_found = any(item.get('id') == item_2_id for item in campaign_items)
+                
+                if item_1_found and item_2_found:
+                    self.log_test("Campaign Items Data Integrity", True)
+                else:
+                    self.log_test("Campaign Items Data Integrity", False, "Created campaign items not found in list")
+            else:
+                self.log_test("Campaign Items in Menu Items List", False, f"Expected at least 2 campaign items, found {len(campaign_items)}")
+        
+        # Clean up
+        if item_1_id:
+            self.run_test("Delete Campaign Item 1", "DELETE", f"menu-items/{item_1_id}", 200)
+        if item_2_id:
+            self.run_test("Delete Campaign Item 2", "DELETE", f"menu-items/{item_2_id}", 200)
+        
+        return True
+
+    def test_public_menu_with_campaign_data(self):
+        """Test Public Menu API with Campaign Data"""
+        print("\n🔍 Testing PUBLIC MENU API WITH CAMPAIGN DATA")
+        
+        if not self.restaurant_id:
+            self.log_test("Public Menu Campaign Test", False, "No restaurant ID available")
+            return False
+        
+        # First create a campaign
+        campaign_data = {
+            "title": "Yaz Kampanyası",
+            "description": "Yaz aylarına özel kampanya",
+            "image_url": "https://example.com/summer-campaign.jpg",
+            "is_active": True
+        }
+        
+        success, response = self.run_test(
+            "Create Campaign for Public Menu Test",
+            "POST",
+            "campaign",
+            200,
+            data=campaign_data
+        )
+        
+        if not success:
+            return False
+        
+        # Create a test category
+        category_data = {"name": "Campaign Test Category", "order": 1}
+        success, cat_response = self.run_test(
+            "Create Category for Campaign Test",
+            "POST",
+            "categories",
+            200,
+            data=category_data
+        )
+        
+        if not success:
+            return False
+        
+        category_id = cat_response.get('id')
+        
+        # Create campaign items
+        campaign_item_both = {
+            "category_id": category_id,
+            "name": "Campaign Item Both",
+            "price": 20.00,
+            "is_campaign": True,
+            "campaign_only": False
+        }
+        
+        campaign_item_only = {
+            "category_id": category_id,
+            "name": "Campaign Item Only",
+            "price": 25.00,
+            "is_campaign": True,
+            "campaign_only": True
+        }
+        
+        regular_item = {
+            "category_id": category_id,
+            "name": "Regular Item",
+            "price": 15.00,
+            "is_campaign": False,
+            "campaign_only": False
+        }
+        
+        # Create all items
+        success_1, response_1 = self.run_test("Create Campaign Item Both", "POST", "menu-items", 200, data=campaign_item_both)
+        success_2, response_2 = self.run_test("Create Campaign Item Only", "POST", "menu-items", 200, data=campaign_item_only)
+        success_3, response_3 = self.run_test("Create Regular Item", "POST", "menu-items", 200, data=regular_item)
+        
+        if not (success_1 and success_2 and success_3):
+            return False
+        
+        item_both_id = response_1.get('id')
+        item_only_id = response_2.get('id')
+        regular_item_id = response_3.get('id')
+        
+        # Test public menu API
+        success, response = self.run_test(
+            "GET Public Menu with Campaign Data",
+            "GET",
+            f"menu/public/{self.restaurant_id}",
+            200
+        )
+        
+        if success:
+            # Verify response structure
+            required_fields = ['restaurant', 'categories', 'campaign', 'campaign_items']
+            missing_fields = [field for field in required_fields if field not in response]
+            
+            if not missing_fields:
+                self.log_test("Public Menu Response Structure", True)
+                
+                # Verify campaign object
+                campaign = response.get('campaign')
+                if campaign and campaign.get('title') == "Yaz Kampanyası":
+                    self.log_test("Campaign Object in Public Menu", True)
+                else:
+                    self.log_test("Campaign Object in Public Menu", False, "Campaign object missing or incorrect")
+                
+                # Verify campaign_items array
+                campaign_items = response.get('campaign_items', [])
+                campaign_item_names = [item.get('name') for item in campaign_items]
+                
+                if "Campaign Item Both" in campaign_item_names and "Campaign Item Only" in campaign_item_names:
+                    self.log_test("Campaign Items Array", True)
+                else:
+                    self.log_test("Campaign Items Array", False, f"Expected campaign items not found. Found: {campaign_item_names}")
+                
+                # Verify categories filtering (campaign_only items should be excluded from regular categories)
+                categories = response.get('categories', [])
+                test_category = None
+                for cat in categories:
+                    if cat.get('id') == category_id:
+                        test_category = cat
+                        break
+                
+                if test_category:
+                    category_items = test_category.get('items', [])
+                    category_item_names = [item.get('name') for item in category_items]
+                    
+                    # Should include "Campaign Item Both" and "Regular Item" but NOT "Campaign Item Only"
+                    if ("Campaign Item Both" in category_item_names and 
+                        "Regular Item" in category_item_names and 
+                        "Campaign Item Only" not in category_item_names):
+                        self.log_test("Campaign Only Items Filtering", True)
+                    else:
+                        self.log_test("Campaign Only Items Filtering", False, 
+                                     f"Incorrect filtering. Category items: {category_item_names}")
+                else:
+                    self.log_test("Test Category in Public Menu", False, "Test category not found")
+            else:
+                self.log_test("Public Menu Response Structure", False, f"Missing fields: {missing_fields}")
+        
+        # Clean up
+        if item_both_id:
+            self.run_test("Delete Campaign Item Both", "DELETE", f"menu-items/{item_both_id}", 200)
+        if item_only_id:
+            self.run_test("Delete Campaign Item Only", "DELETE", f"menu-items/{item_only_id}", 200)
+        if regular_item_id:
+            self.run_test("Delete Regular Item", "DELETE", f"menu-items/{regular_item_id}", 200)
+        if category_id:
+            self.run_test("Delete Campaign Test Category", "DELETE", f"categories/{category_id}", 200)
+        
+        # Delete campaign
+        self.run_test("Delete Test Campaign", "DELETE", "campaign", 200)
+        
+        return success
+
+    def test_specific_restaurant_public_menu(self):
+        """Test specific restaurant public menu as requested"""
+        print("\n🔍 Testing SPECIFIC RESTAURANT PUBLIC MENU")
+        
+        # Test the specific restaurant ID from the review request
+        restaurant_id = "005267f6-9a4e-4e11-ba84-22322d1e0e25"
+        
+        success, response = self.run_test(
+            "GET Public Menu - Specific Restaurant",
+            "GET",
+            f"menu/public/{restaurant_id}",
+            200
+        )
+        
+        if success:
+            # Verify response includes campaign data
+            campaign = response.get('campaign')
+            campaign_items = response.get('campaign_items', [])
+            
+            if campaign:
+                campaign_title = campaign.get('title')
+                if campaign_title == "Yaz Kampanyası":
+                    self.log_test("Specific Restaurant - Campaign Title", True)
+                else:
+                    self.log_test("Specific Restaurant - Campaign Title", False, f"Expected 'Yaz Kampanyası', got '{campaign_title}'")
+                
+                # Check campaign fields
+                required_campaign_fields = ['title', 'description', 'image_url', 'is_active']
+                missing_campaign_fields = [field for field in required_campaign_fields if field not in campaign]
+                
+                if not missing_campaign_fields:
+                    self.log_test("Specific Restaurant - Campaign Fields", True)
+                else:
+                    self.log_test("Specific Restaurant - Campaign Fields", False, f"Missing fields: {missing_campaign_fields}")
+            else:
+                self.log_test("Specific Restaurant - Campaign Object", False, "No campaign object found")
+            
+            # Verify campaign_items array exists
+            if isinstance(campaign_items, list):
+                self.log_test("Specific Restaurant - Campaign Items Array", True)
+                
+                # Check if any items have is_campaign=true
+                campaign_item_count = len([item for item in campaign_items if item.get('is_campaign', False)])
+                if campaign_item_count > 0:
+                    self.log_test("Specific Restaurant - Campaign Items Content", True)
+                else:
+                    self.log_test("Specific Restaurant - Campaign Items Content", False, "No campaign items found")
+            else:
+                self.log_test("Specific Restaurant - Campaign Items Array", False, "campaign_items is not an array")
+            
+            # Verify categories structure
+            categories = response.get('categories', [])
+            if isinstance(categories, list):
+                self.log_test("Specific Restaurant - Categories Structure", True)
+                
+                # Check if campaign_only items are properly filtered from regular categories
+                all_category_items = []
+                for category in categories:
+                    items = category.get('items', [])
+                    all_category_items.extend(items)
+                
+                campaign_only_in_categories = [item for item in all_category_items if item.get('campaign_only', False)]
+                
+                if len(campaign_only_in_categories) == 0:
+                    self.log_test("Specific Restaurant - Campaign Only Filtering", True)
+                else:
+                    self.log_test("Specific Restaurant - Campaign Only Filtering", False, 
+                                 f"Found {len(campaign_only_in_categories)} campaign_only items in regular categories")
+            else:
+                self.log_test("Specific Restaurant - Categories Structure", False, "categories is not an array")
+        
+        return success
+
     def cleanup_test_data(self, category_id):
         """Clean up test data"""
         if category_id:
