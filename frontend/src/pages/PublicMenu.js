@@ -26,6 +26,7 @@ export default function PublicMenu() {
   const [isSearching, setIsSearching] = useState(false);
   const [showCampaignPopup, setShowCampaignPopup] = useState(false);
   const [showCampaignCategory, setShowCampaignCategory] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   useEffect(() => {
     fetchMenu();
