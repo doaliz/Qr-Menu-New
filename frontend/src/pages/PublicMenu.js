@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useTheme } from '@/contexts/ThemeContext';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, Search, X } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -14,6 +15,8 @@ export default function PublicMenu() {
   const [menuData, setMenuData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     fetchMenu();
