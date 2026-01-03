@@ -83,12 +83,14 @@ export default function PublicMenu() {
     );
   }
 
-  const activeCategoryData = menuData.categories.find(cat => cat.id === activeCategory);
+  const activeCategoryData = activeCategory === 'campaign' 
+    ? { id: 'campaign', name: 'Kampanyalar', items: menuData.campaign_items || [] }
+    : menuData.categories.find(cat => cat.id === activeCategory);
 
-  // Get all items from all categories for search
+  // Get all items from all categories for search (including campaign items)
   const getAllItems = () => {
     if (!menuData) return [];
-    return menuData.categories.flatMap(category => 
+    const regularItems = menuData.categories.flatMap(category => 
       category.items
         .filter(item => item.is_available !== false)
         .map(item => ({
@@ -97,6 +99,15 @@ export default function PublicMenu() {
           categoryId: category.id
         }))
     );
+    // Add campaign items that are campaign_only
+    const campaignOnlyItems = (menuData.campaign_items || [])
+      .filter(item => item.campaign_only)
+      .map(item => ({
+        ...item,
+        categoryName: 'Kampanyalar',
+        categoryId: 'campaign'
+      }));
+    return [...regularItems, ...campaignOnlyItems];
   };
 
   // Filter items based on search query
