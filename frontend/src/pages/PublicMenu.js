@@ -41,7 +41,7 @@ export default function PublicMenu() {
       const hasCampaignItems = response.data.campaign_items && response.data.campaign_items.length > 0;
       setShowCampaignCategory(hasCampaignItems);
       
-      // Show campaign popup if active
+      // Show campaign popup if active (regardless of campaign items)
       if (response.data.campaign && response.data.campaign.is_active) {
         // Check if popup was shown in this session
         const popupShown = sessionStorage.getItem(`campaign-popup-${restaurantId}`);
