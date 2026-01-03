@@ -729,6 +729,64 @@ async def upload_image(file: UploadFile = File(...), restaurant_id: str = Depend
     
     return {"image_url": image_data_url, "filename": file.filename}
 
+# Campaign endpoints
+@api_router.get("/campaign")
+async def get_campaign(restaurant_id: str = Depends(get_current_restaurant)):
+    campaign = await db.campaigns.find_one({'restaurant_id': restaurant_id}, {'_id': 0})
+    return campaign
+
+@api_router.post("/campaign")
+async def create_or_update_campaign(input: CampaignCreate, restaurant_id: str = Depends(get_current_restaurant)):
+    existing = await db.campaigns.find_one({'restaurant_id': restaurant_id}, {'_id': 0})
+    
+    if existing:
+        # Update existing campaign
+        update_data = input.model_dump(exclude_unset=True)
+        await db.campaigns.update_one(
+            {'restaurant_id': restaurant_id},
+            {'$set': update_data}
+        )
+        return {"message": "Kampanya güncellendi"}
+    else:
+        # Create new campaign
+        campaign_dict = {
+            'id': str(uuid.uuid4()),
+            'restaurant_id': restaurant_id,
+            'title': input.title,
+            'description': input.description,
+            'image_url': input.image_url,
+            'is_active': input.is_active if input.is_active is not None else True,
+            'created_at': datetime.now(timezone.utc).isoformat()
+        }
+        await db.campaigns.insert_one(campaign_dict)
+        return {"message": "Kampanya oluşturuldu", "id": campaign_dict['id']}
+
+@api_router.put("/campaign")
+async def update_campaign(input: CampaignUpdate, restaurant_id: str = Depends(get_current_restaurant)):
+    update_data = {k: v for k, v in input.model_dump(exclude_unset=True).items() if v is not None}
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="Güncellenecek alan bulunamadı")
+    
+    result = await db.campaigns.update_one(
+        {'restaurant_id': restaurant_id},
+        {'$set': update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Kampanya bulunamadı")
+    
+    return {"message": "Kampanya güncellendi"}
+
+@api_router.delete("/campaign")
+async def delete_campaign(restaurant_id: str = Depends(get_current_restaurant)):
+    result = await db.campaigns.delete_one({'restaurant_id': restaurant_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Kampanya bulunamadı")
+    
+    return {"message": "Kampanya silindi"}
+
 @api_router.get("/categories", response_model=List[Category])
 async def get_categories(restaurant_id: str = Depends(get_current_restaurant)):
     categories = await db.categories.find({'restaurant_id': restaurant_id}, {'_id': 0}).sort('order', 1).to_list(1000)
