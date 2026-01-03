@@ -6,376 +6,196 @@ The user wants to build a QR menu management system for cafes and restaurants.
 - **Admin Panel Features:**
     - Each business has its own separate admin panel.
     - **Customization:**
-        - Light and dark theme options for the panel.
+        - Light and dark theme options.
         - Ability to upload a business logo and a hero image for the public menu.
-        - Ability to customize the colors of category and product text/backgrounds, with a bulk update option.
+        - Ability to customize the colors of category and product text/backgrounds.
         - Add a business Instagram link to the public menu.
     - **Product Management:**
-        - Upload product photos (as files: jpg, jpeg, png), which should appear as squares to the left of the product info on both the admin panel and public menu.
-        - Toggle product availability (on/off for sale) directly from the dashboard product list.
+        - Upload product photos.
+        - Toggle product availability.
+        - Add campaign products, which can be shown in a special Campaigns category or exclusively there.
+    - **User Account Management:** Users should be able to change their password and request account deletion.
+- **Public Menu Features:**
+    - Display a campaign popup with an image and description if a campaign is active.
+    - A dedicated Campaigns category for special offers.
+    - A search bar at the top to search for products across all categories.
+    - PWA Add to Home Screen functionality.
 - **Subscription & Monetization:**
     - A 7-day trial for new sign-ups.
     - A single yearly subscription plan is required after the trial.
-    - An online payment system is needed. The user initially requested Stripe but is now asking for a system that can accommodate other Turkish payment providers.
-    - A manual license activation system for the super admin to handle in-person sales.
+    - A pluggable payment system to accommodate Turkish providers like PayTR.
+    - A manual license activation system for the super admin.
 - **Super Admin Functionality:**
-    - A super admin role for the system owner.
-    - This super admin should have a private dashboard to:
-        - View a list of all registered businesses (name, email, phone).
-        - Register new businesses manually.
-        - Access the manual license activation feature (which should be hidden from regular business users).
-- **UI/UX:**
-    - The admin panel must be mobile-responsive.
-    - Don't log the user out after they update their profile.
-    - On the public menu, if a logo is present, hide the business name.
+    - A private, mobile-responsive dashboard to:
+        - View a list of all registered businesses with filtering by status (Trial, Active, Expired).
+        - Register new businesses manually with an option for a trial or a 1-year license.
+        - Add a 1-year license to any existing business directly from the list.
+        - View and approve account deletion requests from users.
 
 **User's preferred language**: Turkish
 
 **what currently exists?**
-A full-stack application (FastAPI + React + MongoDB) that allows restaurant owners to register, log in, and manage their QR menu. The system supports creating categories and menu items with optional image uploads. Users can customize their profile (logo, hero image, Instagram link) and apply custom colors to menu elements. A basic subscription model with a 7-day trial and a yearly plan is in place, with non-functional Stripe integration. The admin panel is mobile-responsive. Implementation of a super admin system has just begun.
+A full-stack application (FastAPI + React + MongoDB) for QR menu management. The system includes user registration/login, a super admin panel, and a customer-facing public menu.
+
+- **Super Admin Panel:** Mobile-responsive dashboard with statistics, a list of all businesses, and filtering by status. Super admins can create new businesses (with trial/license options), add licenses to existing businesses, and manage account deletion requests.
+- **Restaurant Admin Panel:** Restaurant owners can manage their profile, categories, and products. They can change their password and request account deletion. PWA Add to home screen functionality has been added.
+- **Public Menu:** Displays the menu with categories and items. A search bar allows customers to find products across all categories.
+- **Campaign System:** The backend and frontend code for a complete campaign system has been implemented but is untested. This includes an admin interface to create/manage campaigns and logic on the public menu to display a popup and a special Campaigns category.
+- **Payment System:** The original Stripe integration was faulty and has been disabled in the UI to prevent user-facing errors. No new payment provider has been integrated.
 
 **Last working item**:
-- **Last item agent was working:** The agent was in the middle of implementing a Super Admin system. This involves creating a special administrative role that can view all registered businesses, create new business accounts manually, and manage subscriptions, features that should be hidden from regular restaurant owners.
+- **Last item agent was working:** The agent was implementing a comprehensive Campaign Management System. This includes creating a campaign (image, description, status) from the admin panel, marking products as campaign products, and displaying a popup and a special Campaigns category on the public menu.
 - **Status:** IN PROGRESS
 - **Agent Testing Done:** N
 - **Which testing method agent to use?** both
 - **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
-- **Issue 1:** Stripe Payment Integration is Broken (P0)
-- **Issue 2:** Manual License page is visible to all users (P1)
+- **Issue 1:** The newly implemented Campaign Feature is completely untested. (P0)
+- **Issue 2:** The super admin login sometimes fails to redirect to , landing on the regular user dashboard instead. (P1)
+- **Issue 3:** The Stripe payment integration is broken and was only disabled in the UI, not fixed or replaced. (P2)
 
 **Issues Detail:**
 - **Issue 1:**
-    - **Description:** When a user clicks the Start Subscription button, they are redirected to a blank white screen instead of the Stripe checkout page. This is a critical blocker for monetization.
-    - **Attempted fixes:** The agent added a  block, console logging, and a  to the redirection logic in . These fixes were not effective as the user reported the issue persists.
+    - **Description:** The agent wrote a significant amount of code for the campaign feature across the backend () and frontend (, , ) but did not perform any testing to verify if it works.
+    - **Attempted fixes:** None. This is a new feature implementation.
     - **Next debug checklist:**
-        1.  In , find the  endpoint. Log the generated  from Stripe before returning it to confirm it's a valid URL.
-        2.  Check the backend logs for any errors during the Stripe API call: ==> /var/log/supervisor/backend.err.log <==
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-INFO:     Started reloader process [10124] using WatchFiles
-INFO:     Started server process [10126]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-2026-01-01 19:20:52,339 - stripe - INFO - message='Request to Stripe api' method=post url=https://integrations.emergentagent.com/stripe/v1/checkout/sessions
-2026-01-01 19:20:52,780 - stripe - INFO - message='Stripe API response' path=https://integrations.emergentagent.com/stripe/v1/checkout/sessions response_code=200
-2026-01-01 19:22:14,121 - stripe - INFO - message='Request to Stripe api' method=post url=https://integrations.emergentagent.com/stripe/v1/checkout/sessions
-2026-01-01 19:22:14,486 - stripe - INFO - message='Stripe API response' path=https://integrations.emergentagent.com/stripe/v1/checkout/sessions response_code=200
-INFO:     Will watch for changes in these directories: ['/app/backend']
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-INFO:     Started reloader process [48] using WatchFiles
-INFO:     Started server process [86]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-2026-01-02 05:39:03,443 - stripe - INFO - message='Request to Stripe api' method=post url=https://integrations.emergentagent.com/stripe/v1/checkout/sessions
-2026-01-02 05:39:03,902 - stripe - INFO - message='Stripe API response' path=https://integrations.emergentagent.com/stripe/v1/checkout/sessions response_code=200
-WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [86]
-INFO:     Started server process [263]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [263]
-INFO:     Started server process [279]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [279]
-INFO:     Stopping reloader process [48]
-INFO:     Will watch for changes in these directories: ['/app/backend']
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-INFO:     Started reloader process [434] using WatchFiles
-INFO:     Started server process [436]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-2026-01-02 05:44:42,669 - stripe - INFO - message='Request to Stripe api' method=post url=https://integrations.emergentagent.com/stripe/v1/checkout/sessions
-2026-01-02 05:44:43,131 - stripe - INFO - message='Stripe API response' path=https://integrations.emergentagent.com/stripe/v1/checkout/sessions response_code=200
-WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [436]
-INFO:     Started server process [689]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [689]
-INFO:     Started server process [709]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [709]
-INFO:     Started server process [743]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [743]
-INFO:     Started server process [791]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [791]
-INFO:     Started server process [811]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [811]
-INFO:     Started server process [845]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Will watch for changes in these directories: ['/app/backend']
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-INFO:     Started reloader process [47] using WatchFiles
-INFO:     Started server process [85]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-
-==> /var/log/supervisor/backend.out.log <==
-INFO:     10.64.141.75:34764 - "GET /api/menu-items HTTP/1.1" 200 OK
-INFO:     10.64.141.76:60770 - "GET /api/subscription/info HTTP/1.1" 200 OK
-INFO:     10.64.141.76:60770 - "GET /api/subscription/info HTTP/1.1" 200 OK
-INFO:     10.64.133.143:47226 - "GET /api/subscription/info HTTP/1.1" 200 OK
-INFO:     10.64.141.73:45822 - "GET /api/subscription/info HTTP/1.1" 200 OK
-INFO:     10.64.133.160:49160 - "GET /api/subscription/info HTTP/1.1" 200 OK
-INFO:     10.64.141.75:33008 - "POST /api/payments/checkout HTTP/1.1" 200 OK
-INFO:     10.64.141.76:46034 - "GET /api/subscription/info HTTP/1.1" 200 OK
-INFO:     10.64.141.76:46034 - "GET /api/subscription/info HTTP/1.1" 200 OK
-INFO:     10.64.133.143:43512 - "GET /api/menu-items HTTP/1.1" 200 OK
-INFO:     10.64.133.160:36586 - "GET /api/subscription/info HTTP/1.1" 200 OK
-INFO:     10.64.141.73:60628 - "GET /api/categories HTTP/1.1" 200 OK
-INFO:     10.64.141.75:43774 - "GET /api/menu-items HTTP/1.1" 200 OK
-INFO:     10.64.141.73:60628 - "GET /api/categories HTTP/1.1" 200 OK
-INFO:     10.64.141.75:43774 - "GET /api/subscription/info HTTP/1.1" 200 OK
-INFO:     10.64.133.143:43512 - "GET /api/subscription/info HTTP/1.1" 200 OK
-INFO:     10.64.141.76:45444 - "GET /api/subscription/info HTTP/1.1" 200 OK
-INFO:     10.64.141.75:33112 - "GET /api/auth/me HTTP/1.1" 200 OK
-INFO:     10.64.141.73:40026 - "GET /api/auth/me HTTP/1.1" 200 OK
-INFO:     10.64.128.53:47550 - "GET /api/menu/public/4a31695a-9a3b-4461-b52c-99030c86cdbc HTTP/1.1" 200 OK
-INFO:     10.64.128.8:39798 - "GET /api/menu/public/4a31695a-9a3b-4461-b52c-99030c86cdbc HTTP/1.1" 200 OK
-INFO:     10.64.128.53:57884 - "GET /api/auth/me HTTP/1.1" 200 OK
-INFO:     10.64.130.160:51808 - "GET /api/auth/me HTTP/1.1" 200 OK
-INFO:     10.64.130.161:44030 - "POST /api/auth/login HTTP/1.1" 200 OK
-INFO:     10.64.130.167:45998 - "GET /api/auth/me HTTP/1.1" 200 OK
-INFO:     10.64.130.166:33628 - "GET /api/categories HTTP/1.1" 200 OK
-INFO:     10.64.130.167:45998 - "GET /api/subscription/info HTTP/1.1" 200 OK
-INFO:     10.64.130.160:58444 - "GET /api/menu-items HTTP/1.1" 200 OK
-INFO:     10.64.128.53:57896 - "GET /api/categories HTTP/1.1" 200 OK
-INFO:     10.64.130.160:58446 - "GET /api/subscription/info HTTP/1.1" 200 OK
-INFO:     10.64.130.160:58446 - "GET /api/menu-items HTTP/1.1" 200 OK
-INFO:     10.64.130.161:44030 - "GET /api/categories HTTP/1.1" 200 OK
-INFO:     10.64.128.53:57896 - "GET /api/subscription/info HTTP/1.1" 200 OK
-INFO:     10.64.130.161:44030 - "GET /api/menu-items HTTP/1.1" 200 OK
-INFO:     10.64.130.160:58444 - "GET /api/subscription/info HTTP/1.1" 200 OK
-INFO:     10.64.130.161:44030 - "GET /api/subscription/info HTTP/1.1" 200 OK
-INFO:     10.64.128.53:46764 - "GET /api/auth/me HTTP/1.1" 200 OK
-INFO:     10.64.128.6:54672 - "GET /api/menu/public/4a31695a-9a3b-4461-b52c-99030c86cdbc HTTP/1.1" 200 OK
-INFO:     10.64.131.73:35546 - "GET /api/subscription/info HTTP/1.1" 200 OK
-INFO:     10.64.131.76:50990 - "GET /api/subscription/info HTTP/1.1" 200 OK
-INFO:     10.64.131.73:35546 - "POST /api/payments/checkout HTTP/1.1" 200 OK
-INFO:     10.64.131.73:36980 - "OPTIONS /api/auth/login HTTP/1.1" 200 OK
-INFO:     10.64.131.76:38362 - "POST /api/auth/login HTTP/1.1" 200 OK
-INFO:     10.64.131.73:36980 - "OPTIONS /api/auth/me HTTP/1.1" 200 OK
-INFO:     10.64.131.76:38362 - "GET /api/auth/me HTTP/1.1" 200 OK
-INFO:     10.64.131.73:36980 - "OPTIONS /api/categories HTTP/1.1" 200 OK
-INFO:     10.64.131.73:36996 - "OPTIONS /api/subscription/info HTTP/1.1" 200 OK
-INFO:     10.64.131.73:36988 - "OPTIONS /api/menu-items HTTP/1.1" 200 OK
-INFO:     10.64.131.73:37012 - "OPTIONS /api/menu-items HTTP/1.1" 200 OK
-INFO:     10.64.131.76:38364 - "OPTIONS /api/subscription/info HTTP/1.1" 200 OK
-INFO:     10.64.131.73:36996 - "OPTIONS /api/categories HTTP/1.1" 200 OK
-INFO:     10.64.131.76:38364 - "GET /api/menu-items HTTP/1.1" 200 OK
-INFO:     10.64.131.76:38380 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.131.76:38380 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.131.73:37012 - "OPTIONS /api/categories HTTP/1.1" 200 OK
-INFO:     10.64.131.76:38362 - "GET /api/categories HTTP/1.1" 200 OK
-INFO:     10.64.131.73:37012 - "GET /api/menu-items HTTP/1.1" 200 OK
-INFO:     10.64.131.73:36988 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.131.73:36988 - "GET /api/categories HTTP/1.1" 200 OK
-INFO:     10.64.131.73:37012 - "GET /api/menu-items HTTP/1.1" 200 OK
-INFO:     10.64.131.76:38380 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.131.76:38380 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.131.76:38364 - "GET /api/categories HTTP/1.1" 200 OK
-INFO:     10.64.131.76:38380 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.131.73:37012 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.131.76:40438 - "GET /api/auth/me HTTP/1.1" 200 OK
-INFO:     10.64.131.73:49970 - "GET /api/auth/me HTTP/1.1" 200 OK
-INFO:     10.64.131.73:49970 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.131.76:40438 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.131.76:40438 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.128.6:33010 - "GET /api/auth/me HTTP/1.1" 200 OK
-INFO:     10.64.131.73:49984 - "GET /api/auth/me HTTP/1.1" 200 OK
-INFO:     10.64.130.167:35954 - "POST /api/auth/login HTTP/1.1" 200 OK
-INFO:     10.64.130.167:35954 - "GET /api/auth/me HTTP/1.1" 200 OK
-INFO:     10.64.131.73:46784 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.131.76:36494 - "GET /api/menu-items HTTP/1.1" 200 OK
-INFO:     10.64.131.76:36510 - "GET /api/categories HTTP/1.1" 200 OK
-INFO:     10.64.131.73:46784 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.128.53:60946 - "GET /api/categories HTTP/1.1" 200 OK
-INFO:     10.64.130.165:35900 - "GET /api/menu-items HTTP/1.1" 200 OK
-INFO:     10.64.128.6:49626 - "GET /api/menu-items HTTP/1.1" 200 OK
-INFO:     10.64.130.166:55050 - "GET /api/categories HTTP/1.1" 200 OK
-INFO:     10.64.130.167:35954 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.128.8:43036 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.131.73:46784 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.128.6:49626 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.128.53:60960 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.131.76:44186 - "GET /api/categories HTTP/1.1" 200 OK
-INFO:     10.64.130.160:44304 - "GET /api/menu-items HTTP/1.1" 200 OK
-INFO:     10.64.131.73:45694 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.128.53:51658 - "GET /api/categories HTTP/1.1" 200 OK
-INFO:     10.64.130.166:50214 - "GET /api/menu-items HTTP/1.1" 200 OK
-INFO:     10.64.131.73:45694 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.130.161:54448 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.131.76:44186 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.130.161:38366 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.131.73:41532 - "GET /api/subscription/info HTTP/1.1" 405 Method Not Allowed
-INFO:     10.64.128.6:47184 - "POST /api/payments/checkout HTTP/1.1" 200 OK
-INFO:     10.64.131.76:37946 - "GET /api/menu/public/4a31695a-9a3b-4461-b52c-99030c86cdbc HTTP/1.1" 200 OK
-INFO:     10.64.131.73:52590 - "GET /api/menu/public/4a31695a-9a3b-4461-b52c-99030c86cdbc HTTP/1.1" 200 OK.
-        3.  In , inside the  function, add  to inspect the full response from the backend API call.
-        4.  Verify that the  in  is being loaded correctly by the application.
-    - **Why fix this issue and what will be achieved with the fix?** Fixing this will make the primary monetization feature of the application functional, allowing users to purchase subscriptions.
-    - **Status:** IN PROGRESS
-    - **Is recurring issue?** Y
-    - **Should Test frontend/backend/both after fix?** both
-    - **Blocked on other issue:** None
-
-- **Issue 2:**
-    - **Description:** The Manual Subscription feature, intended only for the super admin, is currently accessible to all logged-in users.
-    - **Attempted fixes:** The agent has started creating the super admin backend logic but has not yet implemented the frontend logic to hide the button/page.
-    - **Next debug checklist:**
-        1.  In , ensure the user object returned after login includes the  flag.
-        2.  In , wrap the  to  in a conditional render that checks .
-        3.  In , protect the  route so it's only accessible to super admins, redirecting others if they try to access the URL directly.
-    - **Why fix this issue and what will be achieved with the fix?** This will secure the administrative functionality and prevent regular users from accessing features not intended for them.
+        1. Restart backend/frontend services and check for any compilation or runtime errors in the logs.
+        2. Log in as a super admin ( / ).
+        3. Navigate to the **Settings** page and create a new campaign: upload an image, add a description, and set it to Active.
+        4. Navigate to the **Dashboard**, create a new product, and test the Is Campaign Product? and Show in Campaign Only? checkboxes.
+        5. Open the **Public Menu** for that restaurant and verify:
+            - Does the campaign popup appear on page load?
+            - Does a Campaigns category appear?
+            - Do the correct items appear in the Campaigns category?
+            - Does the Show in Campaign Only logic correctly hide the item from its original category?
+    - **Why fix this issue and what will be achieved with the fix?** To complete the last requested feature and make the campaign system functional.
     - **Status:** NOT STARTED
     - **Is recurring issue?** N
+    - **Should Test frontend/backend/both after fix?** both
+    - **Blocked on other issue:** none
+
+- **Issue 2:**
+    - **Description:** During testing, the agent observed that after a super admin logs in, the app sometimes redirects to the regular dashboard () instead of the super admin panel (). This seems to be a race condition or a logic issue in the  or  redirect logic.
+    - **Attempted fixes:** The agent implemented a redirect in  but the issue persisted intermittently.
+    - **Next debug checklist:**
+        1. Review the  function in .
+        2. Examine the  logic to see how  state is set and when the application navigates based on it. Add logging to trace the value of  immediately after login.
+        3. Consider using  with a dependency on the user/ state in a layout component to handle routing reliably, rather than an immediate  call in the login handler.
+    - **Why fix this issue and what will be achieved with this fix?** This will provide a smoother and more reliable user experience for the super admin.
+    - **Status:** NOT STARTED
+    - **Is recurring issue?** Y
     - **Should Test frontend/backend/both after fix?** frontend
-    - **Blocked on other issue:** In progress Task 1 (Complete Super Admin feature)
+    - **Blocked on other issue:** none
+
+- **Issue 3:**
+    - **Description:** The Stripe payment integration is non-functional, leading to a blank screen. The agent disabled the button in the UI as a temporary workaround. The user wants to use a Turkish payment provider like PayTR instead.
+    - **Attempted fixes:** The button was disabled in . No fix for the underlying payment logic was attempted.
+    - **Next debug checklist:** This issue is superseded by the task to integrate a new payment provider.
+    - **Why fix this issue and what will be achieved with the fix?** This is a critical blocker for application monetization.
+    - **Status:** BLOCKED
+    - **Is recurring issue?** Y
+    - **Should Test frontend/backend/both after fix?** both
+    - **Blocked on other issue:** Upcoming Task 1 (Implement Pluggable Payment Provider)
 
 **In progress Task List**:
-- **Task 1:** Complete Super Admin feature (P0)
-    - **Where to resume:** The agent has added  to the  model and  to the  file. The next steps are:
-        1.  Finish coding the super admin API endpoints in : one to list all restaurants () and another to register a new business ().
-        2.  Create a new frontend page for the super admin dashboard.
-        3.  Implement the UI to list all businesses and a form to add a new business.
-    - **What will be achieved with this?** The system owner will have a dedicated panel to manage all client accounts, fulfilling a key user requirement.
+- **Task 1:** Complete and Test Campaign Feature (P0)
+    - **Where to resume:** The code has been written. The next step is to begin testing as outlined in Issue 1: Next debug checklist. Start by checking logs and then functionally testing the entire campaign flow from admin creation to public menu display.
+    - **What will be achieved with this?** A key marketing feature for restaurant owners will be functional.
     - **Status:** IN PROGRESS
     - **Should Test frontend/backend/both after fix?** both
     - **Blocked on something:** None
 
 **Upcoming and Future Tasks**
 - **Upcoming Tasks:**
-    - **Task 1 (P1):** Implement a Pluggable Payment Provider System. The user wants to use Turkish payment gateways instead of just Stripe. This will require refactoring the backend payment logic to be more abstract, potentially reading provider details (API keys, endpoints) from a configuration.
-    - **Task 2 (P2):** Build the Super Admin Frontend UI. After the backend endpoints are ready, a new section or page needs to be created in the frontend that is only visible to the super admin for managing businesses.
+  - **Task 1 (P1):** Implement Pluggable Payment Provider System (PayTR). The user has requested this as the next major step after current features are stable. The agent should call  for PayTR to get the implementation plan and required credentials, then confirm these with the user before coding.
+  - **Task 2 (P2):** Provide Project Deployment Options. The user has asked how to deploy the project. The agent has already provided a  for self-hosting. The agent should also investigate and propose a deployment plan using the .
+- **Future Tasks:**
+  - Enhance Super Admin panel with more detailed analytics or user management features.
 
 **Completed work in this session**
-- **Feature:** QR Menu CRUD (Create, Read, Update, Delete for categories and products).
-- **Feature:** User Authentication (Register/Login for restaurant owners).
-- **Feature:** Product Image Upload (JPG, PNG, JPEG).
-- **Feature:** Product Availability Toggle (on/off for sale).
-- **Feature:** Profile Management (update restaurant name, logo, hero image, Instagram link).
-- **Feature:** Menu Color Customization (for individual items/categories and in bulk).
-- **Feature:** Mobile Responsive Admin Panel.
-- **Feature:** Subscription Model (7-day trial, yearly plan concept).
-- **Fix:** Data loading issue for existing users after subscription fields were added.
-- **Fix:** Public menu layout consistency with admin panel dashboard.
-- **Fix:** Hero image deletion functionality.
-- **Feature:** Manual Subscription creation page (backend and frontend structure).
-
-**Earlier issues found/mentioned but not fixed**
-- **Issue 1:** Stripe payment integration has been reported as non-functional (white screen issue) multiple times and is still not resolved.
+- **Feature:** Super Admin dashboard is now mobile-responsive.
+- **Feature:** Super Admin can filter businesses by status (Active, Trial, Expired) and the stats cards are clickable for quick filtering.
+- **Feature:** Super Admin can add a new business with a 7-day trial or a 1-year license directly upon creation.
+- **Feature:** User Settings page now includes forms for changing passwords and requesting account deletion.
+- **Feature:** Super Admin dashboard has a new tab to view and process account deletion requests.
+- **Feature:** Public menu now has a search bar to find products across all categories.
+- **Feature:** Progressive Web App (PWA) Add to Home Screen functionality was added for mobile users.
+- **Fix:** Subscription display logic was corrected to show remaining licensed days instead of trial days if a license is active.
+- **Fix:** Subscription page UI was updated to hide pricing information temporarily.
+- **Doc:** A  was created explaining how to self-host the application.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Backend:** FastAPI, MongoDB (using ), JWT for authentication.
-- **Frontend:** React,  for API calls, TailwindCSS for styling,  for icons.
-- **Integrations:**  for Stripe (currently non-functional).
-- **Deployment:** Services are managed by .
+- **Backend:** FastAPI, MongoDB (using ), JWT authentication.
+- **Frontend:** React, , TailwindCSS, shadcn/ui components, PWA.
+- **State Management:** React Context () for user session and roles.
 
 **key DB schema**
 - **restaurants:** 
-- **categories:** 
 - **menu_items:** 
-
-**changes in tech stack**
--  library was added for Stripe integration.
+- **campaigns:** (New Collection) 
 
 **All files of reference**
-- : Contains all backend logic, API endpoints, and database models. It's the most frequently modified file.
-- : The main page for restaurant owners, containing menu and product management logic.
-- : Handles profile updates and bulk color changes.
-- : Manages the subscription and payment process.
-- : Renders the public-facing QR menu.
-- : The new page for manual license activation.
-- : Contains critical credentials, including the new .
-- : Manages authentication state on the frontend.
+- : Major changes to add endpoints for campaigns, password changes, and account deletion requests. Public menu endpoint updated.
+- : Overhauled to be a mobile-responsive super admin panel with filtering, tabs, and new actions.
+- : Updated with cards for Password Change, Account Deletion, and Campaign Management.
+- : Updated to include a search bar, campaign popup, and a dynamic Campaigns category.
+- : The Add/Edit Item dialog now includes checkboxes for campaign settings.
+- : New file for PWA support.
+- : Updated to link to the manifest file.
+- : New documentation file for self-hosting.
 
 **key api endpoints**
-- , 
--  (GET, PUT)
-- ,  (CRUD)
-- ,  (CRUD)
--  (PATCH)
+-  (POST)
+-  (POST)
 -  (GET)
--  (POST)
--  (POST)
-- **(In Progress):**  (GET),  (POST)
-- **(In Progress):**  (POST)
+-  (DELETE)
+-  (GET, POST)
+-  (POST - updated to accept )
 
 **Critical Info for New Agent**
-- The project has pivoted to include a Super Admin layer. You must complete this feature first.
-- The Stripe payment integration is broken and has been a recurring problem. The user is also requesting to support other Turkish payment providers, so a more abstract payment solution should be planned after the immediate bugs are fixed.
-- The new  has been added to . You will need to use this to differentiate between a regular user and the super admin.
-- The next development steps involve finishing the super admin backend endpoints, then creating the corresponding frontend UI, and finally securing the manual subscription page so only the super admin can access it.
+- The user's preferred language is **Turkish**. All responses must be in Turkish.
+- **Your immediate priority is to test the Campaign feature.** A large amount of code was written for it, but it's completely unverified. Follow the debug checklist for Issue #1.
+- The next major functional requirement is to integrate a payment provider (likely **PayTR**). Do not try to fix Stripe. Use the  subagent for this task.
+- Be aware of the intermittent super admin login redirect issue. It's a known UX bug that needs to be addressed.
+- The user has been provided with a  for self-hosting.
+
+**documents and test reports created in this job**
+- 
 
 **Last 10 User Messages and any pending HUMAN messages**
-10. **User:** The cover photo can't be removed. (COMPLETED - Agent implemented a fix)
-9.  **User:** The Start Subscription button gets stuck on a white screen. Also, I need a way to manually activate licenses for customers. (IN PROGRESS - Agent created a manual activation page and attempted a fix for the white screen)
-8.  **User:** The manual license page should only be for me (super admin), not customers. The payment system is still broken. I want to use other Turkish payment providers. I need a super admin panel to see all registered businesses and add new ones myself. (IN PROGRESS - Agent started building the super admin system)
-7.  **User:** The subscription trial info in the header is missing a button to go to the subscription page. (COMPLETED - Agent added the button)
-6.  **User:** The Settings and Subscription buttons are not visible on mobile. Product images should be square and on the left of the product name. (COMPLETED - Agent fixed mobile UI and updated product card layout)
-5.  **User:** The product image layout is fixed on the admin panel but still wrong on the public menu. (COMPLETED - Agent fixed the public menu layout)
-4.  **User:** The trial/remaining days text is in the header, but the actual Subscription page is missing. (This seems to be a rephrasing of message #7, which was resolved).
-3.  **User:** Subscription info isn't showing in the panel. Subscriptions should be yearly. Add a switch to the product card on the dashboard to toggle availability. (COMPLETED - Agent implemented these UI/UX improvements)
-2.  **User:** Data is not loading. Old menus/images are gone. I want to update colors for all items at once, not one by one. (COMPLETED - Agent fixed data migration and added bulk color update feature)
-1.  **User:** The panel shows a data could not be loaded error. (This is part of the previous message, which was resolved).
+10. **User:** Can you add a button for users to add the app to their mobile home screen? (COMPLETED)
+9. **User:** When a customer scans the QR code, I want a search bar to appear above the categories so they can search for products across the whole menu. (COMPLETED)
+8. **User:** I want a comprehensive campaign system... (popup, special category, admin management, etc.) (IN PROGRESS)
+7. **User:** The super admin panel is not mobile-friendly. Also, don't show the subscription price on the user panel for now. Tell me what you need for PayTR integration and how I can deploy this project. (COMPLETED - Mobile fix, price hidden, PayTR/deployment questions answered)
+6. **User:** I want to self-host the project on my own server. (COMPLETED - Agent provided a detailed deployment guide)
+5. **User:** Can the businesses be filtered by their status (active, trial, expired)? Make the stats cards clickable to apply these filters. Also, when adding a new business, let me choose between a trial or a yearly license. (COMPLETED)
+4. **User:** When a license is added, the panel still shows 6 days left from the trial. The super admin panel doesn't need a user dashboard view. Let users change their password and request account deletion, and let me approve those requests. (COMPLETED)
+3. **User:** I logged in with the super admin email but it opened the normal user panel. The super admin should be taken directly to the admin panel. Add a Add License button to each business in the list. Remove the Add Manual License button from the subscription page for normal users. (COMPLETED)
+2. **User:** What is the password for ? (COMPLETED - Agent provided password)
+1. **User:** (Confirms plan, asks to use a Turkish payment provider, and decides to choose one later) (ACKNOWLEDGED)
 
 **Project Health Check:**
-- **Broken:** The online payment subscription flow is non-functional due to the white screen issue with Stripe checkout.
+- **Broken:** Payment/Monetization flow.
+- **Mocked:** None.
+- **Potentially Broken:** The entire Campaign system is untested.
 
 **3rd Party Integrations**
-- **Stripe (Payments)** — uses  library and requires a User API Key (which is set in the environment).
+- **Stripe (Payments)** — Disabled and pending replacement.
+- **PayTR (Payments)** — Planned future integration.
 
 **Testing status**
-- **Testing agent used after significant changes:** YES
+- **Testing agent used after significant changes:** YES (for Super Admin features)
 - **Troubleshoot agent used after agent stuck in loop:** NO
-- **Test files created:** None
-- **Known regressions:** The Stripe payment functionality was reported to work at one point but is now broken.
+- **Test files created:** Test cases in  were updated for backend testing of admin features.
+- **Known regressions:** Stripe functionality is a known regression.
+
+**Credentials to test flow:**
+- **Super Admin:**  / 
+- **Regular User:**  /  (Note: this user was created during the session for testing)
 
 **What agent forgot to execute**
-- The agent has not yet implemented the frontend logic to hide the Manual Subscription page from regular users, which was a key part of the last user request. This task is pending the completion of the backend super admin logic.</analysis>
+- The agent completely forgot to test the extensive campaign feature after implementing it. This includes multiple backend endpoints, database schema changes, and UI changes across three different frontend pages. It was a major oversight to commit this much code without any form of verification.</analysis>
