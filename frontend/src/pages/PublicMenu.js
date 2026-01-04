@@ -133,13 +133,15 @@ export default function PublicMenu() {
     <div className="min-h-screen bg-background">
       {/* Campaign Popup */}
       <Dialog open={showCampaignPopup} onOpenChange={setShowCampaignPopup}>
-        <DialogContent className="max-w-[90vw] md:max-w-md p-0 overflow-hidden">
+        <DialogContent className="max-w-[90vw] md:max-w-[420px] p-0 overflow-hidden">
           {menuData.campaign?.image_url && (
-            <img 
-              src={menuData.campaign.image_url} 
-              alt={menuData.campaign.title}
-              className="w-full h-48 object-cover"
-            />
+            <div className="w-full aspect-square max-h-[420px] overflow-hidden bg-muted">
+              <img 
+                src={menuData.campaign.image_url} 
+                alt={menuData.campaign.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
           )}
           <div className="p-6">
             <DialogHeader>
