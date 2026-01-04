@@ -428,9 +428,9 @@ export default function PublicMenu() {
 
       {/* Item Detail Modal */}
       <Dialog open={!!selectedItem} onOpenChange={(open) => !open && setSelectedItem(null)}>
-        <DialogContent className="max-w-[95vw] sm:max-w-md p-0 overflow-hidden">
+        <DialogContent className="max-w-[95vw] sm:max-w-[420px] p-0 overflow-hidden">
           {selectedItem?.image_url && (
-            <div className="w-full aspect-video overflow-hidden bg-muted">
+            <div className="w-full aspect-square max-h-[420px] overflow-hidden bg-muted">
               <img 
                 src={selectedItem.image_url} 
                 alt={selectedItem.name}
