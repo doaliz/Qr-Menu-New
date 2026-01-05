@@ -62,11 +62,12 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const response = await axios.post(`${API}/auth/login`, { email, password });
-    const { token: newToken, restaurant } = response.data;
+    const { token: newToken, restaurant, is_super_admin } = response.data;
     localStorage.setItem('token', newToken);
     setToken(newToken);
     setUser(restaurant);
-    return restaurant;
+    setIsSuperAdmin(is_super_admin || false);
+    return { restaurant, is_super_admin };
   };
 
   const register = async (name, email, password) => {
