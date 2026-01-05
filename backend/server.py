@@ -496,7 +496,11 @@ async def list_all_restaurants(restaurant_id: str = Depends(get_current_restaura
     if not admin_restaurant or admin_restaurant.get('email') != SUPER_ADMIN_EMAIL:
         raise HTTPException(status_code=403, detail="Sadece super admin bu işlemi yapabilir")
     
-    restaurants = await db.restaurants.find({}, {'_id': 0, 'password': 0}).to_list(1000)
+    # Exclude super admin from list
+    restaurants = await db.restaurants.find(
+        {'email': {'$ne': SUPER_ADMIN_EMAIL}, 'is_super_admin': {'$ne': True}}, 
+        {'_id': 0, 'password': 0}
+    ).to_list(1000)
     
     # Migrate old data: Add missing fields for compatibility
     restaurant_list = []
