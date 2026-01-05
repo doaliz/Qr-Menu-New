@@ -340,8 +340,11 @@ async def login(input: RestaurantLogin):
         created_at=datetime.fromisoformat(restaurant_dict['created_at'])
     )
     
+    # Check if super admin
+    is_super_admin_user = restaurant_dict.get('email') == SUPER_ADMIN_EMAIL or restaurant_dict.get('is_super_admin', False)
+    
     token = create_token(restaurant.id)
-    return TokenResponse(token=token, restaurant=restaurant)
+    return TokenResponse(token=token, restaurant=restaurant, is_super_admin=is_super_admin_user)
 
 @api_router.get("/auth/me", response_model=Restaurant)
 async def get_me(restaurant_id: str = Depends(get_current_restaurant)):
