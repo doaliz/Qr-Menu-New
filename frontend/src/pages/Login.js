@@ -24,21 +24,13 @@ export default function Login() {
     setLoading(true);
     
     try {
-      const restaurant = await login(email, password);
+      const response = await login(email, password);
       toast.success('Giriş başarılı!');
       
-      // Check if super admin and redirect accordingly
-      const token = localStorage.getItem('token');
-      try {
-        const subResponse = await axios.get(`${API}/subscription/info`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (subResponse.data.is_super_admin) {
-          navigate('/admin');
-        } else {
-          navigate('/dashboard');
-        }
-      } catch {
+      // Check if super admin from login response
+      if (response?.is_super_admin) {
+        navigate('/admin');
+      } else {
         navigate('/dashboard');
       }
     } catch (error) {
