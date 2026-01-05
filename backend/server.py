@@ -215,6 +215,7 @@ class DeletionRequestItem(BaseModel):
 class TokenResponse(BaseModel):
     token: str
     restaurant: Restaurant
+    is_super_admin: bool = False
 
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
