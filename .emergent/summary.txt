@@ -2,200 +2,271 @@
 The user wants to build a QR menu management system for cafes and restaurants.
 
 **PRODUCT REQUIREMENTS:**
-- **Core Functionality:** Businesses should be able to create an admin account, build a menu by adding categories and products (with names, descriptions, prices). The menu should be accessible via a QR code and update in real-time.
+- **Core Functionality:** Businesses should be able to create an admin account, build a menu by adding categories and products. The menu should be accessible via a QR code and update in real-time.
 - **Admin Panel Features:**
     - Each business has its own separate admin panel.
-    - **Customization:**
-        - Light and dark theme options.
-        - Ability to upload a business logo and a hero image for the public menu.
-        - Ability to customize the colors of category and product text/backgrounds.
-        - Add a business Instagram link to the public menu.
-    - **Product Management:**
-        - Upload product photos.
-        - Toggle product availability.
-        - Add campaign products, which can be shown in a special Campaigns category or exclusively there.
-    - **User Account Management:** Users should be able to change their password and request account deletion.
+    - **Customization:** Light/dark theme, logo/hero image upload, color customization, Instagram link.
+    - **Product Management:** Product photos, toggle availability, campaign product management.
+    - **User Account Management:** Change password, request account deletion.
 - **Public Menu Features:**
-    - Display a campaign popup with an image and description if a campaign is active.
-    - A dedicated Campaigns category for special offers.
-    - A search bar at the top to search for products across all categories.
+    - **Custom Domains:** Each restaurant's menu should be accessible via a unique subdomain (e.g., ).
+    - Campaign popup and a dedicated Campaigns category.
+    - Search bar for products.
     - PWA Add to Home Screen functionality.
 - **Subscription & Monetization:**
-    - A 7-day trial for new sign-ups.
-    - A single yearly subscription plan is required after the trial.
-    - A pluggable payment system to accommodate Turkish providers like PayTR.
-    - A manual license activation system for the super admin.
+    - 7-day trial for new sign-ups.
+    - A single yearly subscription plan after the trial.
+    - Pluggable payment system for providers like PayTR.
 - **Super Admin Functionality:**
-    - A private, mobile-responsive dashboard to:
-        - View a list of all registered businesses with filtering by status (Trial, Active, Expired).
-        - Register new businesses manually with an option for a trial or a 1-year license.
-        - Add a 1-year license to any existing business directly from the list.
-        - View and approve account deletion requests from users.
+    - Mobile-responsive dashboard to manage businesses (list, filter, create, add license).
+    - Manage account deletion requests.
 
 **User's preferred language**: Turkish
 
 **what currently exists?**
-A full-stack application (FastAPI + React + MongoDB) for QR menu management. The system includes user registration/login, a super admin panel, and a customer-facing public menu.
-
-- **Super Admin Panel:** Mobile-responsive dashboard with statistics, a list of all businesses, and filtering by status. Super admins can create new businesses (with trial/license options), add licenses to existing businesses, and manage account deletion requests.
-- **Restaurant Admin Panel:** Restaurant owners can manage their profile, categories, and products. They can change their password and request account deletion. PWA Add to home screen functionality has been added.
-- **Public Menu:** Displays the menu with categories and items. A search bar allows customers to find products across all categories.
-- **Campaign System:** The backend and frontend code for a complete campaign system has been implemented but is untested. This includes an admin interface to create/manage campaigns and logic on the public menu to display a popup and a special Campaigns category.
-- **Payment System:** The original Stripe integration was faulty and has been disabled in the UI to prevent user-facing errors. No new payment provider has been integrated.
+The full-stack application has been successfully deployed to the user's Hetzner VPS and is live. It is configured to use Cloudflare for DNS and SSL. The system now supports custom subdomains for each restaurant's public menu (e.g., ). All previously implemented features, including the newly tested Campaign Management system, are functional in the live environment. The main admin panel is accessible at .
 
 **Last working item**:
-- **Last item agent was working:** The agent was implementing a comprehensive Campaign Management System. This includes creating a campaign (image, description, status) from the admin panel, marking products as campaign products, and displaying a popup and a special Campaigns category on the public menu.
-- **Status:** IN PROGRESS
-- **Agent Testing Done:** N
-- **Which testing method agent to use?** both
-- **User Testing Done:** N
+- **Last item agent was working:** The agent guided the user through a complete manual deployment of the application onto a Hetzner VPS. This involved setting up the server environment (MongoDB, Nginx, Node.js, Python), configuring the application, troubleshooting numerous dependency and build issues, and implementing a wildcard subdomain feature so each restaurant has a unique URL.
+- **Status:** USER VERIFICATION PENDING
+- **Agent Testing Done:** Y (Agent confirmed functionality through user-provided outputs and screenshots)
+- **Which testing method agent to use?** Manual testing by user on their live domain.
+- **User Testing Done:** Y (User confirmed the final deployment issues were resolved).
 
 **All Pending/In progress Issue list**:
-- **Issue 1:** The newly implemented Campaign Feature is completely untested. (P0)
-- **Issue 2:** The super admin login sometimes fails to redirect to , landing on the regular user dashboard instead. (P1)
-- **Issue 3:** The Stripe payment integration is broken and was only disabled in the UI, not fixed or replaced. (P2)
+- **Issue 1:** The payment integration is non-functional. (P1)
 
 **Issues Detail:**
 - **Issue 1:**
-    - **Description:** The agent wrote a significant amount of code for the campaign feature across the backend () and frontend (, , ) but did not perform any testing to verify if it works.
-    - **Attempted fixes:** None. This is a new feature implementation.
-    - **Next debug checklist:**
-        1. Restart backend/frontend services and check for any compilation or runtime errors in the logs.
-        2. Log in as a super admin ( / ).
-        3. Navigate to the **Settings** page and create a new campaign: upload an image, add a description, and set it to Active.
-        4. Navigate to the **Dashboard**, create a new product, and test the Is Campaign Product? and Show in Campaign Only? checkboxes.
-        5. Open the **Public Menu** for that restaurant and verify:
-            - Does the campaign popup appear on page load?
-            - Does a Campaigns category appear?
-            - Do the correct items appear in the Campaigns category?
-            - Does the Show in Campaign Only logic correctly hide the item from its original category?
-    - **Why fix this issue and what will be achieved with the fix?** To complete the last requested feature and make the campaign system functional.
-    - **Status:** NOT STARTED
-    - **Is recurring issue?** N
-    - **Should Test frontend/backend/both after fix?** both
-    - **Blocked on other issue:** none
-
-- **Issue 2:**
-    - **Description:** During testing, the agent observed that after a super admin logs in, the app sometimes redirects to the regular dashboard () instead of the super admin panel (). This seems to be a race condition or a logic issue in the  or  redirect logic.
-    - **Attempted fixes:** The agent implemented a redirect in  but the issue persisted intermittently.
-    - **Next debug checklist:**
-        1. Review the  function in .
-        2. Examine the  logic to see how  state is set and when the application navigates based on it. Add logging to trace the value of  immediately after login.
-        3. Consider using  with a dependency on the user/ state in a layout component to handle routing reliably, rather than an immediate  call in the login handler.
-    - **Why fix this issue and what will be achieved with this fix?** This will provide a smoother and more reliable user experience for the super admin.
+    - **Description:** The original Stripe integration is broken. The user wants to replace it with a Turkish payment provider like PayTR. This is the last major piece of core functionality remaining.
+    - **Attempted fixes:** The UI button for payments was disabled in a previous session. No code has been written for a new provider.
+    - **Next debug checklist:** This is a new feature implementation, not a bug fix. The next step is to begin the Implement Pluggable Payment Provider task.
+    - **Why fix this issue and what will be achieved with the fix?** To enable monetization of the application, which is a critical business requirement.
     - **Status:** NOT STARTED
     - **Is recurring issue?** Y
-    - **Should Test frontend/backend/both after fix?** frontend
-    - **Blocked on other issue:** none
-
-- **Issue 3:**
-    - **Description:** The Stripe payment integration is non-functional, leading to a blank screen. The agent disabled the button in the UI as a temporary workaround. The user wants to use a Turkish payment provider like PayTR instead.
-    - **Attempted fixes:** The button was disabled in . No fix for the underlying payment logic was attempted.
-    - **Next debug checklist:** This issue is superseded by the task to integrate a new payment provider.
-    - **Why fix this issue and what will be achieved with the fix?** This is a critical blocker for application monetization.
-    - **Status:** BLOCKED
-    - **Is recurring issue?** Y
     - **Should Test frontend/backend/both after fix?** both
-    - **Blocked on other issue:** Upcoming Task 1 (Implement Pluggable Payment Provider)
+    - **Blocked on other issue:** none
 
 **In progress Task List**:
-- **Task 1:** Complete and Test Campaign Feature (P0)
-    - **Where to resume:** The code has been written. The next step is to begin testing as outlined in Issue 1: Next debug checklist. Start by checking logs and then functionally testing the entire campaign flow from admin creation to public menu display.
-    - **What will be achieved with this?** A key marketing feature for restaurant owners will be functional.
-    - **Status:** IN PROGRESS
-    - **Should Test frontend/backend/both after fix?** both
-    - **Blocked on something:** None
+None. The deployment task is considered complete pending final user confirmation.
 
 **Upcoming and Future Tasks**
 - **Upcoming Tasks:**
-  - **Task 1 (P1):** Implement Pluggable Payment Provider System (PayTR). The user has requested this as the next major step after current features are stable. The agent should call  for PayTR to get the implementation plan and required credentials, then confirm these with the user before coding.
-  - **Task 2 (P2):** Provide Project Deployment Options. The user has asked how to deploy the project. The agent has already provided a  for self-hosting. The agent should also investigate and propose a deployment plan using the .
-- **Future Tasks:**
-  - Enhance Super Admin panel with more detailed analytics or user management features.
+  - **Task 1 (P0):** Implement Pluggable Payment Provider System (PayTR). This is the highest priority now that the application is deployed. The agent must:
+      1. Call  with PayTR as the integration.
+      2. Present the required credentials and implementation plan to the user for confirmation.
+      3. Implement the payment flow on the live server environment.
+  - **Task 2 (P1):** Enhance Super Admin panel with more detailed analytics or user management features.
 
 **Completed work in this session**
-- **Feature:** Super Admin dashboard is now mobile-responsive.
-- **Feature:** Super Admin can filter businesses by status (Active, Trial, Expired) and the stats cards are clickable for quick filtering.
-- **Feature:** Super Admin can add a new business with a 7-day trial or a 1-year license directly upon creation.
-- **Feature:** User Settings page now includes forms for changing passwords and requesting account deletion.
-- **Feature:** Super Admin dashboard has a new tab to view and process account deletion requests.
-- **Feature:** Public menu now has a search bar to find products across all categories.
-- **Feature:** Progressive Web App (PWA) Add to Home Screen functionality was added for mobile users.
-- **Fix:** Subscription display logic was corrected to show remaining licensed days instead of trial days if a license is active.
-- **Fix:** Subscription page UI was updated to hide pricing information temporarily.
-- **Doc:** A  was created explaining how to self-host the application.
+- **Deployment:** Guided the user through a full manual deployment on a Hetzner VPS, including server setup, application configuration, process management (PM2), and reverse proxy (Nginx).
+- **Feature:** Implemented a wildcard subdomain system. Public menus are now accessible via .
+- **Feature:** Tested and validated the entire Campaign Management system (backend and frontend).
+- **Feature:** Implemented multiple user-requested UI changes on the public menu:
+    - Products display in a list view.
+    - Product images are 52x52px.
+    - Product price is aligned to the right.
+    - Product description is visible below the name.
+    - Images in the campaign popup and product detail modal are square.
+- **Feature:** Added a search bar to the restaurant admin's product dashboard.
+- **Fix:** Resolved the super admin login issue; login now correctly redirects to .
+- **Fix:** The super admin user is now hidden from the list of businesses in the super admin panel.
+- **Fix:** Removed the Made with Emergent badge from the application's .
+- **Troubleshooting:** Solved numerous deployment-related issues, including Python virtual environments, 
+Usage:   
+  pip <command> [options]
+
+Commands:
+  install                     Install packages.
+  lock                        Generate a lock file.
+  download                    Download packages.
+  uninstall                   Uninstall packages.
+  freeze                      Output installed packages in requirements format.
+  inspect                     Inspect the python environment.
+  list                        List installed packages.
+  show                        Show information about installed packages.
+  check                       Verify installed packages have compatible dependencies.
+  config                      Manage local and global configuration.
+  search                      Search PyPI for packages.
+  cache                       Inspect and manage pip's wheel cache.
+  index                       Inspect information available from package indexes.
+  wheel                       Build wheels from your requirements.
+  hash                        Compute hashes of package archives.
+  completion                  A helper command used for command completion.
+  debug                       Show information useful for debugging.
+  help                        Show help for commands.
+
+General Options:
+  -h, --help                  Show help.
+  --debug                     Let unhandled exceptions propagate outside the
+                              main subroutine, instead of logging them to
+                              stderr.
+  --isolated                  Run pip in an isolated mode, ignoring
+                              environment variables and user configuration.
+  --require-virtualenv        Allow pip to only run in a virtual environment;
+                              exit with an error otherwise.
+  --python <python>           Run pip with the specified Python interpreter.
+  -v, --verbose               Give more output. Option is additive, and can be
+                              used up to 3 times.
+  -V, --version               Show version and exit.
+  -q, --quiet                 Give less output. Option is additive, and can be
+                              used up to 3 times (corresponding to WARNING,
+                              ERROR, and CRITICAL logging levels).
+  --log <path>                Path to a verbose appending log.
+  --no-input                  Disable prompting for input.
+  --keyring-provider <keyring_provider>
+                              Enable the credential lookup via the keyring
+                              library if user input is allowed. Specify which
+                              mechanism to use [auto, disabled, import,
+                              subprocess]. (default: auto)
+  --proxy <proxy>             Specify a proxy in the form
+                              scheme://[user:passwd@]proxy.server:port.
+  --retries <retries>         Maximum attempts to establish a new HTTP
+                              connection. (default: 5)
+  --timeout <sec>             Set the socket timeout (default 15 seconds).
+  --exists-action <action>    Default action when a path already exists:
+                              (s)witch, (i)gnore, (w)ipe, (b)ackup, (a)bort.
+  --trusted-host <hostname>   Mark this host or host:port pair as trusted,
+                              even though it does not have valid or any HTTPS.
+  --cert <path>               Path to PEM-encoded CA certificate bundle. If
+                              provided, overrides the default. See 'SSL
+                              Certificate Verification' in pip documentation
+                              for more information.
+  --client-cert <path>        Path to SSL client certificate, a single file
+                              containing the private key and the certificate
+                              in PEM format.
+  --cache-dir <dir>           Store the cache data in <dir>.
+  --no-cache-dir              Disable the cache.
+  --disable-pip-version-check
+                              Don't periodically check PyPI to determine
+                              whether a new version of pip is available for
+                              download. Implied with --no-index.
+  --no-color                  Suppress colored output.
+  --use-feature <feature>     Enable new functionality, that may be backward
+                              incompatible.
+  --use-deprecated <feature>  Enable deprecated functionality, that will be
+                              removed in the future.
+  --resume-retries <resume_retries>
+                              Maximum attempts to resume or restart an
+                              incomplete download. (default: 5) package conflicts (), npm <command>
+
+Usage:
+
+npm install        install all the dependencies in your project
+npm install <foo>  add the <foo> dependency to your project
+npm test           run this project's tests
+npm run <foo>      run the script named <foo>
+npm <command> -h   quick help on <command>
+npm -l             display usage info for all commands
+npm help <term>    search for help on <term>
+npm help npm       more involved overview
+
+All commands:
+
+    access, adduser, audit, bugs, cache, ci, completion,
+    config, dedupe, deprecate, diff, dist-tag, docs, doctor,
+    edit, exec, explain, explore, find-dupes, fund, get, help,
+    help-search, hook, init, install, install-ci-test,
+    install-test, link, ll, login, logout, ls, org, outdated,
+    owner, pack, ping, pkg, prefix, profile, prune, publish,
+    query, rebuild, repo, restart, root, run-script, sbom,
+    search, set, shrinkwrap, star, stars, start, stop, team,
+    test, token, uninstall, unpublish, unstar, update, version,
+    view, whoami
+
+Specify configs in the ini-formatted file:
+    /root/.npmrc
+or on the command line via: npm <command> --key=value
+
+More configuration info: npm help config
+Configuration fields: npm help 7 config
+
+npm@10.8.2 /usr/lib/node_modules/npm dependency conflicts (), and  build failures.
+- **Integration:** Guided the user on setting up Cloudflare to manage DNS and SSL for the custom domain and subdomains.
+
+**Known issue recurrence from previous fork**
+- **Issue recurrence in previous fork:** Super admin login failed to redirect to .
+- **Recurrence count:** 1
+- **Status:** RESOLVED (The login response now includes an  flag, and the frontend uses it for correct redirection).
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Backend:** FastAPI, MongoDB (using ), JWT authentication.
-- **Frontend:** React, , TailwindCSS, shadcn/ui components, PWA.
-- **State Management:** React Context () for user session and roles.
+- **Backend:** FastAPI, MongoDB (motor)
+- **Frontend:** React, TailwindCSS, shadcn/ui
+- **Deployment:** Hetzner VPS (Ubuntu), Nginx (reverse proxy), PM2 (process manager), Cloudflare (DNS, SSL)
+- **Architecture:** Wildcard subdomain routing for multi-tenancy.
 
 **key DB schema**
 - **restaurants:** 
 - **menu_items:** 
-- **campaigns:** (New Collection) 
+- **campaigns:** 
+
+**changes in tech stack**
+- The application is now self-hosted on a Hetzner VPS managed via user instructions.
+- Cloudflare has been introduced for DNS and SSL management.
 
 **All files of reference**
-- : Major changes to add endpoints for campaigns, password changes, and account deletion requests. Public menu endpoint updated.
-- : Overhauled to be a mobile-responsive super admin panel with filtering, tabs, and new actions.
-- : Updated with cards for Password Change, Account Deletion, and Campaign Management.
-- : Updated to include a search bar, campaign popup, and a dynamic Campaigns category.
-- : The Add/Edit Item dialog now includes checkboxes for campaign settings.
-- : New file for PWA support.
-- : Updated to link to the manifest file.
-- : New documentation file for self-hosting.
+- : Added  to models, added  endpoint, fixed admin list query, fixed login response.
+- : Updated to handle subdomain-based data fetching and numerous UI style changes.
+- : Updated to use  flag from API for redirection.
+- : Updated to handle the new login response structure.
+- : Updated to generate QR codes pointing to the restaurant's subdomain.
+- : Updated with logic to handle routing for subdomains.
+- : Nginx configuration file for  and wildcard .
 
 **key api endpoints**
--  (POST)
--  (POST)
--  (GET)
--  (DELETE)
--  (GET, POST)
--  (POST - updated to accept )
+-  (GET - New)
+-  (POST - Response updated)
+-  (GET - Logic updated to hide super admin)
 
 **Critical Info for New Agent**
-- The user's preferred language is **Turkish**. All responses must be in Turkish.
-- **Your immediate priority is to test the Campaign feature.** A large amount of code was written for it, but it's completely unverified. Follow the debug checklist for Issue #1.
-- The next major functional requirement is to integrate a payment provider (likely **PayTR**). Do not try to fix Stripe. Use the  subagent for this task.
-- Be aware of the intermittent super admin login redirect issue. It's a known UX bug that needs to be addressed.
-- The user has been provided with a  for self-hosting.
+- **The application is LIVE and SELF-HOSTED.** You are no longer working in the Emergent pod. Your role is to provide the user with the correct commands and code changes to apply to their Hetzner server.
+- **User's preferred language is Turkish.** All communication must be in Turkish.
+- **Server Environment:** The project is located at . Key tools are  for managing the backend process and  for serving the application.
+- **Deployment Workflow:** Any code change requires:
+    1. Updating the file(s) on the server.
+    2. For backend changes: .
+    3. For frontend changes: .
+- **DNS & SSL are managed by Cloudflare.** Do not use . The server only needs to listen on port 80.
+- **Next Priority:** The user's most important remaining feature is payment integration (PayTR).
 
 **documents and test reports created in this job**
-- 
+-  was updated and used to run backend and frontend tests via the testing agent.
 
 **Last 10 User Messages and any pending HUMAN messages**
-10. **User:** Can you add a button for users to add the app to their mobile home screen? (COMPLETED)
-9. **User:** When a customer scans the QR code, I want a search bar to appear above the categories so they can search for products across the whole menu. (COMPLETED)
-8. **User:** I want a comprehensive campaign system... (popup, special category, admin management, etc.) (IN PROGRESS)
-7. **User:** The super admin panel is not mobile-friendly. Also, don't show the subscription price on the user panel for now. Tell me what you need for PayTR integration and how I can deploy this project. (COMPLETED - Mobile fix, price hidden, PayTR/deployment questions answered)
-6. **User:** I want to self-host the project on my own server. (COMPLETED - Agent provided a detailed deployment guide)
-5. **User:** Can the businesses be filtered by their status (active, trial, expired)? Make the stats cards clickable to apply these filters. Also, when adding a new business, let me choose between a trial or a yearly license. (COMPLETED)
-4. **User:** When a license is added, the panel still shows 6 days left from the trial. The super admin panel doesn't need a user dashboard view. Let users change their password and request account deletion, and let me approve those requests. (COMPLETED)
-3. **User:** I logged in with the super admin email but it opened the normal user panel. The super admin should be taken directly to the admin panel. Add a Add License button to each business in the list. Remove the Add Manual License button from the subscription page for normal users. (COMPLETED)
-2. **User:** What is the password for ? (COMPLETED - Agent provided password)
-1. **User:** (Confirms plan, asks to use a Turkish payment provider, and decides to choose one later) (ACKNOWLEDGED)
+10. **User:** Panel doesn't open. (RESOLVED - Fixed by cleaning Nginx config and adding default server block).
+9. **User:** I bought . I want the panel at  and menus at . (COMPLETED)
+8. **User:** How do I remove the Made with Emergent text? (COMPLETED)
+7. **User:** I'm logged in, but it looks like an old version. The GitHub repo might be out of sync. (RESOLVED - Pulled latest code from new repo and rebuilt).
+6. **User:** Super admin panel opens like a regular user panel. (RESOLVED - Fixed login redirect logic).
+5. **User:** I can't log in with the new super admin account. Also, new user registration is failing. (RESOLVED - Fixed backend port conflict and frontend .env URL).
+4. **User:** The server IP opens the panel, but my old users aren't there. (EXPLAINED - New DB is empty, created a new super admin user).
+3. **User:** After pulling from GitHub, frontend build fails. (RESOLVED - Fixed node module dependencies).
+2. **User:** The project is on GitHub now. Give me deployment steps for cloning from there. (COMPLETED)
+1. **User:** The Download Code option is missing. How do I get the files? (RESOLVED - Guided user to use GitHub).
 
 **Project Health Check:**
-- **Broken:** Payment/Monetization flow.
+- **Broken:** Monetization/Payment flow.
 - **Mocked:** None.
-- **Potentially Broken:** The entire Campaign system is untested.
+- **Working:** Core application, user management, menu management, campaign system, custom subdomains, deployment.
 
 **3rd Party Integrations**
 - **Stripe (Payments)** — Disabled and pending replacement.
 - **PayTR (Payments)** — Planned future integration.
+- **Cloudflare** — Active for DNS and SSL.
 
 **Testing status**
-- **Testing agent used after significant changes:** YES (for Super Admin features)
+- **Testing agent used after significant changes:** YES
 - **Troubleshoot agent used after agent stuck in loop:** NO
-- **Test files created:** Test cases in  were updated for backend testing of admin features.
-- **Known regressions:** Stripe functionality is a known regression.
+- **Test files created:** None, existing test plan in  was updated.
+- **Known regressions:** None from this session.
 
 **Credentials to test flow:**
+- **URL:** 
 - **Super Admin:**  / 
-- **Regular User:**  /  (Note: this user was created during the session for testing)
+- (User can create regular restaurant accounts for testing)
 
 **What agent forgot to execute**
-- The agent completely forgot to test the extensive campaign feature after implementing it. This includes multiple backend endpoints, database schema changes, and UI changes across three different frontend pages. It was a major oversight to commit this much code without any form of verification.</analysis>
+All user requests during this extensive session were addressed. The only outstanding item from the initial product requirements is the payment integration, which was intentionally deferred.</analysis>
